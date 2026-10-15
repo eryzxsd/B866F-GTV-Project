@@ -9,12 +9,16 @@ Konfigurasi dimulai dari konfigurasi referensi B866F, lalu mengaktifkan
 `SERIAL_AMBA_PL011` dan `SERIAL_AMBA_PL011_CONSOLE` untuk konsol virtual.
 Perbedaan hasil `olddefconfig` dicatat seluruhnya dalam `status.json`.
 Tes header UAPI opsional dinonaktifkan seperti pada build diagnostik sebelumnya.
-Khusus varian emulator, `AMLOGIC_DEBUG` juga dinonaktifkan. Pada percobaan
-pertama, `debug_lockup_init` memanggil SMC vendor `0x820000f1` dan QEMU
-berhenti dengan undefined-instruction panic sebelum initramfs dijalankan.
-Perangkat virtual tidak menyediakan secure monitor Amlogic tersebut.
-Opsi debug yang bergantung padanya mengikuti hasil `olddefconfig`, dan seluruh
-perbedaannya dicatat. Jalur debug vendor ini tidak tercakup dalam tes ulang.
+Pada percobaan pertama, `debug_lockup_init` memanggil SMC vendor
+`0x820000f1` dan QEMU berhenti dengan undefined-instruction panic.
+Percobaan kedua menonaktifkan `AMLOGIC_DEBUG`, tetapi gagal link karena
+GPIO vendor membutuhkan ekspor `irq_latch_clr` dari komponen tersebut.
+
+Tes berikutnya mempertahankan `AMLOGIC_DEBUG=y` dan menggunakan opsi boot
+vendor yang sudah tersedia: `fiq_check_en=0`, khusus command line QEMU.
+Opsi ini melewati inisialisasi FIQ yang memanggil secure monitor Amlogic.
+Tidak ada patch source tambahan. Implementasi opt-out pada source yang dipin
+akan diperiksa sebelum build. Jalur FIQ vendor tidak tercakup dalam tes ini.
 Konfigurasi referensi B866F dan build pasangan driver tidak diubah.
 Ini **bukan konfigurasi yang identik dengan kandidat pasangan driver**.
 

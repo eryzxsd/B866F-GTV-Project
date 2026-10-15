@@ -82,7 +82,7 @@ def main():
         requested = ROOT / 'kernel/b866f-running.config'
         shutil.copyfile(requested, output / '.config')
         run([str(kernel / 'scripts/config'), '--file', str(output / '.config'),
-             '--disable', 'UAPI_HEADER_TEST', '--disable', 'AMLOGIC_DEBUG',
+             '--disable', 'UAPI_HEADER_TEST',
              '--enable', 'SERIAL_AMBA_PL011',
              '--enable', 'SERIAL_AMBA_PL011_CONSOLE'], 'qemu-config-fragment.txt')
         make = ['make', '-C', str(kernel), 'O=' + str(output), 'ARCH=arm64', 'LLVM=1',
@@ -93,13 +93,16 @@ def main():
         status['config_changes'] = {key: {'before': before.get(key), 'after': after.get(key)}
                                     for key in sorted(before.keys() | after.keys())
                                     if before.get(key) != after.get(key)}
-        # QEMU virt lacks the vendor secure monitor used by debug_lockup_init.
-        # Do not disable this in the paired-driver/STB candidate configuration.
-        if after.get('CONFIG_AMLOGIC_DEBUG') != 'n':
-            raise RuntimeError('QEMU-only AMLOGIC_DEBUG exclusion did not resolve')
+        # Preserve debug exports needed by the vendor GPIO driver. Use the
+        # vendor's existing boot option to skip its unsupported FIQ SMC in QEMU.
+        if after.get('CONFIG_AMLOGIC_DEBUG') != 'y':
+            raise RuntimeError('Vendor debug exports must remain built in')
+        lockup = (kernel / 'common_drivers/drivers/debug/lockup.c').read_text()
+        if '__setup("fiq_check_en=", fiq_check_en_setup)' not in lockup or 'if (!fiq_check_en)' not in lockup:
+            raise RuntimeError('Pinned vendor FIQ opt-out is unavailable')
         status['qemu_exclusions'] = {
-            'CONFIG_AMLOGIC_DEBUG': 'Vendor debug init issues SMC 0x820000f1; '
-                                    'not supported by the QEMU virt platform',
+            'fiq_check_en=0': 'Skip vendor FIQ debug SMC 0x820000f1 in QEMU; '
+                              'keep AMLOGIC_DEBUG and GPIO exports enabled',
         }
         for key in ('CONFIG_SERIAL_AMBA_PL011', 'CONFIG_SERIAL_AMBA_PL011_CONSOLE',
                     'CONFIG_BLK_DEV_INITRD', 'CONFIG_RD_GZIP', 'CONFIG_ARM_GIC', 'CONFIG_ARM_PSCI_FW'):
@@ -124,7 +127,7 @@ def main():
                    '-m', '2048', '-smp', '2', '-accel', 'tcg', '-display', 'none',
                    '-monitor', 'none', '-serial', 'stdio', '-nic', 'none', '-no-reboot',
                    '-kernel', str(image), '-initrd', str(ramdisk_path),
-                   '-append', 'console=ttyAMA0 earlycon=pl011,0x9000000 rdinit=/init panic=-1 nokaslr']
+                   '-append', 'console=ttyAMA0 earlycon=pl011,0x9000000 rdinit=/init panic=-1 nokaslr fiq_check_en=0']
         status['qemu_command'] = command
         timed_out = False
         with (REPORT / 'qemu-serial.txt').open('w') as log:
