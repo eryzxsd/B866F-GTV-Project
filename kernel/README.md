@@ -8,6 +8,14 @@ Baseline saat ini menggunakan sumber publik Khadas cabang Android 14,
 mempelajari perbedaan ABI Amlogic, bukan kandidat pembaruan. Port ke kernel baru
 memerlukan pekerjaan terpisah; sumber ini belum terbukti sama dengan sumber ZTE.
 
+Pilihan workflow `source`:
+
+- `khadas-android14`: baseline 5.15.153 pada sumber Khadas Android 14.
+- `coreelec-5.15.196`: eksperimen sumber Amlogic 5.15.196 dari CoreELEC,
+  bukan firmware Android B866F. Tetap wajib melewati pemeriksaan ABI yang sama.
+
+Kedua pilihan memakai commit tetap. Tidak ada yang dinyatakan siap diinstal.
+
 `b866f-running.config` adalah konfigurasi build dari perangkat B866F Android 14.
 `vendor-symbol-requirements.json` berisi nama simbol dan CRC yang dibutuhkan
 empat contoh modul perangkat; tidak berisi binary modul, firmware, identitas
@@ -24,6 +32,8 @@ berbeda dari firmware clang 17; perbedaan ini dicatat dalam laporan.
 
 Sumber diambil pada commit tetap dari [Khadas Linux](https://github.com/khadas/linux)
 dan [Khadas common_drivers](https://github.com/khadas/common_drivers).
+Pilihan CoreELEC memakai [linux-amlogic](https://github.com/CoreELEC/linux-amlogic)
+dan [common_drivers](https://github.com/CoreELEC/common_drivers) dari proyek tersebut.
 Masing-masing mempertahankan lisensi upstream (kernel GPL-2.0 dan lisensi per file).
 Konfigurasi di sini mengikuti lisensi kernel GPL-2.0-only. Tidak ada kode sumber
 kernel atau binary proprietary dari firmware yang didistribusikan ulang.

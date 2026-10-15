@@ -1,12 +1,21 @@
 name: Kernel ABI baseline (diagnostic only)
 on:
   workflow_dispatch:
+    inputs:
+      source:
+        description: Sumber eksperimen ABI (tidak untuk flashing)
+        type: choice
+        required: true
+        default: khadas-android14
+        options:
+          - khadas-android14
+          - coreelec-5.15.196
 
 permissions:
   contents: read
 
 concurrency:
-  group: kernel-baseline
+  group: kernel-baseline-${{ inputs.source || 'khadas-android14' }}
   cancel-in-progress: false
 
 jobs:
@@ -22,6 +31,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y clang-18 lld-18 llvm-18 flex bison libssl-dev libelf-dev bc gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi
       - name: Build baseline and compare vendor ABI
+        env:
+          KERNEL_SOURCE: ${{ inputs.source || 'khadas-android14' }}
         run: python3 tools/kernel_baseline.py
       - name: Save diagnostic reports (no kernel images)
         if: always()

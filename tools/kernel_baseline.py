@@ -13,10 +13,18 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 WORK = ROOT / 'build/kernel-baseline'
 REPORT = ROOT / 'build/kernel-report'
-SOURCES = {
-    'kernel': ('khadas/linux', '070ae7539e6cd7c0f6c263bff80603113b8c1011'),
-    'drivers': ('khadas/common_drivers', 'e0718dc4aba5b556beb4882d5207c938f84dc12a'),
+BASELINES = {
+    'khadas-android14': {
+        'kernel': ('khadas/linux', '070ae7539e6cd7c0f6c263bff80603113b8c1011'),
+        'drivers': ('khadas/common_drivers', 'e0718dc4aba5b556beb4882d5207c938f84dc12a'),
+    },
+    'coreelec-5.15.196': {
+        'kernel': ('CoreELEC/linux-amlogic', 'f231c7811a91c548f86a43e17cf43611f8747c86'),
+        'drivers': ('CoreELEC/common_drivers', '8a89a9aae1cb7c7993cc20b943491af435b31801'),
+    },
 }
+SOURCE_KEY = os.environ.get('KERNEL_SOURCE', 'khadas-android14')
+SOURCES = BASELINES[SOURCE_KEY]
 
 
 def fetch_source(name, destination):
@@ -71,7 +79,8 @@ def main():
         raise SystemExit('Use a fresh build/kernel-baseline directory for each run.')
     WORK.mkdir(parents=True)
     REPORT.mkdir(parents=True, exist_ok=True)
-    status = {'purpose': 'Android 14 vendor ABI baseline, 5.15.153 source; NOT a security update',
+    status = {'purpose': 'Vendor ABI diagnostic source build; NOT a security update',
+              'baseline': SOURCE_KEY,
               'installable': False, 'sources': {}, 'status': 'preparing'}
     try:
         kernel = WORK / 'linux'
@@ -152,6 +161,7 @@ def main():
                                            for symbols in expected.values())}
         (REPORT / 'core-abi-gate.json').write_text(json.dumps(gate, indent=2))
         status['core_abi_gate'] = gate
+        print('Core ABI gate: ' + json.dumps(gate), flush=True)
         if not gate['matches_all_samples']:
             status['status'] = 'diagnostic complete: module_layout mismatch; full build skipped'
             markdown = ('# Baseline: tidak kompatibel sebagai pengganti langsung\n\n'
