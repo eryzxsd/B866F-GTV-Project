@@ -1,0 +1,25 @@
+B866F GTV Project
+Copyright 2026 B866F GTV Project contributors
+
+This is an independent customization project, not the original EBS firmware.
+Existing internal package names and module ID are retained for compatibility.
+EBS firmware and its Settings implementation are not distributed here.
+
+Android Settings/Leanback/Preference layout adaptations reference Android Open
+Source Project and AndroidX designs, licensed under Apache License 2.0:
+https://android.googlesource.com/platform/packages/apps/TvSettings/
+https://android.googlesource.com/platform/frameworks/support/
+Firmware-specific XML contains integration references to the user's locally
+installed Settings resources/classes; the corresponding APK is not included.
+
+Google TV Home and the Google TV boot animation are not distributed here.
+Google and Android trademarks belong to their owners.
+
+Samba and its runtime dependencies are not bundled in this source repository.
+The local runtime fetcher uses official Termux packages, whose license files are
+preserved. Samba is GPL-3.0-or-later; dependencies retain their own licenses.
+https://www.samba.org/samba/docs/GPL.html
+https://github.com/termux/termux-packages/tree/master/packages/samba
+
+Go dependency golang.org/x/crypto is BSD-3-Clause licensed:
+https://cs.opensource.google/go/x/crypto/+/master:LICENSE

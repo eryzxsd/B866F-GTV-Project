@@ -1,0 +1,13 @@
+local-inputs/
+build/
+dist/
+.cache/
+*.pk8
+*.pem
+*.jks
+*.p12
+*.keystore
+__pycache__/
+*.pyc
+*.log
+.env

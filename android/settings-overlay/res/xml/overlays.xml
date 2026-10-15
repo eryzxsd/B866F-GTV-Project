@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<overlay>
+  <item target="style/Theme.Settings" value="@style/Theme.Settings"/>
+  <item target="layout/leanback_preference" value="@layout/leanback_preference"/>
+  <item target="drawable/compound_icon_background" value="@drawable/appearance_icon_background"/>
+  <item target="color/tp_preference_icon_background_color" value="@color/appearance_icon_background_color"/>
+  <item target="color/two_panel_preference_icon_color" value="@color/appearance_icon_tint"/>
+  <item target="color/tp_preference_item_primary_text_color_selector" value="@color/appearance_primary_text"/>
+  <item target="color/tp_preference_item_secondary_text_color_selector" value="@color/appearance_secondary_text"/>
+  <item target="layout/preference_access_point_tv" value="@layout/preference_access_point_tv"/>
+  <item target="layout/preference_reversed_widget" value="@layout/preference_reversed_widget"/>
+  <item target="layout/preference_reversed_icon" value="@layout/preference_reversed_icon"/>
+  <item target="layout/preference_app" value="@layout/preference_app"/>
+  <item target="layout/preference" value="@layout/preference"/>
+  <item target="layout/preference_material" value="@layout/preference_material"/>
+  <item target="layout/preference_two_target" value="@layout/preference_two_target"/>
+  <item target="layout/preference_radio" value="@layout/preference_radio"/>
+  <item target="layout/preference_access_point" value="@layout/preference_access_point"/>
+  <item target="layout/leanback_list_preference_item_single" value="@layout/leanback_list_preference_item_single"/>
+  <item target="layout/leanback_list_preference_item_multi" value="@layout/leanback_list_preference_item_multi"/>
+<item target="layout/access_point_friction_widget" value="@layout/access_point_friction_widget"/><item target="layout/leanback_preferences_list" value="@layout/leanback_preferences_list"/><item target="drawable/settingslib_switch_thumb" value="@drawable/appearance_switch_thumb"/><item target="drawable/settingslib_switch_track" value="@drawable/appearance_switch_track"/><item target="layout/leanback_preference_widget_switch" value="@layout/leanback_preference_widget_switch"/><item target="layout/preference_widget_switch" value="@layout/preference_widget_switch"/><item target="drawable/switch_thumb" value="@color/material3_thumb_color"/><item target="drawable/switch_track" value="@color/material3_track_color"/><item target="xml/ebs_interface" value="@xml/ebs_interface"/><item target="drawable/ic_settings_developeroptions" value="@drawable/appearance_developer_icon"/><item target="drawable/ic_developer_mode" value="@drawable/appearance_developer_icon"/><item target="xml/daydream" value="@xml/daydream"/><item target="xml/daydream_x" value="@xml/daydream_x"/><item target="layout/leanback_preference_fragment" value="@layout/leanback_preference_fragment"/><item target="layout/leanback_list_preference_fragment" value="@layout/leanback_list_preference_fragment"/><item target="drawable/storage_indicator_apps" value="@drawable/appearance_storage_apps"/><item target="drawable/storage_indicator_dcim" value="@drawable/appearance_storage_dcim"/><item target="drawable/storage_indicator_music" value="@drawable/appearance_storage_music"/><item target="drawable/storage_indicator_downloads" value="@drawable/appearance_storage_downloads"/><item target="drawable/storage_indicator_cache" value="@drawable/appearance_storage_cache"/><item target="drawable/storage_indicator_misc" value="@drawable/appearance_storage_misc"/><item target="drawable/storage_indicator_available" value="@drawable/appearance_storage_available"/><item target="string/header_category_ebstv_settings" value="@string/personal_header_category_ebstv_settings"/><item target="string/interface_settings" value="@string/personal_interface_settings"/><item target="string/interface_title" value="@string/personal_interface_title"/></overlay>

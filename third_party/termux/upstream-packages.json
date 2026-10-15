@@ -1,0 +1,289 @@
+{
+  "samba": {
+    "Version": "4.25.0",
+    "Filename": "pool/main/s/samba/samba_4.25.0_arm.deb",
+    "SHA256": "bbf54921ece38174a15f5c4e76b29d3b1e29b20c54d04b080d5c2d11bbb23d07",
+    "Homepage": "https://www.samba.org/",
+    "Description": "SMB/CIFS fileserver"
+  },
+  "krb5": {
+    "Version": "1.22.2",
+    "Filename": "pool/main/k/krb5/krb5_1.22.2_arm.deb",
+    "SHA256": "d9afd335bf2039d8d95a5fb9eee2f7012623b857f71a3be2980c66ab7d890c46",
+    "Homepage": "https://web.mit.edu/kerberos",
+    "Description": "The Kerberos network authentication system"
+  },
+  "libandroid-support": {
+    "Version": "29-1",
+    "Filename": "pool/main/liba/libandroid-support/libandroid-support_29-1_arm.deb",
+    "SHA256": "67150f1cb050d4852cb21d2b138676c68920b2ec7f059795b287b75cf2cf6cb6",
+    "Homepage": "https://github.com/termux/libandroid-support",
+    "Description": "Library extending the Android C library (Bionic) for additional multibyte, locale and math support"
+  },
+  "libandroid-glob": {
+    "Version": "0.6-3",
+    "Filename": "pool/main/liba/libandroid-glob/libandroid-glob_0.6-3_arm.deb",
+    "SHA256": "a499b313eac0cd712d6196947649cd4390c5c5a0ac5f4b6f52d95b49367faf96",
+    "Homepage": "https://man7.org/linux/man-pages/man3/glob.3.html",
+    "Description": "Shared library for the glob(3) system function"
+  },
+  "libresolv-wrapper": {
+    "Version": "1.1.8",
+    "Filename": "pool/main/libr/libresolv-wrapper/libresolv-wrapper_1.1.8_arm.deb",
+    "SHA256": "c334801124bffefe6471996da98bf3ff9bfae57427799063dd8903e160c62384",
+    "Homepage": "https://cwrap.org/resolv_wrapper.html",
+    "Description": "A wrapper for DNS name resolving or DNS faking"
+  },
+  "resolv-conf": {
+    "Version": "1.3",
+    "Filename": "pool/main/r/resolv-conf/resolv-conf_1.3_arm.deb",
+    "SHA256": "081d62f6d29b6de49976628f400f536c71b4342badd06a652dd2e0c4338333c9",
+    "Homepage": "https://man7.org/linux/man-pages/man5/resolv.conf.5.html",
+    "Description": "Resolver configuration file"
+  },
+  "readline": {
+    "Version": "8.3.6",
+    "Filename": "pool/main/r/readline/readline_8.3.6_arm.deb",
+    "SHA256": "4b3bdacdbee97503a9062a81e5e460ff5c4f3b35fed4b1cb3a612c5b8c79e64f",
+    "Homepage": "https://tiswww.case.edu/php/chet/readline/rltop.html",
+    "Description": "Library that allow users to edit command lines as they are typed in"
+  },
+  "ncurses": {
+    "Version": "6.6.20260307+really6.5.20250830",
+    "Filename": "pool/main/n/ncurses/ncurses_6.6.20260307+really6.5.20250830_arm.deb",
+    "SHA256": "a729f77be4109f8123aeb59702e49bf2d30f67a213d305c276859af52e12a3bb",
+    "Homepage": "https://invisible-island.net/ncurses/",
+    "Description": "Library for text-based user interfaces in a terminal-independent manner"
+  },
+  "openssl": {
+    "Version": "1:3.6.5",
+    "Filename": "pool/main/o/openssl/openssl_1:3.6.5_arm.deb",
+    "SHA256": "4271df34c1cad73da0143b6d9013df4b80a4f6fc4d8a107f4069ef864606e0a9",
+    "Homepage": "https://www.openssl.org/",
+    "Description": "Library implementing the SSL and TLS protocols as well as general purpose cryptography functions"
+  },
+  "ca-certificates": {
+    "Version": "1:2026.09.25",
+    "Filename": "pool/main/c/ca-certificates/ca-certificates_1:2026.09.25_all.deb",
+    "SHA256": "57fab24bf4561bfdd35afe71bc1929914e51c35458cfd1fca2b15e54bc8df7af",
+    "Homepage": "https://curl.se/docs/caextract.html",
+    "Description": "Common CA certificates"
+  },
+  "zlib": {
+    "Version": "1.3.2",
+    "Filename": "pool/main/z/zlib/zlib_1.3.2_arm.deb",
+    "SHA256": "c63ee590f2f02254725bdd8e415582c70737b63712a20d5395b45e4b13ffffc5",
+    "Homepage": "https://www.zlib.net/",
+    "Description": "Compression library implementing the deflate compression method found in gzip and PKZIP"
+  },
+  "libdb": {
+    "Version": "18.1.40-6",
+    "Filename": "pool/main/libd/libdb/libdb_18.1.40-6_arm.deb",
+    "SHA256": "08a6239a4ab5c29e6b96352fa9f47aaebd01ce999119f3787e81e4cabc7b71db",
+    "Homepage": "https://www.oracle.com/database/berkeley-db",
+    "Description": "The Berkeley DB embedded database system (library)"
+  },
+  "libc++": {
+    "Version": "30",
+    "Filename": "pool/main/libc/libc++/libc++_30_arm.deb",
+    "SHA256": "5d4e4dfea77402c0b3ee05b6cb4c73108bb69cc149e2d3a73d4ec6ee6919fd16",
+    "Homepage": "https://libcxx.llvm.org/",
+    "Description": "C++ Standard Library"
+  },
+  "libandroid-execinfo": {
+    "Version": "0.1-3",
+    "Filename": "pool/main/liba/libandroid-execinfo/libandroid-execinfo_0.1-3_arm.deb",
+    "SHA256": "9d78f90e7e8f9e02edb176b40acd288c00e4d4c25f22c068656a2e0da71fdd38",
+    "Homepage": "https://man7.org/linux/man-pages/man3/backtrace.3.html",
+    "Description": "Shared library for the backtrace system function"
+  },
+  "libandroid-spawn": {
+    "Version": "0.3",
+    "Filename": "pool/main/liba/libandroid-spawn/libandroid-spawn_0.3_arm.deb",
+    "SHA256": "76b340753822f4ebf45855a3d40481ed5690feda920cd99aed029e3c1c1957c8",
+    "Homepage": "https://man7.org/linux/man-pages/man3/posix_spawn.3.html",
+    "Description": "Shared library for the posix_spawn system function"
+  },
+  "libbsd": {
+    "Version": "0.12.2",
+    "Filename": "pool/main/libb/libbsd/libbsd_0.12.2_arm.deb",
+    "SHA256": "eb7e1be6fa893eeecf6b7dd290b3a4908fc9655bc96ea10e634be2f61d56cbc4",
+    "Homepage": "https://libbsd.freedesktop.org",
+    "Description": "utility functions from BSD systems"
+  },
+  "libmd": {
+    "Version": "1.3.0",
+    "Filename": "pool/main/libm/libmd/libmd_1.3.0_arm.deb",
+    "SHA256": "b5e92835b647895f98cca1b4dea4e2087fd2891ee1a5bc1d63fd8a8d2bc61abb",
+    "Homepage": "https://www.hadrons.org/software/libmd/",
+    "Description": "Message Digest functions from BSD systems"
+  },
+  "libcap": {
+    "Version": "2.78",
+    "Filename": "pool/main/libc/libcap/libcap_2.78_arm.deb",
+    "SHA256": "38972305fb6268b6b6b1307317e85beb9491e29736548049559f194acf0f0df2",
+    "Homepage": "https://sites.google.com/site/fullycapable/",
+    "Description": "POSIX 1003.1e capabilities"
+  },
+  "attr": {
+    "Version": "2.6.0",
+    "Filename": "pool/main/a/attr/attr_2.6.0_arm.deb",
+    "SHA256": "7bea86aa0d78873c9f32f6b2edf20e3108e1710e5964be1f75f9b589f35008d3",
+    "Homepage": "http://savannah.nongnu.org/projects/attr/",
+    "Description": "Utilities for manipulating filesystem extended attributes"
+  },
+  "libcrypt": {
+    "Version": "0.2-6",
+    "Filename": "pool/main/libc/libcrypt/libcrypt_0.2-6_arm.deb",
+    "SHA256": "111ff17330ac375b12677bd14d8d44edea2e423dffabc2dd26583d5940e4fcb1",
+    "Homepage": "http://michael.dipperstein.com/crypt/",
+    "Description": "A crypt(3) implementation"
+  },
+  "libgnutls": {
+    "Version": "3.8.13-1",
+    "Filename": "pool/main/libg/libgnutls/libgnutls_3.8.13-1_arm.deb",
+    "SHA256": "7f68f61082429e4f3d5cbd83dc2fdf05a377d9ac6ecda883807ddcf044121a2b",
+    "Homepage": "https://www.gnutls.org/",
+    "Description": "Secure communications library implementing the SSL, TLS and DTLS protocols and technologies around them"
+  },
+  "libgmp": {
+    "Version": "6.3.0-2",
+    "Filename": "pool/main/libg/libgmp/libgmp_6.3.0-2_arm.deb",
+    "SHA256": "84d462fe805f361850742827283f801be27e7354b74135b243a2515ae9e5c388",
+    "Homepage": "https://gmplib.org/",
+    "Description": "Library for arbitrary precision arithmetic"
+  },
+  "libnettle": {
+    "Version": "4.0+really3.10.2",
+    "Filename": "pool/main/libn/libnettle/libnettle_4.0+really3.10.2_arm.deb",
+    "SHA256": "9b428dd65b3e5a5a732a51430eaea49643da0a9d1445c73d474678275934cf47",
+    "Homepage": "https://www.lysator.liu.se/~nisse/nettle/",
+    "Description": "Cryptographic library that is designed to fit easily in more or less any context"
+  },
+  "libidn2": {
+    "Version": "2.3.8-1",
+    "Filename": "pool/main/libi/libidn2/libidn2_2.3.8-1_arm.deb",
+    "SHA256": "5c263581ff0ed0770bd9688980901ddf0cf10499183e020ec470d9f9a004cf80",
+    "Homepage": "https://www.gnu.org/software/libidn/#libidn2",
+    "Description": "Free software implementation of IDNA2008, Punycode and TR46"
+  },
+  "libiconv": {
+    "Version": "1.19",
+    "Filename": "pool/main/libi/libiconv/libiconv_1.19_arm.deb",
+    "SHA256": "a540d434d458faccb4391a1d870bddaae5cf0a061b8fc52102b5642f6d7a9445",
+    "Homepage": "https://www.gnu.org/software/libiconv/",
+    "Description": "An implementation of iconv()"
+  },
+  "libunistring": {
+    "Version": "1.4.2",
+    "Filename": "pool/main/libu/libunistring/libunistring_1.4.2_arm.deb",
+    "SHA256": "da3cbf9f0a2c8f5700df44e31110b84b7c9e19496010646a9147fb4a5c35ecad",
+    "Homepage": "https://www.gnu.org/software/libunistring/",
+    "Description": "Library providing functions for manipulating Unicode strings"
+  },
+  "libtasn1": {
+    "Version": "4.21.0",
+    "Filename": "pool/main/libt/libtasn1/libtasn1_4.21.0_arm.deb",
+    "SHA256": "7fb32af00bbd67523e67f90f6b09329c5d6f229dee8aa38aa9998eefed99ec08",
+    "Homepage": "https://www.gnu.org/software/libtasn1/",
+    "Description": "This is GNU Libtasn1, a small ASN.1 library"
+  },
+  "libunbound": {
+    "Version": "1.26.1",
+    "Filename": "pool/main/libu/libunbound/libunbound_1.26.1_arm.deb",
+    "SHA256": "049424bc8c6167263cb2c39d61242e6612fe2fc8f4ec5e6bf1faccff34d7e42d",
+    "Homepage": "https://unbound.net/",
+    "Description": "A validating, recursive, caching DNS resolver"
+  },
+  "libevent": {
+    "Version": "2.1.13",
+    "Filename": "pool/main/libe/libevent/libevent_2.1.13_arm.deb",
+    "SHA256": "0e142de6f7d2e461badfbc5d0cb9b1abd4ba31a314ac6129ca7ce11f159c8f93",
+    "Homepage": "https://libevent.org/",
+    "Description": "Library that provides asynchronous event notification"
+  },
+  "libnghttp2": {
+    "Version": "1.70.0",
+    "Filename": "pool/main/libn/libnghttp2/libnghttp2_1.70.0_arm.deb",
+    "SHA256": "d21d8375a670dd223563629a69c8ff3fb31c3c0559828178ab05f3d6d08e8f1d",
+    "Homepage": "https://nghttp2.org/",
+    "Description": "nghttp HTTP 2.0 library"
+  },
+  "libngtcp2": {
+    "Version": "1.25.0",
+    "Filename": "pool/main/libn/libngtcp2/libngtcp2_1.25.0_arm.deb",
+    "SHA256": "5dc0d716901f7ed7c679f939ed1924ef16f1ac455b75686af92de2ed57125f2a",
+    "Homepage": "https://github.com/ngtcp2/ngtcp2",
+    "Description": "Implementation of IETF QUIC protocol"
+  },
+  "p11-kit": {
+    "Version": "0.26.5",
+    "Filename": "pool/main/p/p11-kit/p11-kit_0.26.5_arm.deb",
+    "SHA256": "c259868b4817a4d1ea987a49834be8949e1f543c6675808a6a978e765d2de62c",
+    "Homepage": "https://p11-glue.github.io/p11-glue/p11-kit.html",
+    "Description": "Provides a way to load and enumerate PKCS#11 modules"
+  },
+  "libffi": {
+    "Version": "3.8.0",
+    "Filename": "pool/main/libf/libffi/libffi_3.8.0_arm.deb",
+    "SHA256": "27fc13bac4366ea270689a59a4a41fde52dfdbbd13418b29ac32ee66a0c43396",
+    "Homepage": "https://sourceware.org/libffi/",
+    "Description": "Library providing a portable, high level programming interface to various calling conventions"
+  },
+  "libicu": {
+    "Version": "78.3",
+    "Filename": "pool/main/libi/libicu/libicu_78.3_arm.deb",
+    "SHA256": "3ddca664e8cbe4cc775f585dc6457c65b3de454f5ca10bede412dfffbbbab8a8",
+    "Homepage": "http://site.icu-project.org/home",
+    "Description": "International Components for Unicode library"
+  },
+  "libpopt": {
+    "Version": "1.19-3",
+    "Filename": "pool/main/libp/libpopt/libpopt_1.19-3_arm.deb",
+    "SHA256": "1c0f5247fd68cf5ab19ea3bb76bd54dfdf709c6ed759ba1a840f5d50f2668a3f",
+    "Homepage": "https://www.linuxfromscratch.org/blfs/view/svn/general/popt.html",
+    "Description": "Library for parsing cmdline parameters"
+  },
+  "libtalloc": {
+    "Version": "2.5.0",
+    "Filename": "pool/main/libt/libtalloc/libtalloc_2.5.0_arm.deb",
+    "SHA256": "98ace4f1fcbb04b75e859a12b689a9ae4ac91ff8fd34ab221e5359c95ba47f52",
+    "Homepage": "https://talloc.samba.org/talloc/doc/html/index.html",
+    "Description": "Hierarchical, reference counted memory pool system with destructors"
+  },
+  "libtirpc": {
+    "Version": "1.3.8",
+    "Filename": "pool/main/libt/libtirpc/libtirpc_1.3.8_arm.deb",
+    "SHA256": "1cce2dfc8f8bc81616d07fd41816d021c73d40d404bd7de0efeb63e0c5743c34",
+    "Homepage": "http://git.linux-nfs.org/?p=steved/libtirpc.git",
+    "Description": "Transport Independent RPC library"
+  },
+  "tdb-tools": {
+    "Version": "1.4.15-1",
+    "Filename": "pool/main/t/tdb-tools/tdb-tools_1.4.15-1_arm.deb",
+    "SHA256": "0ea2458a26fb9a188e37437d7e531215840eeac70431f7bfe7e1f22eb0b1344d",
+    "Homepage": "https://tdb.samba.org/",
+    "Description": "Tools for TDB"
+  },
+  "libtdb": {
+    "Version": "1.4.15-1",
+    "Filename": "pool/main/libt/libtdb/libtdb_1.4.15-1_arm.deb",
+    "SHA256": "a9a4581a6cf71904ee96cc13995f06f7150ea8696adb12ccca62aef7a8a0a84f",
+    "Homepage": "https://tdb.samba.org/",
+    "Description": "A trivial database system"
+  },
+  "zstd": {
+    "Version": "1.5.7-1",
+    "Filename": "pool/main/z/zstd/zstd_1.5.7-1_arm.deb",
+    "SHA256": "87031a6369a7fd14108e4612d35e6296f8b933c6bc4d383b8aa18044d26f11f5",
+    "Homepage": "https://github.com/facebook/zstd",
+    "Description": "Zstandard compression"
+  },
+  "liblzma": {
+    "Version": "5.8.4",
+    "Filename": "pool/main/libl/liblzma/liblzma_5.8.4_arm.deb",
+    "SHA256": "428f2a7b3b6e1ccaa69a87ef60e2748985516b48ee4b7e37c4183b84ae454871",
+    "Homepage": "https://tukaani.org/xz/",
+    "Description": "XZ-format compression library"
+  }
+}

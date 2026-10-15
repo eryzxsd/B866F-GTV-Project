@@ -1,0 +1,5 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:id="@*com.android.tv.settings:id/main_frame" android:background="?android:attr/windowBackground" android:layout_width="match_parent" android:layout_height="match_parent" android:transitionGroup="false">
+  <FrameLayout android:id="@*com.android.tv.settings:id/decor_title_container" android:background="?com.android.tv.settings:attr/defaultBrandColor" android:layout_width="match_parent" android:layout_height="wrap_content" android:transitionGroup="false" android:elevation="@*com.android.tv.settings:dimen/lb_preference_decor_title_container_elevation">
+    <TextView android:id="@*com.android.tv.settings:id/decor_title" android:layout_width="match_parent" android:layout_height="wrap_content" style="?android:attr/titleTextStyle" android:singleLine="false" android:maxLines="2" android:ellipsize="end" android:autoSizeTextType="uniform" android:autoSizeMinTextSize="24sp" android:autoSizeMaxTextSize="32sp" android:autoSizeStepGranularity="1sp"/>
+  </FrameLayout>
+</LinearLayout>

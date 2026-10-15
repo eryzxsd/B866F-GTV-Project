@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.android.tv.profile" android:versionCode="2" android:versionName="local-readonly-2">
+  <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="34"/>
+  <queries><package android:name="com.google.android.apps.tv.launcherx"/></queries>
+  <application android:label="TV profile compatibility (local)" android:allowBackup="false" android:hasCode="true" android:supportsRtl="true">
+    <service android:name="com.local.gtvcompat.TvProfileCompatService" android:exported="true">
+      <intent-filter><action android:name="com.android.tv.profile.ITvProfileManager"/></intent-filter>
+    </service>
+  </application>
+</manifest>

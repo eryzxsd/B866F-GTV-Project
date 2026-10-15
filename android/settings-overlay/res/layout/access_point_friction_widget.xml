@@ -1,0 +1,1 @@
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android" android:duplicateParentState="true" android:layout_gravity="center" android:id="@*com.android.tv.settings:id/friction_icon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:contentDescription="@null" android:tint="@*com.android.tv.settings:color/two_panel_preference_icon_color"/>

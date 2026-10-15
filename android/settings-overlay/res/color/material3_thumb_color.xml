@@ -1,0 +1,1 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android"><item android:state_enabled="false" android:state_checked="true" android:color="#C7D1DF"/><item android:state_enabled="false" android:color="#B5BDC8"/><item android:state_checked="true" android:color="#174475"/><item android:color="#BAC3D0"/></selector>

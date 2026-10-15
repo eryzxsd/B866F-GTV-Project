@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.local.b866f.launcherpicker" android:versionCode="3" android:versionName="1.2">
+  <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="34"/>
+  <queries><intent><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.HOME"/></intent></queries>
+  <application android:label="B866F launcher settings" android:allowBackup="false" android:defaultToDeviceProtectedStorage="true" android:theme="@android:style/Theme.Material.NoActionBar">
+    <activity android:name="com.local.b866f.launcherpicker.LauncherPickerActivity" android:exported="true" android:excludeFromRecents="true" android:theme="@style/PickerTheme"/>
+    <activity android:name="com.local.b866f.launcherpicker.SambaSettingsActivity" android:exported="true" android:excludeFromRecents="true" android:theme="@style/PickerTheme"/>
+  </application>
+</manifest>

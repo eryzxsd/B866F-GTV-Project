@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<permissions>
+  <privapp-permissions package="com.google.android.apps.tv.launcherx">
+    <deny-permission name="android.permission.ACCESS_NOTIFICATIONS" />
+    <deny-permission name="android.permission.CHANGE_COMPONENT_ENABLED_STATE" />
+    <deny-permission name="android.permission.DELETE_PACKAGES" />
+    <deny-permission name="android.permission.DUMP" />
+    <deny-permission name="android.permission.GET_ACCOUNTS_PRIVILEGED" />
+    <permission name="android.permission.INTERACT_ACROSS_USERS" />
+    <deny-permission name="android.permission.MANAGE_USERS" />
+    <permission name="android.permission.MEDIA_CONTENT_CONTROL" />
+    <deny-permission name="android.permission.OBSERVE_APP_USAGE" />
+    <deny-permission name="android.permission.PACKAGE_USAGE_STATS" />
+    <deny-permission name="android.permission.READ_CONTENT_RATING_SYSTEMS" />
+    <permission name="android.permission.READ_DREAM_STATE" />
+    <permission name="android.permission.WRITE_DREAM_STATE" />
+    <deny-permission name="android.permission.WRITE_SECURE_SETTINGS" />
+    <deny-permission name="com.android.permission.INSTALL_EXISTING_PACKAGES" />
+    <deny-permission name="com.android.providers.tv.permission.ACCESS_ALL_EPG_DATA" />
+    <deny-permission name="com.android.setupwizard.permission.SETUP" />
+    <deny-permission name="com.google.android.apps.mediashell.permission.MULTIZONE_INFO" />
+    <deny-permission name="com.netflix.ninja.permission.DET" />
+    <deny-permission name="android.permission.REAL_GET_TASKS" />
+    <deny-permission name="android.permission.CHANGE_DEVICE_IDLE_TEMP_WHITELIST" />
+    <deny-permission name="android.permission.HDMI_CEC" />
+    <deny-permission name="android.permission.SET_UNRESTRICTED_KEEP_CLEAR_AREAS" />
+    <deny-permission name="android.permission.READ_LOGS" />
+    <deny-permission name="android.permission.FORCE_STOP_PACKAGES" />
+  </privapp-permissions>
+</permissions>

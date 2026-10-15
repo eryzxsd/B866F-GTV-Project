@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="Ganti launcher">
+  <SwitchPreference android:key="personal_default_home_choice" android:title="Gunakan Google TV" android:summaryOn="Launcher default: Google TV" android:summaryOff="Launcher default: Beranda Android TV" android:defaultValue="true" android:persistent="true"/>
+  <Preference android:key="personal_launcher_instructions" android:title="Aktif: Google TV · Nonaktif: Android TV" android:summary="Setelah mengubah pilihan, tekan tombol Home. Kedua launcher tetap terpasang." android:selectable="false"/>
+</PreferenceScreen>

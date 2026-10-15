@@ -1,0 +1,6 @@
+id=ebs_gtv_system_app
+name=B866F GTV Project
+version=0.1.0-preview
+versionCode=20
+author=B866F GTV Project contributors
+description=Pengaturan dua panel, pemilih launcher, dan Samba untuk basis B866F EBS Android 14 yang cocok. Tidak memperbarui kernel atau patch keamanan.

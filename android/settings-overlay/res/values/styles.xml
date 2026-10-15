@@ -1,0 +1,12 @@
+<resources>
+  <style name="Theme.Settings" parent="@*com.android.tv.settings:style/Theme.Leanback">
+    <item name="android:windowBackground">@*com.android.tv.settings:color/settings_background</item>
+    <item name="android:windowAnimationStyle">@*com.android.tv.settings:style/SettingsWindowAnimationStyle</item>
+    <item name="android:colorBackgroundCacheHint">@null</item>
+    <item name="com.android.tv.settings:preferenceTheme">@*com.android.tv.settings:style/TwoPanelPreferenceTheme</item>
+    <item name="com.android.tv.settings:wifi_friction">@*com.android.tv.settings:drawable/wifi_friction</item>
+    <item name="com.android.tv.settings:wifi_signal">@*com.android.tv.settings:drawable/wifi_signal</item>
+    <item name="com.android.tv.settings:wifi_signal_color">?android:attr/colorAccent</item>
+    <item name="com.android.tv.settings:wps_color">@*com.android.tv.settings:color/normal</item>
+  </style>
+</resources>
