@@ -145,3 +145,27 @@ Pengujian stanza terisolasi memastikan SI2183 tidak dipilih saat mux=n dan
 tersedia sebagai modul saat mux=m. Nilai mux=n perangkat dipertahankan;
 modpost tidak diabaikan dan tidak ada simbol/CRC yang dipalsukan.
 Perbaikan dependency dan GPIO-key masih memerlukan build penuh berikutnya.
+
+### Uji objek media dan integrasi terbaru
+
+Uji cepat menyingkap kesalahan sintaks di `aml_creat_pipeline`: saat wrapper
+opsional off, source masih menyisakan `if` tanpa statement sebelum `else`.
+Patch `coreelec-media-wrapper-guard.patch` menjaga keseluruhan cabang opsional,
+mempertahankan perilaku saat on tanpa mengaktifkan fitur pada konfigurasi perangkat.
+
+[Uji objek yang berhasil](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38726751622)
+pada commit `b3fb252c21f32922a8107fe5a5efa19682eb94e5` mengompilasi 114 objek C
+media yang dipilih konfigurasi tanpa error kompilasi. Keberadaan enam objek
+decoder/V4L/buffer manager juga diverifikasi. Mode ini tidak menjalankan
+modpost media atau menghasilkan hasil ABI penuh. Artifact `11967819000`
+diverifikasi dengan SHA-256
+`4042db60f2f2226c016fb233631fa8b5e726ed61f6a44ed9483c4244c87ddfec`.
+
+Percobaan target direktori root sebelumnya merupakan no-op pada Kbuild vendor;
+pemeriksaan objek wajib menggagalkannya. Run berhasil memakai tujuh target
+subdirektori eksplisit, bukan menganggap exit code saja sebagai bukti kompilasi.
+
+[Integrasi penuh dengan fix wrapper](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38727395892)
+telah diluncurkan dari commit yang sama dan masih berjalan pada saat catatan ini
+ditulis. Build modul terhubung, modpost, boundary ABI, boot dan Netflix belum
+dinyatakan lolos oleh hasil kompilasi objek. Tidak ada perubahan pada STB.
