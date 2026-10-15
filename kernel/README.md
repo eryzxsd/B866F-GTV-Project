@@ -66,7 +66,8 @@ lebih dekat. Hasil lama tidak boleh dianggap sebagai hasil cabang Android 14.
 
 Pemeriksaan inti `module_layout` pada cabang Android 14 5.15.153 dan eksperimen
 CoreELEC 5.15.196 telah lolos: CRC sama dengan kebutuhan empat sampel perangkat,
-`0x115475ea`. Build penuh dan perbandingan simbol lain masih diproses.
+`0x115475ea`. Kedua build penuh telah selesai; [hasil audit yang diperluas](RESULTS.md)
+menunjukkan bahwa kecocokan simbol inti belum cukup untuk penggantian langsung.
 Ini bukan bukti kompatibilitas seluruh driver, apalagi hasil uji boot.
 
 Build Khadas Android 14 telah selesai. Empat sampel awal tidak memiliki CRC
@@ -93,9 +94,9 @@ Penyesuaian build diagnostik:
   (`struct timespec` tidak lengkap). Ini tes saat build, bukan fitur runtime.
   Konfigurasi referensi perangkat tetap disimpan utuh; penyesuaian tercatat di laporan.
 
-Belum ada hasil perbandingan seluruh simbol sampel pada saat catatan ini ditulis.
-Lihat [riwayat eksperimen](https://github.com/eryzxsd/B866F-GTV-Project/actions/workflows/kernel-baseline.yml)
-untuk status terbaru. Jangan menafsirkan workflow hijau sebagai izin flashing.
+Lihat [hasil dan penghambat saat ini](RESULTS.md) serta
+[riwayat eksperimen](https://github.com/eryzxsd/B866F-GTV-Project/actions/workflows/kernel-baseline.yml).
+Jangan menafsirkan workflow hijau sebagai izin flashing.
 
 Run awal telah mencapai kompilasi driver, tetapi berhenti pada watchpoint
 Amlogic: konfigurasi Android 14 memilih nama register yang tidak tersedia pada
