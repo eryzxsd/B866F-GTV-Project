@@ -23,3 +23,17 @@ Kedua konsumen, sprdbt_tty_sdio.ko dan sprdwl_ng.ko, memakai provider uwe5621_bs
 Parser terpisah berbasis pyelftools mengonfirmasi seluruh 66 ekspor provider memiliki namespace kosong. Relocation di luar tabel sengaja diuji dan ditolak. Pemeriksaan ulang lokal menggunakan artifact build yang sama dan metadata provider yang sudah dikoreksi menyelesaikan seluruh unknown namespace pada profil 131 modul/35 pengganti. Tidak perlu mengulang kompilasi untuk koreksi metadata provider ini. Report CI asli tetap menyimpan hasil sebelum koreksi; hasil ulang diberi label terpisah.
 
 Kecocokan CRC, dependency dan deklarasi namespace sekarang lolos pada profil yang ditangkap. Kepercayaan signature, GPL/protected-export policy, waktu/urutan load, boot nyata, ABI userspace dan DRM tetap belum diuji. Tidak ada perubahan firmware atau klaim siap dipasang.
+
+## Signature dan protected-symbol: pemeriksaan lanjutan
+
+Pemeriksaan source kernel yang dipin pada f231c7811a91c548f86a43e17cf43611f8747c86 menunjukkan MODULE_SIG_PROTECT membutuhkan signature yang dipercaya untuk modul yang mengekspor simbol protected. Marker signature saja tidak cukup. Enam provider yang dipertahankan terkena aturan ini: cdc_ether, cdc_ncm, libarc4, mii, r8152 dan usbnet.
+
+Satu sertifikat publik ditemukan pada kernel backup asli. SHA-256 DER: 01c0d6ffe7c65ce8a9b42eed55a3bd0f4d8e5fa2b63e1f9aea13e02317e667f8. Dari 47 file dengan marker signature, 46 berhasil diverifikasi menggunakan sertifikat tersebut, termasuk keenam provider protected. amlogic-input.ko memiliki signer identifier berbeda; sertifikat penandatangannya belum ditemukan. Ini berarti signature-nya belum terverifikasi, bukan bukti file rusak. Semua hash file sesuai audit asli; tiga file awal diambil dari backup ramdisk yang sudah ada.
+
+`tools/kernel_module_signature_audit.py` memeriksa signature PKCS7 detached menggunakan OpenSSL dan sertifikat publik milik operator. Flag -noverify melewati validasi rantai sertifikat, tetapi tetap memverifikasi signature terhadap isi modul. Tool tidak menghubungi perangkat, memasang key, menandatangani file atau memuat modul. Uji negatif mengubah satu byte isi modul dan verifikasi menolaknya; header rusak juga ditolak. Tidak ada binary modul, sertifikat atau private key yang diterbitkan.
+
+`module-signature-result.json` menyimpan hasil verifikasi lokal. `conditional-policy-result.json` memodelkan profil 131 modul/35 pengganti dengan asumsi sertifikat asli diterima kernel kandidat. Dengan asumsi itu, tidak ditemukan protected export dari modul yang dianggap tidak dipercaya, maupun impor di luar KMI dari provider yang dianggap dipercaya. Pemeriksaan license terhadap EXPORT_SYMBOL_GPL pada symvers kernel/modul hasil build juga tidak menemukan konflik. Jenis GPL ekspor seluruh modul lama dan header GKI hasil generate belum diaudit lengkap.
+
+Jalur eksperimen berikutnya adalah mempertahankan sertifikat publik asli pada trust store kandidat, misalnya melalui CONFIG_SYSTEM_TRUSTED_KEYS, lalu memeriksa hasil build dan penerimaan key. Itu belum diimplementasikan atau dibuktikan oleh hasil lokal ini; sertifikat tidak memberi kemampuan menandatangani driver baru dan tidak menggantikan private key. Kebijakan enforcement tetap utuh.
+
+Belum ada candidate trust test, load driver, boot STB, pengujian Netflix/DRM atau paket restore mandiri yang terbukti. Pemeriksaan ini tidak menerapkan patch keamanan Android Mei 2026. Kernel dan driver pada STB tidak berubah.

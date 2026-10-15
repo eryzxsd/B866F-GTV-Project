@@ -1,0 +1,339 @@
+{
+  "scope": "47 original signature-marked modules; original hashes verified",
+  "certificate_sha256": "01c0d6ffe7c65ce8a9b42eed55a3bd0f4d8e5fa2b63e1f9aea13e02317e667f8",
+  "method": "OpenSSL CMS detached binary signature verification; chain validation separate",
+  "candidate_kernel_trust_verified": false,
+  "runtime_load_verified": false,
+  "installable": false,
+  "modules": [
+    {
+      "module": "aml_smmu.ko",
+      "sha256": "f1a810fabcb81455d8557cd2290b8ec4e4e96bb188094e53ea00863259569034",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "amlogic-input.ko",
+      "sha256": "6a9fede78c667cbdc3ea97ca86bd683e244d87f84fae3220d18f624737dbb4d2",
+      "signature_bytes": 681,
+      "status": "signer_certificate_not_supplied",
+      "exit_code": 4
+    },
+    {
+      "module": "amlogic-realtek.ko",
+      "sha256": "c53fbce79684cb66b36727ec05444b5a71dd647be0f9c0596a11a61bfbdde7d8",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "amlogic-spi.ko",
+      "sha256": "ecd8e312ba5fda175ef26ea77db23ffb3748dfd25224cfb1fe569c76898d76b8",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "asix.ko",
+      "sha256": "52fec3ad8ec2153559cb2bec10db7bf65e39da7995cc952bb2b105eefdd44275",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "ax88179_178a.ko",
+      "sha256": "eb8d334c4f2e13ea0927af81cb0819354052098762984bc563f9bcdfe4764ffd",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "cdc_ether.ko",
+      "sha256": "39298866f0edcc7ff7920f773faa8ad7f344774beb1594515077938cd8d34ac0",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "cdc_ncm.ko",
+      "sha256": "18c8acc01803eb77b50389b1f2e4c0dd73ea7eac8ff1d9101af7add973db008e",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "clk-scmi.ko",
+      "sha256": "ef2d4715fd12a0dc6c5bf5ae230e2f6673778386c4cabc98c2c3803f99ca0320",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-apple.ko",
+      "sha256": "14aecb5dd2192bb80d31868077b54ac173cf47e81bac4144d2b96ea9287cd0d6",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-elecom.ko",
+      "sha256": "67067f2b26713fa0f83b2ae9af7c36478e7b852ef42f90e47970d290dc9c111b",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-lg-g15.ko",
+      "sha256": "57c43fdaa968075d5d67a3ed67154dd6dd2b10769727690709c11e243885dc64",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-logitech-dj.ko",
+      "sha256": "e192c390efeb30dd1561ec89693f44fa6485753a00a2a163054fed0dbd124d45",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-logitech-hidpp.ko",
+      "sha256": "84089f897b5a775a119f6b583ce471e1d461e283bbc7cf719750966bf3c222da",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-logitech.ko",
+      "sha256": "9821fc4dc4c0a8f61592938c41d7077ddaa2d751e461ffcef40260ffe8a71c92",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-magicmouse.ko",
+      "sha256": "3102a34a5a70640973c3a93db5107bbbff244560e6976bb9ef37923ddb9dd3ee",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-microsoft.ko",
+      "sha256": "b4b8bd780f0616f9bd11415d53f6b5acfd1fc4ede8ff8253e35f82db7d4cd6cc",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-multitouch.ko",
+      "sha256": "117d4dd61b789a8b1217a9396d43990ec03b9317748a4eea8abe8b537e83c40e",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-nintendo.ko",
+      "sha256": "ea6981beac18b645a85a4b49f97ad16159816c84332332ca456c7e3904ec4716",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-picolcd.ko",
+      "sha256": "81dea356244dfe1e8ba2c973b9000568d88e8707ade5531bad1c21a0117eefd3",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-plantronics.ko",
+      "sha256": "00cd53f0774af0f549d8956dc74973af5efc75d7f1cd062b10672125865ca27c",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-prodikeys.ko",
+      "sha256": "c55b26ca16a54cca86fcaced0ab0b7f58eb6f7898d0b9e00ec03bc1954039c4f",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-roccat-arvo.ko",
+      "sha256": "35a2c39dfe85bc6303c7ad92921bf7a8b42a30285d39e376979a437f93cfebc0",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-roccat-common.ko",
+      "sha256": "92f1df942ee2bb03ed3b4a1d0e69e410dda0b07a9d7443892f27e64f83a23a5e",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-roccat-isku.ko",
+      "sha256": "34c3dee8fcb25c1fabf707ec967555da81a67802b6ae4163fcbbdf941eb0fa2d",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-roccat-kone.ko",
+      "sha256": "64a5b0f84555e0fda7517d803549f5048b8f4345fcd0f13079e2e9347a209364",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-roccat-koneplus.ko",
+      "sha256": "3a9918a167b4b9da242179be3f8ff2d7a437bbfe9b0e767841161fd5f6ac70e2",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-roccat-konepure.ko",
+      "sha256": "6988e43a56d200b685d496013c3eb4b41e1e20df66df899493d0e4a0fa633570",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-roccat-kovaplus.ko",
+      "sha256": "ef0a96338ca2e1cac966398b6b355cfb1a3553c4294e9697589e59664e8a2139",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-roccat-lua.ko",
+      "sha256": "ff87bfabc1e4c9845a3d93a8382860e982349bff265ef237dfa86989581071df",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-roccat-pyra.ko",
+      "sha256": "378fa6a17fb386c767fcd4ffa67c897c78fa5fb8ef558c4936bff4d3a184ee30",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-roccat-ryos.ko",
+      "sha256": "a20a5f6405f7c3999758ca43a550326059e96379e4092b6d167268956ffbe92f",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-roccat-savu.ko",
+      "sha256": "f03ba8b04f34fab5d4a28a446cbd05e375f012b88ac9a8affdead2ad7de65a0f",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-roccat.ko",
+      "sha256": "13b0b686f89e5dae5b8f3dbf91963444d4698b3ee760f8a8676368e983bab81b",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-steam.ko",
+      "sha256": "edb84d5e4b26e0be8f79fd76c650dd7ccca6d1f5618bbf6ad00cfb79313441a5",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-uclogic.ko",
+      "sha256": "708ed235538b69b4e030c3ce0a9ec5c9177804df7f9c406659395122c9d4b85f",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "hid-wiimote.ko",
+      "sha256": "a8fcaf83e2487a61b7f403d67d266cd99563f648c5838fcd5fad98b1a95b3c35",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "leds-gpio.ko",
+      "sha256": "96a57b2a6c6917df5ec7e1f96ccfe17c6b726a4809f55689c7e180e944e6a97c",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "libarc4.ko",
+      "sha256": "a1867d2061e178dd2b3921f51432106f4234312d25918df2b0f94c5d1237342e",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "mii.ko",
+      "sha256": "c379324a4a5568a9f2eff9cbbdd515694f189170d477be29ac471abed47406ed",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "r8152.ko",
+      "sha256": "32ae7fd8a62a4b10a1225ae09837d96f0fed55219019f7494a887706ade04252",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "r8153_ecm.ko",
+      "sha256": "11cf752c100799f36334bef58736ea7df4a7f74d01f6fde1db7f75bbff18f042",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "usbnet.ko",
+      "sha256": "5e90acb642bd4879830c5c8a996cf816b99ebb6a8ec5c1b39cca013380c658a7",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "user_fault.ko",
+      "sha256": "eebce92fbe5ef5bd5d1b81b9096e1e086e201ab0cd7c32da1ed6f7fa2a42ca24",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "wacom.ko",
+      "sha256": "b4f7ac78c0e73cbafae5a3fa0d6e0625db8ddd88e5569a8a346322c09f4b66db",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "zram.ko",
+      "sha256": "4a5aacc93b9d4841fce01211c1745b79f81644070a1126431243fc1b391e4b83",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    },
+    {
+      "module": "zsmalloc.ko",
+      "sha256": "726634cd8d3e218700880ec87ce23ea14daf54275f97660d29c4e06db130fa2a",
+      "signature_bytes": 681,
+      "status": "signature_verified_with_supplied_certificate",
+      "exit_code": 0
+    }
+  ]
+}

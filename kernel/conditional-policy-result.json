@@ -1,0 +1,16 @@
+{
+  "scope": "captured 131 module names, 35 same-named replacements",
+  "conditional_assumption": "Original public certificate is included and accepted by candidate kernel; this has NOT been built or tested",
+  "policy_source_commit": "f231c7811a91c548f86a43e17cf43611f8747c86",
+  "unprotected_symbol_count": 6975,
+  "protected_export_count": 323,
+  "modules_assumed_trusted": 46,
+  "untrusted_protected_exports": {},
+  "untrusted_imports_from_trusted_modules_outside_kmi": {},
+  "gpl_import_errors_for_candidate_symvers": {},
+  "retained_module_export_gpl_types_fully_audited": false,
+  "generated_gki_headers_checked": false,
+  "candidate_kernel_trust_verified": false,
+  "boot_tested": false,
+  "installable": false
+}
