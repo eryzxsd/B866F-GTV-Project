@@ -3,6 +3,7 @@ from pathlib import Path
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import tarfile
@@ -133,6 +134,40 @@ def main():
             if resolved.get(key) != 'y':
                 raise RuntimeError(f'Critical baseline option lost: {key}')
         status['compiler'] = subprocess.check_output(['clang-18', '--version'], text=True)
+        # Fail the compatibility gate early rather than building unrelated
+        # vendor drivers when the fundamental module_layout CRC differs.
+        run(make + ['-j2', 'kernel/module.o'], 'core-abi.txt')
+        versions = output / 'kernel/module.o.symversions'
+        if not versions.is_file():
+            raise RuntimeError('Core object did not produce LTO symbol versions')
+        crc_rows = re.findall(r'__crc_(\w+)\s*=\s*(0x[0-9a-fA-F]+)\s*;', versions.read_text())
+        crcs = {symbol: int(value, 16) for symbol, value in crc_rows}
+        if 'module_layout' not in crcs:
+            raise RuntimeError('module_layout CRC missing from core object')
+        expected = json.loads((ROOT / 'kernel/vendor-symbol-requirements.json').read_text())
+        gate = {'scope': 'module_layout only; not a full driver ABI comparison',
+                'built': hex(crcs['module_layout']),
+                'required': {name: symbols['module_layout'] for name, symbols in expected.items()},
+                'matches_all_samples': all(int(symbols['module_layout'], 16) == crcs['module_layout']
+                                           for symbols in expected.values())}
+        (REPORT / 'core-abi-gate.json').write_text(json.dumps(gate, indent=2))
+        status['core_abi_gate'] = gate
+        if not gate['matches_all_samples']:
+            status['status'] = 'diagnostic complete: module_layout mismatch; full build skipped'
+            markdown = ('# Baseline: tidak kompatibel sebagai pengganti langsung\n\n'
+                        f'CRC module_layout hasil build: `{gate["built"]}`.\n\n'
+                        + '\n'.join(f'- {name}: membutuhkan `{crc}`'
+                                    for name, crc in gate['required'].items())
+                        + '\n\nBuild penuh dilewati karena syarat awal ABI sudah berbeda. '
+                        'Ini pemeriksaan satu simbol inti, bukan pemeriksaan seluruh driver. '
+                        'Keberhasilan workflow berarti eksperimen selesai, bukan kernel kompatibel. '
+                        'Tidak ada image kernel, flashing, atau perubahan patch keamanan.\n')
+            (REPORT / 'summary.md').write_text(markdown)
+            if os.environ.get('GITHUB_STEP_SUMMARY'):
+                with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary_file:
+                    summary_file.write(markdown)
+            print(markdown, flush=True)
+            return
         status['status'] = 'compiling'
         (REPORT / 'status.json').write_text(json.dumps(status, indent=2))
         # vmlinux is local to this ephemeral runner; never upload an image.

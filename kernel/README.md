@@ -13,7 +13,10 @@ terpisah; sumber publik ini belum terbukti sama dengan sumber ZTE.
 empat contoh modul perangkat; tidak berisi binary modul, firmware, identitas
 perangkat, kredensial, atau signing key. Sampel ini tidak mencakup semua driver.
 
-Runner Linux sementara membangun vmlinux untuk menghasilkan tabel simbol.
+Runner Linux sementara terlebih dahulu membangun objek inti `kernel/module.o`
+dan memeriksa CRC `module_layout`. Jika CRC berbeda dari kebutuhan driver,
+build penuh dilewati dan hasil dilaporkan sebagai tidak kompatibel untuk
+penggantian langsung. Jika lolos, runner melanjutkan build vmlinux untuk tabel simbol.
 Artifact hanya berisi konfigurasi, log, metadata sumber, dan perbandingan CRC.
 Binary kernel tidak diunggah. Hasil build berhasil pun tidak membuktikan kernel
 bisa boot atau telah memenuhi patch keamanan Mei 2026. Compiler runner clang 18
@@ -48,6 +51,12 @@ Penyesuaian build diagnostik:
 Belum ada hasil kecocokan ABI dari baseline pada saat catatan ini ditulis.
 Lihat [riwayat eksperimen](https://github.com/eryzxsd/B866F-GTV-Project/actions/workflows/kernel-baseline.yml)
 untuk status terbaru. Jangan menafsirkan workflow hijau sebagai izin flashing.
+
+Run awal telah mencapai kompilasi driver, tetapi berhenti pada watchpoint
+Amlogic: konfigurasi Android 14 memilih nama register yang tidak tersedia pada
+sumber kernel publik lama. Pemeriksaan inti dilakukan lebih awal untuk
+menghindari build penuh jika ABI dasar sudah berbeda; fitur driver tidak
+dinonaktifkan untuk memaksakan kelulusan kompatibilitas.
 
 Patch keamanan Android mencakup komponen selain kernel. Membuat kernel baru
 tidak otomatis memenuhi seluruh bulletin Android Mei 2026. Nilai patch level
