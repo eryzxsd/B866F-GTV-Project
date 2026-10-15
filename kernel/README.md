@@ -27,3 +27,28 @@ kernel atau binary proprietary dari firmware yang didistribusikan ulang.
 
 Belum ada prosedur pemulihan melalui USB yang terverifikasi ketika Android gagal
 boot. Jangan gunakan hasil eksperimen ini untuk menulis partisi perangkat.
+
+## Hasil awal, 15 Oktober 2026
+
+Konfigurasi berhasil diproses oleh runner. Opsi inti ARM64, MODVERSIONS,
+AMLOGIC_DRIVER, AMLOGIC_BREAK_GKI, dan AMLOGIC_IN_KERNEL_MODULES tetap aktif.
+Namun, konfigurasi sumber publik berbeda dari firmware: antara lain opsi
+STB_ZTE_DRIVER tidak tersedia, INIT_ENV_ARG_LIMIT berubah dari 32 ke 128, dan
+sejumlah opsi Android/Amlogic yang lebih baru tidak dikenal. Perbedaan lengkap
+disimpan dalam artifact `config-differences.json` setiap run.
+
+Penyesuaian build diagnostik:
+
+- Menggunakan LLVM=1 dan PATH LLVM 18 sesuai antarmuka Makefile vendor lama.
+- Mengabaikan nama warning GCC yang tidak dikenal oleh Clang.
+- Menonaktifkan UAPI_HEADER_TEST karena header DVB publik gagal tes standalone
+  (`struct timespec` tidak lengkap). Ini tes saat build, bukan fitur runtime.
+  Konfigurasi referensi perangkat tetap disimpan utuh; penyesuaian tercatat di laporan.
+
+Belum ada hasil kecocokan ABI dari baseline pada saat catatan ini ditulis.
+Lihat [riwayat eksperimen](https://github.com/eryzxsd/B866F-GTV-Project/actions/workflows/kernel-baseline.yml)
+untuk status terbaru. Jangan menafsirkan workflow hijau sebagai izin flashing.
+
+Patch keamanan Android mencakup komponen selain kernel. Membuat kernel baru
+tidak otomatis memenuhi seluruh bulletin Android Mei 2026. Nilai patch level
+tidak diubah oleh eksperimen ini.
