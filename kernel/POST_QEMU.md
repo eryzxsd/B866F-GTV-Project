@@ -49,3 +49,13 @@ Uji lokal menolak sertifikat berbeda, hilangnya DER dari Image, pelemahan opsi e
 [Run trust pertama](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38782104163) berhasil membangun Image dengan satu salinan DER sertifikat asli dan boot ke init. Serial log mencatat Loaded X.509 cert dengan SKID asli, dan seluruh pemeriksaan inti sampai proc-read lolos. Run tetap gagal karena syscall KEYCTL_SEARCH dari userspace tidak menemukan key; marker trust dan marker selesai tidak terbit. Exit QEMU 0 setelah jalur gagal tidak dihitung sukses.
 
 Source certs/common.c pada commit kernel yang dipin memberi sertifikat built-in permission root VIEW/READ, tetapi tidak SEARCH. Hal ini konsisten dengan kegagalan SEARCH meskipun kernel telah mencatat key berhasil dimuat; errno belum direkam pada run pertama. Pengamatan diperbaiki agar membaca ID anggota ring sebenarnya dengan KEYCTL_READ lalu mencocokkan identifier sertifikat asymmetric melalui KEYCTL_DESCRIBE. SEARCH tetap direkam dengan errno sebagai diagnostik, bukan syarat sukses. Tidak ada permission atau enforcement yang diubah. Hasil verifikasi keanggotaan runtime masih menunggu run ulang.
+
+### Hasil akhir eksperimen trust QEMU: berhasil
+
+[Run pengganti berhasil](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38787178937) dengan commit ff1226bd77e2c4fe61374f53668f70ca794e84b0. Artifact ZIP diverifikasi terhadap SHA-256 d89dcf70ed47a6275de8529050c9cb03f2f8a4ff96ee2a3bf08141318b07d918. Hasil terstruktur disimpan di kernel/trust/qemu-result.json.
+
+Image berisi satu salinan DER sertifikat asli yang fingerprint-nya dipin. Kernel guest 5.15.196-gff1226bd77e2 mencatat sertifikat berhasil dimuat; pemeriksaan READ/DESCRIBE memastikan key asymmetric dengan SKID asli benar-benar anggota .builtin_trusted_keys. SEARCH mengembalikan errno 13 (EACCES), sesuai keterbatasan permission userspace, dan tidak dipakai sebagai bukti trust gagal. Tidak ada permission atau opsi enforcement yang diubah.
+
+Marker B866F_QEMU_ORIGINAL_CERT_TRUST_PASSED dan B866F_QEMU_CORE_TESTS_PASSED muncul; guest power down bersih, exit QEMU 0, tanpa timeout atau kernel panic. Warning hardware vendor tetap ada pada emulator dan bukan validasi driver Amlogic. Bukti ini menunjukkan sertifikat publik asli dapat dimuat pada keyring built-in varian eksperimen. Ini belum menguji acceptance signature modul asli oleh loader, protected-symbol saat load, driver B866F, Android, HDMI, Netflix/DRM, AVB, atau kelengkapan patch Mei 2026.
+
+Investigasi terjadwal berhenti setelah pencatatan hasil ini. Tidak ada akses STB, module load/unload, reboot, flashing atau instalasi kernel. Tahap hardware tetap menunggu validasi terpisah dan jalur restore mandiri yang terbukti.

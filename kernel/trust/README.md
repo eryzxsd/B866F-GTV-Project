@@ -23,3 +23,8 @@ cukup untuk membuktikan driver asli dapat dimuat.
 Workflow tetap hanya mengunggah laporan teks. Tidak ada image boot, private key,
 binary driver asli atau perubahan konfigurasi STB. Kernel kandidat STB belum
 mendapat sertifikat ini dan seluruh hasil masih eksperimen, bukan update Android.
+
+Hasil QEMU terakhir berhasil: [run 38787178937](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38787178937).
+Lihat qemu-result.json untuk fingerprint, hash artifact dan batas cakupan. Keanggotaan
+sertifikat pada trusted keyring dan core checks terverifikasi, disertai shutdown
+bersih. Driver asli dan hardware STB belum diuji.

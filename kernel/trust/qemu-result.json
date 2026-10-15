@@ -1,0 +1,30 @@
+{
+  "run_url": "https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38787178937",
+  "source_commit": "ff1226bd77e2c4fe61374f53668f70ca794e84b0",
+  "artifact_id": 12000126938,
+  "artifact_zip_sha256": "d89dcf70ed47a6275de8529050c9cb03f2f8a4ff96ee2a3bf08141318b07d918",
+  "kernel_release": "5.15.196-gff1226bd77e2",
+  "trust_probe": {
+    "enforcement_options_unchanged": true,
+    "certificate_sha256": "01c0d6ffe7c65ce8a9b42eed55a3bd0f4d8e5fa2b63e1f9aea13e02317e667f8",
+    "original_module_signer_skid": "821976dbe4b8a702b6f3b8804f03a4d517df1f3b",
+    "stb_configuration_changed": false,
+    "original_driver_load_tested": false,
+    "installable": false,
+    "certificate_der_occurrences_in_image": 1
+  },
+  "guest_checks_passed": true,
+  "clean_shutdown": true,
+  "qemu_exit_code": 0,
+  "timed_out": false,
+  "keyctl_search_errno": 13,
+  "membership_check": "KEYCTL_READ built-in ring member IDs, then KEYCTL_DESCRIBE of matching asymmetric key",
+  "signature_enforcement_options_unchanged": true,
+  "original_driver_load_tested": false,
+  "stb_boot_tested": false,
+  "android_tested": false,
+  "netflix_drm_tested": false,
+  "may_2026_patch_coverage_verified": false,
+  "installable": false,
+  "limits": "Separate QEMU variant; vendor hardware warnings remain. No STB access or firmware changes."
+}
