@@ -14,7 +14,8 @@ import kernel_trust_probe as trust
 
 ROOT = baseline.ROOT
 REPORT = ROOT / 'build/qemu-report'
-TRUST_PROBE = os.environ.get('TRUST_PROBE') == '1'
+LOADER_PROBE = os.environ.get('LOADER_PROBE') == '1'
+TRUST_PROBE = os.environ.get('TRUST_PROBE') == '1' or LOADER_PROBE
 
 
 def archive_entry(name, data=b'', mode=stat.S_IFDIR | 0o755, major=0, minor=0):
@@ -26,17 +27,25 @@ def archive_entry(name, data=b'', mode=stat.S_IFDIR | 0o755, major=0, minor=0):
     return result + b'\0' * (-len(result) % 4)
 
 
-def classify(log, timed_out, returncode, trust_probe=False):
+def classify(log, timed_out, returncode, trust_probe=False, loader_probe=False):
     reached = 'B866F_QEMU_CORE_TESTS_PASSED' in log
     trust_passed = 'B866F_QEMU_ORIGINAL_CERT_TRUST_PASSED' in log
     failed = 'B866F_QEMU_FAIL:' in log or 'Kernel panic' in log
     if trust_probe and not trust_passed:
+        failed = True
+    loader_passed = ('B866F_QEMU_LOADER_POLICY_PASSED' in log and
+                     log.count('B866F_LOADER_FIXTURE_INIT') == 1 and
+                     log.count('B866F_LOADER_FIXTURE_EXIT') == 1 and
+                     log.count('exports protected symbol arc4_crypt') == 2)
+    if loader_probe and not loader_passed:
         failed = True
     return {'guest_checks_passed': reached and not failed,
             'clean_shutdown': reached and not failed and not timed_out and returncode == 0,
             'timed_out': timed_out, 'qemu_exit_code': returncode,
             'original_certificate_keyring_test_requested': trust_probe,
             'original_certificate_keyring_test_passed': trust_probe and trust_passed and not failed,
+            'synthetic_loader_policy_test_requested': loader_probe,
+            'synthetic_loader_policy_test_passed': loader_probe and loader_passed and not failed,
             'original_driver_load_tested': False,
             'stb_boot_tested': False, 'installable': False}
 
@@ -137,13 +146,22 @@ def main():
         status['kernel_image_sha256'] = hashlib.sha256(image.read_bytes()).hexdigest()
         if TRUST_PROBE:
             status['trust_probe'].update(trust.check_image(image, certificate_der))
+        fixtures = {}
+        if LOADER_PROBE:
+            if after.get('CONFIG_MODULE_UNLOAD') != 'y':
+                raise RuntimeError('Synthetic loader test requires normal module unload support')
+            from kernel_loader_probe import build
+            fixtures, status['loader_fixture'] = build(ROOT, kernel, output, baseline.WORK, make, run)
         init = baseline.WORK / 'init'
         run(['aarch64-linux-gnu-gcc', '-static', '-O2', '-Wall', '-Wextra', '-Werror',
              *(['-DB866F_TRUST_PROBE=1'] if TRUST_PROBE else []),
+             *(['-DB866F_LOADER_PROBE=1'] if LOADER_PROBE else []),
              str(ROOT / 'tools/qemu_init.c'), '-o', str(init)], 'init-build.txt')
         ramdisk = b''.join(archive_entry(name) for name in ('dev', 'proc', 'tmp'))
         ramdisk += archive_entry('dev/console', mode=stat.S_IFCHR | 0o600, major=5, minor=1)
         ramdisk += archive_entry('init', init.read_bytes(), stat.S_IFREG | 0o755)
+        for name, data in fixtures.items():
+            ramdisk += archive_entry(name + '.ko', data, stat.S_IFREG | 0o400)
         ramdisk += archive_entry('TRAILER!!!', mode=0)
         ramdisk_path = baseline.WORK / 'initramfs.cpio.gz'
         ramdisk_path.write_bytes(gzip.compress(ramdisk, mtime=0))
@@ -163,10 +181,14 @@ def main():
                     process.kill()
                     code = process.wait()
         result = classify((REPORT / 'qemu-serial.txt').read_text(errors='replace'), timed_out, code,
-                          trust_probe=TRUST_PROBE)
+                          trust_probe=TRUST_PROBE, loader_probe=LOADER_PROBE)
         status.update(result)
-        status['status'] = ('QEMU core and original-certificate keyring checks passed' if TRUST_PROBE
-                            else 'QEMU core checks passed') if result['clean_shutdown'] else 'QEMU boot test failed'
+        if result['clean_shutdown']:
+            status['status'] = ('QEMU core, keyring and synthetic loader policy checks passed' if LOADER_PROBE
+                                else 'QEMU core and original-certificate keyring checks passed' if TRUST_PROBE
+                                else 'QEMU core checks passed')
+        else:
+            status['status'] = 'QEMU boot test failed'
         print(json.dumps(result, indent=2))
         if not result['guest_checks_passed'] or not result['clean_shutdown']:
             raise RuntimeError('Guest checks or clean shutdown incomplete; inspect serial log')
@@ -183,6 +205,10 @@ def main():
             summary += ('\nEksperimen trust diminta: sertifikat publik asli pada Image dan pencarian '
                         'keanggotaan key di .builtin_trusted_keys melalui READ/DESCRIBE. Tidak menguji load driver asli dan tidak '
                         'mengubah konfigurasi kernel STB. Lihat status.json dan serial log untuk hasil.\n')
+        if LOADER_PROBE:
+            summary += ('\nUji loader memakai modul fixture sintetis dan key build runner sementara. '
+                        'Bukan load driver asli atau signature dengan private key vendor. '
+                        'Binary fixture, Image dan private key tidak diunggah.\n')
         (REPORT / 'summary.md').write_text(summary)
         if os.environ.get('GITHUB_STEP_SUMMARY'):
             with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:

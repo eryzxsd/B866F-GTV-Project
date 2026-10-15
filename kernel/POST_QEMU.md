@@ -59,3 +59,9 @@ Image berisi satu salinan DER sertifikat asli yang fingerprint-nya dipin. Kernel
 Marker B866F_QEMU_ORIGINAL_CERT_TRUST_PASSED dan B866F_QEMU_CORE_TESTS_PASSED muncul; guest power down bersih, exit QEMU 0, tanpa timeout atau kernel panic. Warning hardware vendor tetap ada pada emulator dan bukan validasi driver Amlogic. Bukti ini menunjukkan sertifikat publik asli dapat dimuat pada keyring built-in varian eksperimen. Ini belum menguji acceptance signature modul asli oleh loader, protected-symbol saat load, driver B866F, Android, HDMI, Netflix/DRM, AVB, atau kelengkapan patch Mei 2026.
 
 Investigasi terjadwal berhenti setelah pencatatan hasil ini. Tidak ada akses STB, module load/unload, reboot, flashing atau instalasi kernel. Tahap hardware tetap menunggu validasi terpisah dan jalur restore mandiri yang terbukti.
+
+## Eksperimen loader sintetis berikutnya
+
+Opsi loader_probe pada workflow QEMU menambahkan fixture GPL minimal yang mengekspor nama protected arc4_crypt sebagai stub tanpa konsumen. Ini bukan driver ARC4 asli dan tidak untuk perangkat fisik. Varian trusted memakai key build runner sementara, bukan private key vendor. Percobaan mengharapkan load/unload trusted berhasil, unsigned dan signer asing ditolak karena protected export, serta signature yang diubah ditolak sebelum init. Header protected hasil generate dan tabel simbol kernel diperiksa terlebih dahulu; CRC, vermagic dan opsi enforcement tidak diabaikan.
+
+Artifact tetap hanya teks; seluruh key sementara dan binary fixture tinggal pada runner. Hasil runtime masih menunggu. Sertifikat asli tetap diperiksa di keyring emulator, tetapi percobaan ini belum menguji signature/driver asli maupun membuktikan kernel siap dipasang.

@@ -73,6 +73,36 @@ static void check_original_certificate(void) {
 }
 #endif
 
+#ifdef B866F_LOADER_PROBE
+static long load_fixture(const char *path, int *error) {
+    int file = open(path, O_RDONLY);
+    require(file >= 0, "loader-fixture-file-readable");
+    errno = 0;
+    long result = syscall(SYS_finit_module, file, "", 0);
+    *error = errno;
+    close(file);
+    printf("Loader fixture %s: result=%ld errno=%d\n", path, result, *error);
+    return result;
+}
+
+static void check_loader_policy(void) {
+    int error;
+    require(load_fixture("/trusted.ko", &error) == 0, "trusted-synthetic-module-load");
+    require(syscall(SYS_delete_module, "b866f_policy_probe", O_NONBLOCK) == 0,
+            "trusted-synthetic-module-unload");
+    long result = load_fixture("/unsigned.ko", &error);
+    require(result == -1 && error == EACCES, "unsigned-protected-export-rejected");
+    result = load_fixture("/untrusted.ko", &error);
+    require(result == -1 && error == EACCES, "untrusted-signer-protected-export-rejected");
+    result = load_fixture("/tampered.ko", &error);
+    /* rsa-pkcs1pad.c returns EBADMSG for damaged padding, or EKEYREJECTED
+     * for a digest mismatch. Both are fatal signature verification failures. */
+    require(result == -1 && (error == EKEYREJECTED || error == EBADMSG),
+            "tampered-signature-rejected");
+    puts("B866F_QEMU_LOADER_POLICY_PASSED");
+}
+#endif
+
 int main(void) {
     int console = open("/dev/console", O_RDWR);
     if (console < 0) return 1;
@@ -115,6 +145,9 @@ int main(void) {
     close(file);
 #ifdef B866F_TRUST_PROBE
     check_original_certificate();
+#endif
+#ifdef B866F_LOADER_PROBE
+    check_loader_policy();
 #endif
     puts("B866F_QEMU_CORE_TESTS_PASSED");
     puts("Virtual hardware only; STB boot, drivers, DRM and patch coverage UNTESTED.");

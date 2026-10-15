@@ -1,11 +1,14 @@
 """Fail-closed checks for the emulator trust experiment; no device access."""
 from pathlib import Path
 import tempfile
+import struct
 import unittest
 
 from kernel_baseline import config_map, ROOT
 from kernel_qemu import classify
 from kernel_trust_probe import certificate_der, check_config, check_image
+from kernel_loader_probe import tamper_signature
+from kernel_module_signature_audit import MARKER, split_signature
 
 
 class TrustProbeChecks(unittest.TestCase):
@@ -47,6 +50,30 @@ class TrustProbeChecks(unittest.TestCase):
         self.assertFalse(classify(core + trust + 'Kernel panic', False, 0, trust_probe=True)
                          ['guest_checks_passed'])
         self.assertFalse(classify(core + trust, True, -9, trust_probe=True)['clean_shutdown'])
+
+    def test_loader_requires_negative_policy_evidence_and_single_initialization(self):
+        base = 'B866F_QEMU_CORE_TESTS_PASSED B866F_QEMU_ORIGINAL_CERT_TRUST_PASSED'
+        loader = (' B866F_QEMU_LOADER_POLICY_PASSED B866F_LOADER_FIXTURE_INIT '
+                  'B866F_LOADER_FIXTURE_EXIT exports protected symbol arc4_crypt '
+                  'exports protected symbol arc4_crypt')
+        self.assertFalse(classify(base, False, 0, True, True)['guest_checks_passed'])
+        self.assertTrue(classify(base + loader, False, 0, True, True)
+                        ['synthetic_loader_policy_test_passed'])
+        self.assertFalse(classify(base + loader + ' B866F_LOADER_FIXTURE_INIT', False, 0, True, True)
+                         ['guest_checks_passed'])
+
+    def test_tamper_preserves_module_body_and_signature_header(self):
+        body = b'example ELF fixture body'
+        signature = b'example detached signature'
+        header = struct.pack('>BBBBB3sI', 0, 0, 2, 0, 0, b'\0'*3, len(signature))
+        original = body + signature + header + MARKER
+        tampered = tamper_signature(original)
+        actual_body, actual_signature = split_signature(tampered)
+        self.assertEqual(actual_body, body)
+        self.assertNotEqual(actual_signature, signature)
+        self.assertEqual(sum(a != b for a, b in zip(original, tampered)), 1)
+        with self.assertRaises(ValueError):
+            tamper_signature(body)
 
 
 if __name__ == '__main__':
