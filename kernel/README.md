@@ -16,6 +16,13 @@ Pilihan workflow `source`:
 
 Kedua pilihan memakai commit tetap. Tidak ada yang dinyatakan siap diinstal.
 
+Sumber CoreELEC mendapat patch kecil berlisensi GPL-2.0-only di `patches/`:
+makro video layer memakai field capture hanya bila VIDEOCAPTURE aktif, sesuai
+guard deklarasi struct upstream. Flag konfigurasi perangkat tidak diubah.
+Objek `video_hw.o` dikompilasi lebih awal sebagai pemeriksaan integrasi patch.
+SHA-256 patch dicatat pada laporan. Jika build penuh gagal, `partial.symvers`
+menyimpan CRC objek yang sempat dikompilasi; tabel parsial ini bukan hasil ABI lengkap.
+
 `b866f-running.config` adalah konfigurasi build dari perangkat B866F Android 14.
 `vendor-symbol-requirements.json` berisi nama simbol dan CRC yang dibutuhkan
 empat contoh modul perangkat; tidak berisi binary modul, firmware, identitas

@@ -29,7 +29,7 @@ jobs:
       - name: Install build dependencies on runner
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang-18 lld-18 llvm-18 flex bison libssl-dev libelf-dev bc gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi
+          sudo apt-get install -y clang-18 lld-18 llvm-18 flex bison libssl-dev libelf-dev bc patch gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi
       - name: Build baseline and compare vendor ABI
         env:
           KERNEL_SOURCE: ${{ inputs.source || 'khadas-android14' }}

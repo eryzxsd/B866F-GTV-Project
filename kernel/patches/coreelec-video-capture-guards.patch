@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Preserve capture behavior when enabled; avoid fields absent when disabled.
+# Helpers remain inside the original video_onoff_lock critical sections.
+--- a/common_drivers/drivers/media/video_sink/video_hw.c
++++ b/common_drivers/drivers/media/video_sink/video_hw.c
+@@ -311,6 +311,28 @@
+ 	} while (0)
+ #endif
+ 
++#ifdef CONFIG_AMLOGIC_MEDIA_VIDEOCAPTURE
++#define VIDEO_CAPTURE_ON() \
++	do { \
++		vd_layer[0].capture_frame_req = NULL; \
++		atomic_set(&vd_layer[0].capture_use_cnt, CAPTURE_STATE_ON); \
++	} while (0)
++#define VIDEO_CAPTURE_OFF() \
++	do { \
++		atomic_set(&vd_layer[0].capture_use_cnt, CAPTURE_STATE_OFF); \
++		if (vd_layer[0].capture_frame_req && vd_layer[0].capture_frame_req->data) { \
++			struct amvideocap_req_data *reqdata = \
++				(struct amvideocap_req_data *)vd_layer[0].capture_frame_req->data; \
++			if (reqdata && reqdata->privdata) \
++				reqdata->privdata->state = 0xffff; \
++		} \
++		vd_layer[0].capture_frame_req = NULL; \
++	} while (0)
++#else
++#define VIDEO_CAPTURE_ON() do { } while (0)
++#define VIDEO_CAPTURE_OFF() do { } while (0)
++#endif
++
+ #define VIDEO_LAYER_ON() \
+ 	do { \
+ 		unsigned long flags; \
+@@ -320,8 +342,7 @@
+ 			VIDEO_ENABLE_STATE_ON_PENDING; \
+ 		vd_layer[0].enabled = 1; \
+ 		vd_layer[0].enabled_status_saved = 1; \
+-		vd_layer[0].capture_frame_req = NULL; \
+-		atomic_set(&vd_layer[0].capture_use_cnt, CAPTURE_STATE_ON); \
++		VIDEO_CAPTURE_ON(); \
+ 		spin_unlock_irqrestore(&video_onoff_lock, flags); \
+ 	} while (0)
+ 
+@@ -332,14 +353,7 @@
+ 		vd_layer[0].onoff_state = VIDEO_ENABLE_STATE_OFF_REQ; \
+ 		vd_layer[0].enabled = 0; \
+ 		vd_layer[0].enabled_status_saved = 0; \
+-		atomic_set(&vd_layer[0].capture_use_cnt, CAPTURE_STATE_OFF); \
+-		if (vd_layer[0].capture_frame_req && vd_layer[0].capture_frame_req->data) { \
+-			struct amvideocap_req_data *reqdata = \
+-				(struct amvideocap_req_data *)vd_layer[0].capture_frame_req->data; \
+-			if (reqdata && reqdata->privdata) \
+-				reqdata->privdata->state = 0xffff; \
+-		} \
+-		vd_layer[0].capture_frame_req = NULL; \
++		VIDEO_CAPTURE_OFF(); \
+ 		spin_unlock_irqrestore(&video_onoff_lock, flags); \
+ 	} while (0)
+ 

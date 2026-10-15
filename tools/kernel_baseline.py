@@ -86,6 +86,14 @@ def main():
         kernel = WORK / 'linux'
         status['sources']['kernel'] = fetch_source('kernel', kernel)
         status['sources']['drivers'] = fetch_source('drivers', kernel / 'common_drivers')
+        if SOURCE_KEY == 'coreelec-5.15.196':
+            patch = ROOT / 'kernel/patches/coreelec-video-capture-guards.patch'
+            for option in ('--dry-run', None):
+                command = ['patch', '--batch', '--forward', '-p1', '-i', str(patch)]
+                if option:
+                    command.append(option)
+                subprocess.run(command, cwd=kernel, check=True)
+            status['source_patches'] = {patch.name: hashlib.sha256(patch.read_bytes()).hexdigest()}
         # This pinned Linux tree already includes common_drivers from drivers/Kconfig.
         # No unavailable ZTE project Kconfig is fabricated or included.
         output = WORK / 'out'
@@ -180,6 +188,9 @@ def main():
             return
         status['status'] = 'compiling'
         (REPORT / 'status.json').write_text(json.dumps(status, indent=2))
+        if SOURCE_KEY == 'coreelec-5.15.196':
+            run(make + ['-j2', 'common_drivers/drivers/media/video_sink/video_hw.o'],
+                'video-capture-check.txt')
         # vmlinux is local to this ephemeral runner; never upload an image.
         run(make + ['-j2', 'vmlinux'], 'compile.txt')
         symvers = output / 'vmlinux.symvers'
@@ -208,6 +219,25 @@ def main():
         status['error'] = str(exc)
         raise
     finally:
+        # Preserve text CRCs from compiled objects even if another driver fails.
+        # This table is explicitly partial and cannot establish complete ABI.
+        partial = {}
+        conflicts = set()
+        for path in (WORK / 'out').rglob('*.o.symversions'):
+            for symbol, value in re.findall(r'__crc_(\w+)\s*=\s*(0x[0-9a-fA-F]+)\s*;', path.read_text(errors='replace')):
+                value = int(value, 16)
+                if symbol in partial and partial[symbol] != value:
+                    conflicts.add(symbol)
+                partial[symbol] = value
+        for symbol in conflicts:
+            del partial[symbol]
+        if partial:
+            (REPORT / 'partial.symvers').write_text(''.join(
+                f'{value:#010x}\t{symbol}\tunlinked-objects\tUNKNOWN\n'
+                for symbol, value in sorted(partial.items())))
+            status['partial_symbols'] = len(partial)
+            status['partial_symbol_conflicts'] = sorted(conflicts)
+            status['partial_table_note'] = 'Unlinked compiled objects only; not a complete vmlinux symbol table.'
         (REPORT / 'status.json').write_text(json.dumps(status, indent=2))
 
 
