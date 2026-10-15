@@ -82,11 +82,13 @@ def main():
         requested = ROOT / 'kernel/b866f-running.config'
         shutil.copyfile(requested, output / '.config')
         env = os.environ.copy()
+        # This old vendor Makefile supports LLVM=1, not modern LLVM=-18 suffixes.
+        env['PATH'] = '/usr/lib/llvm-18/bin:' + env['PATH']
         env.update(KCONFIG_EXT_PREFIX='', COMMON_DRIVERS_DIR='common_drivers',
                    KBUILD_BUILD_USER='diagnostic', KBUILD_BUILD_HOST='github-actions',
                    KBUILD_BUILD_TIMESTAMP='Thu Oct 15 00:00:00 UTC 2026')
         make = ['make', '-C', str(kernel), 'O=' + str(output), 'ARCH=arm64',
-                'LLVM=-18', 'LLVM_IAS=1', 'CROSS_COMPILE=aarch64-linux-gnu-',
+                'LLVM=1', 'LLVM_IAS=1', 'CROSS_COMPILE=aarch64-linux-gnu-',
                 'CROSS_COMPILE_COMPAT=arm-linux-gnueabi-', 'KCFLAGS=-Wno-error']
         def run(args, name):
             with (REPORT / name).open('w') as log:
