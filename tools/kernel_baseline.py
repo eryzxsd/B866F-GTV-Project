@@ -103,7 +103,8 @@ def main():
         status['sources']['drivers'] = fetch_source('drivers', kernel / 'common_drivers')
         if SOURCE_KEY == 'coreelec-5.15.196':
             status['source_patches'] = {}
-            for name in ('coreelec-video-capture-guards.patch', 'coreelec-gpio-key-builtin.patch'):
+            for name in ('coreelec-video-capture-guards.patch', 'coreelec-gpio-key-builtin.patch',
+                         'coreelec-si2183-mux-dependency.patch'):
                 patch = ROOT / 'kernel/patches' / name
                 for option in ('--dry-run', None):
                     command = ['patch', '--batch', '--forward', '-p1', '-i', str(patch)]
@@ -151,7 +152,7 @@ def main():
             if proc.returncode:
                 lines = (REPORT / name).read_text(errors='replace').splitlines()
                 errors = [i for i, line in enumerate(lines)
-                          if any(token in line for token in ('error:', 'No rule to make', 'fatal error'))]
+                          if any(token in line for token in ('error:', 'ERROR: modpost', 'No rule to make', 'fatal error'))]
                 for index in errors[:10]:
                     print('\n'.join(lines[max(0, index - 3):index + 5]))
                 print('\n'.join(lines[-25:]))
@@ -163,8 +164,13 @@ def main():
                        for k, v in original.items() if resolved.get(k, 'absent') != v}
         (REPORT / 'config-differences.json').write_text(json.dumps(differences, indent=2))
         status['config_differences'] = len(differences)
+        added = {k: v for k, v in resolved.items() if k not in original}
+        (REPORT / 'config-added.json').write_text(json.dumps(added, indent=2))
+        status['additional_config_options'] = len(added)
         if SOURCE_KEY == 'coreelec-5.15.196' and resolved.get('CONFIG_AMLOGIC_GPIO_KEY') != original.get('CONFIG_AMLOGIC_GPIO_KEY'):
             raise RuntimeError('GPIO-key placement changed from reference configuration')
+        if SOURCE_KEY == 'coreelec-5.15.196' and resolved.get('CONFIG_I2C_MUX') != original.get('CONFIG_I2C_MUX'):
+            raise RuntimeError('I2C mux setting changed from reference configuration')
         for key in ('CONFIG_ARM64', 'CONFIG_MODVERSIONS', 'CONFIG_AMLOGIC_DRIVER',
                     'CONFIG_AMLOGIC_BREAK_GKI', 'CONFIG_AMLOGIC_IN_KERNEL_MODULES'):
             if resolved.get(key) != 'y':

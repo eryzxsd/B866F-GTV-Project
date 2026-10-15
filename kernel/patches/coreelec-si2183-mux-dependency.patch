@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Match the SI2168 dependency rule: SI2183 uses I2C mux on this kernel.
+--- a/drivers/media/dvb-frontends/Kconfig
++++ b/drivers/media/dvb-frontends/Kconfig
+@@ -305,7 +305,7 @@
+ 
+ config DVB_SI2183
+ 	tristate "Silicon Labs Si2183 demodulator"
+-	depends on DVB_CORE && I2C
++	depends on DVB_CORE && I2C && I2C_MUX
+ 	default m if !MEDIA_SUBDRV_AUTOSELECT
+ 	help
+ 	  Say Y when you want to support this frontend.

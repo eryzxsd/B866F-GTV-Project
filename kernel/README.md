@@ -45,6 +45,14 @@ agar GPIO-key tetap built-in saat meson-remote berupa modul, sesuai referensi.
 Aturan ini diverifikasi dengan parser Kconfig pada subtree input terisolasi;
 hasil build penuh diperlukan sebelum menyatakan integrasinya berhasil.
 Build dihentikan bila penempatan GPIO-key menyimpang dari referensi.
+Patch SI2183 menambahkan dependensi I2C_MUX, mengikuti aturan SI2168 di file
+yang sama. Frontend tambahan ini tidak ada di konfigurasi referensi, tetapi
+default source publik memilihnya sebagai modul walaupun I2C_MUX=n. Tanpa
+dependensi tersebut modpost gagal pada tiga fungsi mux. Uji Kconfig terisolasi
+memastikan frontend tidak dipilih saat mux off dan tersedia saat mux=m.
+Nilai I2C_MUX referensi dipertahankan dan diperiksa. Opsi yang baru dikenal
+source publik dicatat terpisah di `config-added.json` agar default tambahan
+tidak hilang dari laporan konfigurasi.
 Objek `video_hw.o` dikompilasi lebih awal sebagai pemeriksaan integrasi patch.
 SHA-256 patch dicatat pada laporan. Jika build penuh gagal, `partial.symvers`
 menyimpan CRC objek yang sempat dikompilasi; tabel parsial ini bukan hasil ABI lengkap.

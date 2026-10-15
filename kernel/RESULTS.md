@@ -89,9 +89,10 @@ Tidak ada boot.img, kernel binary, signing key, atau paket flashing yang dipubli
 
 [Run driver-probe](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38721809377)
 diluncurkan dari commit `b2aa3ccab393f99bb9bc53d3b8b87b1ee13535ab` dengan
-`source=coreelec-5.15.196` dan `driver_probe=true`. Saat catatan ini dibuat,
-pemeriksaan inti 160 modul dan objek video lolos; build penuh masih berjalan.
-Belum ada hasil kompilasi driver baru atau klaim kompatibilitas dari run tersebut.
+`source=coreelec-5.15.196` dan `driver_probe=true`. Run sudah selesai:
+pemeriksaan inti 160 modul, objek video dan vmlinux lolos. Tahap modul in-tree
+gagal pada modpost SI2183; kompilasi media eksternal belum dijalankan.
+Belum ada hasil kompatibilitas pasangan driver baru dari run tersebut.
 Run ini menambahkan source decoder publik `CoreELEC/media_modules-aml` pada
 commit `c15aebb1ac93028d0aceadf8f35dda2204d33424`, pasangan branch CoreELEC yang sama.
 
@@ -127,3 +128,20 @@ patch dan INPUT=m/GPIO_KEY=y sesudah patch, sesuai penempatan pada referensi.
 Patch hanya memindahkan deklarasi Kconfig; source penanganan tombol tidak
 diubah. Ini belum hasil build penuh dengan patch tersebut. Build berikutnya
 juga mencakup AV1 T5D dan encoder H.264/multi/JPEG yang dimuat pada audit.
+
+### Hasil driver-probe pertama
+
+Artifact `11966914502` diverifikasi dengan SHA-256
+`c00c337f7f23ec44025f3b62df79aad1c1fb616c1e82a5f09840865483f6c7ac`.
+Audit ulang tabel vmlinux tetap menemukan 23 simbol aktif berbeda pada
+23 modul aktif, sesuai build sebelumnya. Belum ada driver pengganti yang lolos.
+
+Tiga error modpost semuanya berasal dari `si2183.ko` yang membutuhkan
+`i2c_mux_alloc`, `i2c_mux_add_adapter` dan `i2c_mux_del_adapters` saat
+I2C_MUX=n. SI2183 tidak ada di konfigurasi referensi firmware; default frontend
+source publik menambahkannya sebagai modul. Patch Kconfig menambahkan
+dependensi I2C_MUX, sama seperti SI2168 pada file upstream yang sama.
+Pengujian stanza terisolasi memastikan SI2183 tidak dipilih saat mux=n dan
+tersedia sebagai modul saat mux=m. Nilai mux=n perangkat dipertahankan;
+modpost tidak diabaikan dan tidak ada simbol/CRC yang dipalsukan.
+Perbaikan dependency dan GPIO-key masih memerlukan build penuh berikutnya.
