@@ -25,6 +25,12 @@ BASELINES = {
 }
 SOURCE_KEY = os.environ.get('KERNEL_SOURCE', 'khadas-android14')
 SOURCES = BASELINES[SOURCE_KEY]
+DRIVER_PROBE = os.environ.get('DRIVER_PROBE') == '1'
+if DRIVER_PROBE:
+    if SOURCE_KEY != 'coreelec-5.15.196':
+        raise RuntimeError('Driver probe requires the pinned CoreELEC source set')
+    SOURCES = {**SOURCES, 'media': ('CoreELEC/media_modules-aml',
+                                  'c15aebb1ac93028d0aceadf8f35dda2204d33424')}
 
 
 def fetch_source(name, destination):
@@ -232,6 +238,11 @@ def main():
         status['status'] = ('comparison complete; loaded-module CRC mismatches found'
                             if aggregate['loaded_modules_with_crc_mismatches'] else
                             'comparison complete; no loaded-module CRC mismatches found in compared symbols; boot/provider verification pending')
+        if DRIVER_PROBE:
+            from kernel_driver_probe import probe
+            media = WORK / 'media-source'
+            status['sources']['media'] = fetch_source('media', media)
+            status['driver_probe'] = probe(kernel, output, media, make, run, ROOT, REPORT)
     except Exception as exc:
         status['status'] = 'failed'
         status['error'] = str(exc)

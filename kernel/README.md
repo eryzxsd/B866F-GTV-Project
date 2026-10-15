@@ -16,6 +16,26 @@ Pilihan workflow `source`:
 
 Kedua pilihan memakai commit tetap. Tidak ada yang dinyatakan siap diinstal.
 
+Pilihan tambahan `driver_probe=true` hanya tersedia untuk sumber CoreELEC.
+Sesudah vmlinux selesai, runner membangun modul in-tree dan decoder dari
+[CoreELEC media_modules-aml](https://github.com/CoreELEC/media_modules-aml/tree/c15aebb1ac93028d0aceadf8f35dda2204d33424)
+pada commit tetap `c15aebb1ac93028d0aceadf8f35dda2204d33424`.
+Pilihan decoder mencakup H.264, H.265, VP9, AV1 dan jalur V4L.
+Ini percobaan pasangan source kernel/driver, bukan driver ZTE yang terverifikasi.
+`make modules` dan modpost tetap memeriksa dependensi secara normal.
+
+Jika berhasil dikompilasi, checker membaca CRC impor/ekspor dari ELF hasil build,
+kemudian memeriksa himpunan provider yang diusulkan: vmlinux baru, modul media
+baru, amlogic-wireless baru, dan modul lama lainnya. Konsumen modul lama juga
+diperiksa agar perubahan ekspor driver baru tidak terlewat.
+`module-exports.json` berisi metadata CRC ekspor dari audit privat sebelumnya;
+tidak memuat binary modul. Laporan semua berkas dapat mencantumkan provider
+alternatif yang tidak dimuat bersamaan, sehingga duplikasi perlu ditinjau
+menurut profil driver perangkat. Ini belum menguji signature, namespace,
+urutan inisialisasi, interface userspace, DRM atau Netflix.
+Artifact tetap hanya log dan metadata. Tidak menjalankan `modules_install`,
+tidak menyalin firmware, tidak membuat boot image, dan tidak menghubungi STB.
+
 Sumber CoreELEC mendapat patch kecil berlisensi GPL-2.0-only di `patches/`:
 makro video layer memakai field capture hanya bila VIDEOCAPTURE aktif, sesuai
 guard deklarasi struct upstream. Flag konfigurasi perangkat tidak diubah.

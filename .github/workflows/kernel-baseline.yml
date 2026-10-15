@@ -10,6 +10,10 @@ on:
         options:
           - khadas-android14
           - coreelec-5.15.196
+      driver_probe:
+        description: Uji build driver media bersama kernel CoreELEC (diagnostik saja)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -33,6 +37,7 @@ jobs:
       - name: Build baseline and compare vendor ABI
         env:
           KERNEL_SOURCE: ${{ inputs.source || 'khadas-android14' }}
+          DRIVER_PROBE: ${{ inputs.driver_probe && '1' || '0' }}
         run: python3 tools/kernel_baseline.py
       - name: Save diagnostic reports (no kernel images)
         if: always()
