@@ -103,12 +103,15 @@ def preflight(kernel, media, make, run):
             raise RuntimeError('Preflight source missing: ' + target)
     run(make + ['modules_prepare'], 'media-prepare.txt')
     # Keep compiling independent targets so one run reports more than the first error.
-    # Kbuild's directory target compiles the configured module objects, without modpost.
-    run(make + ['-j2', '-k', *media_options(kernel, media), './'], 'media-object-preflight.txt')
+    # This vendor tree does not normalize M/./ as a recursive build target.
+    # Select the real top-level directories from its media Makefile instead.
+    targets = ['common/', 'frame_provider/', 'frame_sink/', 'stream_input/',
+               'framerate_adapter/', 'media_sync/', 'amvdec_ports/']
+    run(make + ['-j2', '-k', *media_options(kernel, media), *targets], 'media-object-preflight.txt')
     for target in required:
         if not (media / 'drivers' / target).is_file():
             raise RuntimeError('Expected preflight object missing: ' + target)
-    return {'targets': ['./'], 'verified_objects': required,
+    return {'targets': targets, 'verified_objects': required,
             'scope': 'configured media objects only; no final modules or full ABI result',
             'installable': False, 'boot_tested': False}
 
