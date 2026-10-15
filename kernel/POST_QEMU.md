@@ -37,3 +37,9 @@ Satu sertifikat publik ditemukan pada kernel backup asli. SHA-256 DER: 01c0d6ffe
 Jalur eksperimen berikutnya adalah mempertahankan sertifikat publik asli pada trust store kandidat, misalnya melalui CONFIG_SYSTEM_TRUSTED_KEYS, lalu memeriksa hasil build dan penerimaan key. Itu belum diimplementasikan atau dibuktikan oleh hasil lokal ini; sertifikat tidak memberi kemampuan menandatangani driver baru dan tidak menggantikan private key. Kebijakan enforcement tetap utuh.
 
 Belum ada candidate trust test, load driver, boot STB, pengujian Netflix/DRM atau paket restore mandiri yang terbukti. Pemeriksaan ini tidak menerapkan patch keamanan Android Mei 2026. Kernel dan driver pada STB tidak berubah.
+
+## Eksperimen keyring QEMU disiapkan
+
+Opsi trust_probe pada workflow QEMU kini tersedia untuk menguji sertifikat publik asli pada varian emulator. Sertifikat publik saja diterbitkan di kernel/trust, bersama fingerprint yang dipin; tidak ada private key atau binary driver. Eksperimen memeriksa opsi enforcement tidak berubah, keberadaan DER pada Image hasil build, dan KEYCTL_SEARCH pada .builtin_trusted_keys dari guest. Workflow wajib melihat marker trust, seluruh core checks dan shutdown bersih. Core checks saja tidak cukup ketika trust_probe diminta.
+
+Uji lokal menolak sertifikat berbeda, hilangnya DER dari Image, pelemahan opsi enforcement, dan hasil guest tanpa marker trust. Hasil build/runtime eksperimen belum diketahui pada saat perubahan ini dibuat. Dukungan sertifikat hanya ditambahkan ke eksperimen QEMU; konfigurasi kandidat STB tetap belum berubah. Signature driver amlogic-input masih memiliki signer lain yang belum terverifikasi, dan jalur restore mandiri tetap belum terbukti.

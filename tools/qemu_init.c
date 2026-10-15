@@ -10,6 +10,10 @@
 #include <sys/utsname.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#ifdef B866F_TRUST_PROBE
+#include <linux/keyctl.h>
+#include <sys/syscall.h>
+#endif
 
 static void require(int condition, const char *test) {
     if (!condition) {
@@ -21,6 +25,29 @@ static void require(int condition, const char *test) {
     printf("B866F_QEMU_OK:%s\n", test);
     fflush(stdout);
 }
+
+#ifdef B866F_TRUST_PROBE
+static void check_original_certificate(void) {
+    /* Discover the root-owned built-in ring, then search within that ring.
+     * Merely finding a certificate elsewhere in /proc/keys is insufficient. */
+    FILE *keys = fopen("/proc/keys", "r");
+    require(keys != NULL, "trust-key-list-readable");
+    char line[2048];
+    unsigned int ring = 0;
+    while (fgets(line, sizeof(line), keys)) {
+        if (strstr(line, "keyring") && strstr(line, ".builtin_trusted_keys:")) {
+            require(sscanf(line, "%x", &ring) == 1, "builtin-keyring-id");
+            break;
+        }
+    }
+    fclose(keys);
+    require(ring != 0, "builtin-keyring-found");
+    long certificate = syscall(SYS_keyctl, KEYCTL_SEARCH, (int)ring, "asymmetric",
+                               "id:821976dbe4b8a702b6f3b8804f03a4d517df1f3b", 0);
+    require(certificate > 0, "original-certificate-in-builtin-trusted-keyring");
+    puts("B866F_QEMU_ORIGINAL_CERT_TRUST_PASSED");
+}
+#endif
 
 int main(void) {
     int console = open("/dev/console", O_RDWR);
@@ -62,6 +89,9 @@ int main(void) {
     file = open("/proc/version", O_RDONLY);
     require(file >= 0 && read(file, response, 2) == 2, "proc-read");
     close(file);
+#ifdef B866F_TRUST_PROBE
+    check_original_certificate();
+#endif
     puts("B866F_QEMU_CORE_TESTS_PASSED");
     puts("Virtual hardware only; STB boot, drivers, DRM and patch coverage UNTESTED.");
     sync();

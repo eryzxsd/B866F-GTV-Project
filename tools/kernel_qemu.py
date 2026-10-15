@@ -10,9 +10,11 @@ import subprocess
 import time
 
 import kernel_baseline as baseline
+import kernel_trust_probe as trust
 
 ROOT = baseline.ROOT
 REPORT = ROOT / 'build/qemu-report'
+TRUST_PROBE = os.environ.get('TRUST_PROBE') == '1'
 
 
 def archive_entry(name, data=b'', mode=stat.S_IFDIR | 0o755, major=0, minor=0):
@@ -24,12 +26,18 @@ def archive_entry(name, data=b'', mode=stat.S_IFDIR | 0o755, major=0, minor=0):
     return result + b'\0' * (-len(result) % 4)
 
 
-def classify(log, timed_out, returncode):
+def classify(log, timed_out, returncode, trust_probe=False):
     reached = 'B866F_QEMU_CORE_TESTS_PASSED' in log
+    trust_passed = 'B866F_QEMU_ORIGINAL_CERT_TRUST_PASSED' in log
     failed = 'B866F_QEMU_FAIL:' in log or 'Kernel panic' in log
+    if trust_probe and not trust_passed:
+        failed = True
     return {'guest_checks_passed': reached and not failed,
             'clean_shutdown': reached and not failed and not timed_out and returncode == 0,
             'timed_out': timed_out, 'qemu_exit_code': returncode,
+            'original_certificate_keyring_test_requested': trust_probe,
+            'original_certificate_keyring_test_passed': trust_probe and trust_passed and not failed,
+            'original_driver_load_tested': False,
             'stb_boot_tested': False, 'installable': False}
 
 
@@ -85,11 +93,20 @@ def main():
              '--disable', 'UAPI_HEADER_TEST', '--disable', 'AMLOGIC_WATERMARK',
              '--enable', 'SERIAL_AMBA_PL011',
              '--enable', 'SERIAL_AMBA_PL011_CONSOLE'], 'qemu-config-fragment.txt')
+        certificate_path = 'certs/b866f-original-signer.crt'
+        if TRUST_PROBE:
+            certificate = ROOT / 'kernel/trust/original-module-signer.crt'
+            certificate_der = trust.certificate_der(certificate)
+            shutil.copyfile(certificate, kernel / certificate_path)
+            run([str(kernel / 'scripts/config'), '--file', str(output / '.config'),
+                 '--set-str', 'SYSTEM_TRUSTED_KEYS', certificate_path], 'trust-config-fragment.txt')
         make = ['make', '-C', str(kernel), 'O=' + str(output), 'ARCH=arm64', 'LLVM=1',
                 'LLVM_IAS=1', 'CROSS_COMPILE=aarch64-linux-gnu-',
                 'CROSS_COMPILE_COMPAT=arm-linux-gnueabi-', 'KCFLAGS=-Wno-error -Wno-unknown-warning-option']
         run(make + ['olddefconfig'], 'configure.txt')
         before, after = baseline.config_map(requested), baseline.config_map(output / '.config')
+        if TRUST_PROBE:
+            status['trust_probe'] = trust.check_config(before, after, certificate_path)
         status['config_changes'] = {key: {'before': before.get(key), 'after': after.get(key)}
                                     for key in sorted(before.keys() | after.keys())
                                     if before.get(key) != after.get(key)}
@@ -118,8 +135,11 @@ def main():
         run(make + ['-j2', 'Image'], 'compile.txt')
         image = output / 'arch/arm64/boot/Image'
         status['kernel_image_sha256'] = hashlib.sha256(image.read_bytes()).hexdigest()
+        if TRUST_PROBE:
+            status['trust_probe'].update(trust.check_image(image, certificate_der))
         init = baseline.WORK / 'init'
         run(['aarch64-linux-gnu-gcc', '-static', '-O2', '-Wall', '-Wextra', '-Werror',
+             *(['-DB866F_TRUST_PROBE=1'] if TRUST_PROBE else []),
              str(ROOT / 'tools/qemu_init.c'), '-o', str(init)], 'init-build.txt')
         ramdisk = b''.join(archive_entry(name) for name in ('dev', 'proc', 'tmp'))
         ramdisk += archive_entry('dev/console', mode=stat.S_IFCHR | 0o600, major=5, minor=1)
@@ -142,12 +162,14 @@ def main():
                     timed_out = True
                     process.kill()
                     code = process.wait()
-        result = classify((REPORT / 'qemu-serial.txt').read_text(errors='replace'), timed_out, code)
+        result = classify((REPORT / 'qemu-serial.txt').read_text(errors='replace'), timed_out, code,
+                          trust_probe=TRUST_PROBE)
         status.update(result)
-        status['status'] = 'QEMU core checks passed' if result['guest_checks_passed'] else 'QEMU boot test failed'
+        status['status'] = ('QEMU core and original-certificate keyring checks passed' if TRUST_PROBE
+                            else 'QEMU core checks passed') if result['clean_shutdown'] else 'QEMU boot test failed'
         print(json.dumps(result, indent=2))
-        if not result['guest_checks_passed']:
-            raise RuntimeError('Guest failed to complete core tests; inspect serial log')
+        if not result['guest_checks_passed'] or not result['clean_shutdown']:
+            raise RuntimeError('Guest checks or clean shutdown incomplete; inspect serial log')
     except Exception as error:
         status['error'] = str(error)
         status['status'] = 'failed or incomplete; not STB validation'
@@ -157,6 +179,10 @@ def main():
         summary = ('# Uji QEMU, bukan validasi STB\n\nStatus: ' + status['status'] +
                    '\n\nKonfigurasi emulator terpisah. Tidak menguji driver B866F, HDMI, DRM, Netflix, '
                    'AVB atau kelengkapan patch Mei 2026. Tidak mengunggah image atau melakukan flashing.\n')
+        if TRUST_PROBE:
+            summary += ('\nEksperimen trust diminta: sertifikat publik asli pada Image dan pencarian '
+                        'key di .builtin_trusted_keys. Tidak menguji load driver asli dan tidak '
+                        'mengubah konfigurasi kernel STB. Lihat status.json dan serial log untuk hasil.\n')
         (REPORT / 'summary.md').write_text(summary)
         if os.environ.get('GITHUB_STEP_SUMMARY'):
             with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
