@@ -3,10 +3,10 @@
 Workflow **Kernel ABI baseline (diagnostic only)** dijalankan manual melalui tab
 Actions. Tidak berjalan otomatis saat push/PR dan tidak mengakses STB.
 
-Tahap pertama menggunakan sumber publik Khadas 5.15.137, **lebih lama** dari
-kernel firmware 5.15.153. Ini hanya baseline untuk mempelajari perbedaan ABI
-Amlogic, bukan kandidat pembaruan. Port ke kernel baru memerlukan pekerjaan
-terpisah; sumber publik ini belum terbukti sama dengan sumber ZTE.
+Baseline saat ini menggunakan sumber publik Khadas cabang Android 14,
+5.15.153, sama dengan versi dasar kernel firmware. Ini hanya baseline untuk
+mempelajari perbedaan ABI Amlogic, bukan kandidat pembaruan. Port ke kernel baru
+memerlukan pekerjaan terpisah; sumber ini belum terbukti sama dengan sumber ZTE.
 
 `b866f-running.config` adalah konfigurasi build dari perangkat B866F Android 14.
 `vendor-symbol-requirements.json` berisi nama simbol dan CRC yang dibutuhkan
@@ -32,6 +32,18 @@ Belum ada prosedur pemulihan melalui USB yang terverifikasi ketika Android gagal
 boot. Jangan gunakan hasil eksperimen ini untuk menulis partisi perangkat.
 
 ## Hasil awal, 15 Oktober 2026
+
+Eksperimen pertama menggunakan cabang Linux Khadas 5.15.137. Pemeriksaan inti
+selesai: `module_layout` hasil build `0x38e28e16`, sedangkan keempat sampel modul
+memerlukan `0x115475ea`. Karena berbeda, build penuh dilewati. Ini membuktikan
+baseline lama tersebut tidak dapat menggantikan kernel perangkat secara langsung.
+[Laporan eksperimen lama](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38714564258).
+
+Setelah itu ditemukan cabang `khadas-vim4-android14` pada kedua repo upstream.
+Baseline dialihkan ke commit tetap cabang tersebut untuk menguji sumber yang
+lebih dekat. Hasil lama tidak boleh dianggap sebagai hasil cabang Android 14.
+
+Temuan berikut berasal dari eksperimen **5.15.137**:
 
 Konfigurasi berhasil diproses oleh runner. Opsi inti ARM64, MODVERSIONS,
 AMLOGIC_DRIVER, AMLOGIC_BREAK_GKI, dan AMLOGIC_IN_KERNEL_MODULES tetap aktif.

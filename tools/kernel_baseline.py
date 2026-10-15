@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 WORK = ROOT / 'build/kernel-baseline'
 REPORT = ROOT / 'build/kernel-report'
 SOURCES = {
-    'kernel': ('khadas/linux', '4e557e233b9da219f48b82bfa313f353386097ec'),
-    'drivers': ('khadas/common_drivers', '3a11a86a02e759fc57fc79410215f7c0c3a0d8e0'),
+    'kernel': ('khadas/linux', '070ae7539e6cd7c0f6c263bff80603113b8c1011'),
+    'drivers': ('khadas/common_drivers', 'e0718dc4aba5b556beb4882d5207c938f84dc12a'),
 }
 
 
@@ -71,7 +71,7 @@ def main():
         raise SystemExit('Use a fresh build/kernel-baseline directory for each run.')
     WORK.mkdir(parents=True)
     REPORT.mkdir(parents=True, exist_ok=True)
-    status = {'purpose': 'ABI baseline only; older 5.15.137 source, NOT a security update',
+    status = {'purpose': 'Android 14 vendor ABI baseline, 5.15.153 source; NOT a security update',
               'installable': False, 'sources': {}, 'status': 'preparing'}
     try:
         kernel = WORK / 'linux'
