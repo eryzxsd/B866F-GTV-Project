@@ -29,6 +29,10 @@ Samba memakai SMB2/3, login wajib, signing wajib, dan pembatasan jaringan lokal.
 
 **Proyek ini tidak meningkatkan patch keamanan ke Mei 2026 dan tidak mengganti kernel.** Nama proyek adalah nama kustomisasi pribadi. Firmware dasarnya tetap karya EBS dan komponen pihak lain tetap milik pembuatnya.
 
+Eksperimen source build di GitHub Actions didokumentasikan dalam
+[pemeriksaan ABI kernel](kernel/README.md). Workflow hanya menghasilkan laporan
+diagnostik; tidak menghasilkan paket instalasi atau menulis partisi STB.
+
 ## Mulai dari sini
 
 1. Baca [panduan instalasi](docs/INSTALASI.md). Siapkan recovery yang sudah diuji sebelum perubahan yang membutuhkan reboot.
@@ -54,6 +58,6 @@ Pengujian: login Windows dan daftar share berhasil; kata sandi salah ditolak; mo
 
 Lihat [pemulihan](docs/PEMULIHAN.md), [catatan keamanan](SECURITY.md), dan [kontribusi](CONTRIBUTING.md). Jangan unggah dump perangkat, kata sandi, private key, serial perangkat, token ADB, atau log akun Google ke issue.
 
-Kode proyek dan adaptasi yang dicakup dilisensikan Apache-2.0; lihat [LICENSE](LICENSE) dan [NOTICE](NOTICE). Samba dan dependensinya diambil dari Termux saat build lokal, memakai lisensi masing-masing. Google TV, Android TV, ZTE, dan EBS tidak mensponsori proyek ini.
+Kode proyek dan adaptasi yang dicakup dilisensikan Apache-2.0, kecuali berkas yang menyebut lisensi lain (konfigurasi kernel memakai GPL-2.0-only); lihat [LICENSE](LICENSE) dan [NOTICE](NOTICE). Samba dan dependensinya diambil dari Termux saat build lokal, memakai lisensi masing-masing. Google TV, Android TV, ZTE, dan EBS tidak mensponsori proyek ini.
 
 English: experimental developer preview for one tested B866F firmware base. Indonesian documentation is authoritative. No proprietary firmware/Google APKs, kernel update, or security-patch upgrade is distributed.

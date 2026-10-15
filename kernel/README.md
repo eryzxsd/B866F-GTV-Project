@@ -53,6 +53,11 @@ Setelah itu ditemukan cabang `khadas-vim4-android14` pada kedua repo upstream.
 Baseline dialihkan ke commit tetap cabang tersebut untuk menguji sumber yang
 lebih dekat. Hasil lama tidak boleh dianggap sebagai hasil cabang Android 14.
 
+Pemeriksaan inti `module_layout` pada cabang Android 14 5.15.153 dan eksperimen
+CoreELEC 5.15.196 telah lolos: CRC sama dengan kebutuhan empat sampel perangkat,
+`0x115475ea`. Build penuh dan perbandingan simbol lain masih diproses.
+Ini bukan bukti kompatibilitas seluruh driver, apalagi hasil uji boot.
+
 Temuan berikut berasal dari eksperimen **5.15.137**:
 
 Konfigurasi berhasil diproses oleh runner. Opsi inti ARM64, MODVERSIONS,
@@ -70,7 +75,7 @@ Penyesuaian build diagnostik:
   (`struct timespec` tidak lengkap). Ini tes saat build, bukan fitur runtime.
   Konfigurasi referensi perangkat tetap disimpan utuh; penyesuaian tercatat di laporan.
 
-Belum ada hasil kecocokan ABI dari baseline pada saat catatan ini ditulis.
+Belum ada hasil perbandingan seluruh simbol sampel pada saat catatan ini ditulis.
 Lihat [riwayat eksperimen](https://github.com/eryzxsd/B866F-GTV-Project/actions/workflows/kernel-baseline.yml)
 untuk status terbaru. Jangan menafsirkan workflow hijau sebagai izin flashing.
 
