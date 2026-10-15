@@ -102,13 +102,15 @@ def main():
         status['sources']['kernel'] = fetch_source('kernel', kernel)
         status['sources']['drivers'] = fetch_source('drivers', kernel / 'common_drivers')
         if SOURCE_KEY == 'coreelec-5.15.196':
-            patch = ROOT / 'kernel/patches/coreelec-video-capture-guards.patch'
-            for option in ('--dry-run', None):
-                command = ['patch', '--batch', '--forward', '-p1', '-i', str(patch)]
-                if option:
-                    command.append(option)
-                subprocess.run(command, cwd=kernel, check=True)
-            status['source_patches'] = {patch.name: hashlib.sha256(patch.read_bytes()).hexdigest()}
+            status['source_patches'] = {}
+            for name in ('coreelec-video-capture-guards.patch', 'coreelec-gpio-key-builtin.patch'):
+                patch = ROOT / 'kernel/patches' / name
+                for option in ('--dry-run', None):
+                    command = ['patch', '--batch', '--forward', '-p1', '-i', str(patch)]
+                    if option:
+                        command.append(option)
+                    subprocess.run(command, cwd=kernel, check=True)
+                status['source_patches'][patch.name] = hashlib.sha256(patch.read_bytes()).hexdigest()
         # This pinned Linux tree already includes common_drivers from drivers/Kconfig.
         # No unavailable ZTE project Kconfig is fabricated or included.
         output = WORK / 'out'
@@ -161,6 +163,8 @@ def main():
                        for k, v in original.items() if resolved.get(k, 'absent') != v}
         (REPORT / 'config-differences.json').write_text(json.dumps(differences, indent=2))
         status['config_differences'] = len(differences)
+        if SOURCE_KEY == 'coreelec-5.15.196' and resolved.get('CONFIG_AMLOGIC_GPIO_KEY') != original.get('CONFIG_AMLOGIC_GPIO_KEY'):
+            raise RuntimeError('GPIO-key placement changed from reference configuration')
         for key in ('CONFIG_ARM64', 'CONFIG_MODVERSIONS', 'CONFIG_AMLOGIC_DRIVER',
                     'CONFIG_AMLOGIC_BREAK_GKI', 'CONFIG_AMLOGIC_IN_KERNEL_MODULES'):
             if resolved.get(key) != 'y':

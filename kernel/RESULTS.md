@@ -120,3 +120,10 @@ Parser ELF baru dibandingkan dengan parser independen pada 22 modul normal-boot
 cadangan privat: seluruh CRC impor/ekspor sama. Uji sintetis juga menangkap
 perubahan ekspor provider yang membuat konsumen lama tidak cocok. Netflix,
 DRM, interface userspace decoder dan boot tetap belum diuji pada kernel baru.
+
+Perbaikan Kconfig GPIO-key kini disiapkan untuk build berikutnya. Pengujian
+subtree input dengan Kconfiglib 14.1.0 menghasilkan INPUT=m/GPIO_KEY=m sebelum
+patch dan INPUT=m/GPIO_KEY=y sesudah patch, sesuai penempatan pada referensi.
+Patch hanya memindahkan deklarasi Kconfig; source penanganan tombol tidak
+diubah. Ini belum hasil build penuh dengan patch tersebut. Build berikutnya
+juga mencakup AV1 T5D dan encoder H.264/multi/JPEG yang dimuat pada audit.

@@ -86,7 +86,9 @@ def probe(kernel, output, media, make, run, root, report):
         run(make + ['-j2', 'modules'], 'native-modules.txt')
         flags = ['CONFIG_AMLOGIC_MEDIA_VDEC_' + codec + '=m' for codec in (
             'MPEG2_MULTI', 'MPEG4_MULTI', 'VC1', 'H264_MULTI', 'H264_MVC',
-            'H265', 'VP9', 'MJPEG_MULTI', 'AVS_MULTI', 'AVS2', 'AV1')]
+            'H265', 'VP9', 'MJPEG_MULTI', 'AVS_MULTI', 'AVS2', 'AV1', 'AV1_T5D')]
+        flags += ['CONFIG_AMLOGIC_MEDIA_VENC_' + codec + '=m'
+                  for codec in ('H264', 'MULTI', 'JPEG', 'COMMON')]
         flags += ['CONFIG_AMLOGIC_MEDIA_V4L_DEC=y']
         includes = [media / 'drivers/include', kernel / 'common_drivers/include',
                     kernel / 'common_drivers/include/uapi']

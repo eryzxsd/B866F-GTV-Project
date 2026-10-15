@@ -20,7 +20,8 @@ Pilihan tambahan `driver_probe=true` hanya tersedia untuk sumber CoreELEC.
 Sesudah vmlinux selesai, runner membangun modul in-tree dan decoder dari
 [CoreELEC media_modules-aml](https://github.com/CoreELEC/media_modules-aml/tree/c15aebb1ac93028d0aceadf8f35dda2204d33424)
 pada commit tetap `c15aebb1ac93028d0aceadf8f35dda2204d33424`.
-Pilihan decoder mencakup H.264, H.265, VP9, AV1 dan jalur V4L.
+Pilihan decoder mencakup H.264, H.265, VP9, AV1/T5D dan jalur V4L;
+encoder H.264, multi dan JPEG juga dicakup sebagai konsumen interface decoder.
 Ini percobaan pasangan source kernel/driver, bukan driver ZTE yang terverifikasi.
 `make modules` dan modpost tetap memeriksa dependensi secara normal.
 
@@ -39,6 +40,11 @@ tidak menyalin firmware, tidak membuat boot image, dan tidak menghubungi STB.
 Sumber CoreELEC mendapat patch kecil berlisensi GPL-2.0-only di `patches/`:
 makro video layer memakai field capture hanya bila VIDEOCAPTURE aktif, sesuai
 guard deklarasi struct upstream. Flag konfigurasi perangkat tidak diubah.
+Patch Kconfig terpisah memindahkan GPIO-key ke luar kondisi AMLOGIC_INPUT
+agar GPIO-key tetap built-in saat meson-remote berupa modul, sesuai referensi.
+Aturan ini diverifikasi dengan parser Kconfig pada subtree input terisolasi;
+hasil build penuh diperlukan sebelum menyatakan integrasinya berhasil.
+Build dihentikan bila penempatan GPIO-key menyimpang dari referensi.
 Objek `video_hw.o` dikompilasi lebih awal sebagai pemeriksaan integrasi patch.
 SHA-256 patch dicatat pada laporan. Jika build penuh gagal, `partial.symvers`
 menyimpan CRC objek yang sempat dikompilasi; tabel parsial ini bukan hasil ABI lengkap.
