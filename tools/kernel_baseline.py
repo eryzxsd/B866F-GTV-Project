@@ -89,13 +89,19 @@ def main():
                    KBUILD_BUILD_TIMESTAMP='Thu Oct 15 00:00:00 UTC 2026')
         make = ['make', '-C', str(kernel), 'O=' + str(output), 'ARCH=arm64',
                 'LLVM=1', 'LLVM_IAS=1', 'CROSS_COMPILE=aarch64-linux-gnu-',
-                'CROSS_COMPILE_COMPAT=arm-linux-gnueabi-', 'KCFLAGS=-Wno-error']
+                'CROSS_COMPILE_COMPAT=arm-linux-gnueabi-',
+                'KCFLAGS=-Wno-error -Wno-unknown-warning-option']
         def run(args, name):
             with (REPORT / name).open('w') as log:
                 proc = subprocess.run(args, env=env, stdout=log, stderr=subprocess.STDOUT)
             print(f'{name}: exit {proc.returncode}', flush=True)
             if proc.returncode:
-                print('\n'.join((REPORT / name).read_text(errors='replace').splitlines()[-65:]))
+                lines = (REPORT / name).read_text(errors='replace').splitlines()
+                errors = [i for i, line in enumerate(lines)
+                          if any(token in line for token in ('error:', 'No rule to make', 'fatal error'))]
+                for index in errors[:10]:
+                    print('\n'.join(lines[max(0, index - 3):index + 5]))
+                print('\n'.join(lines[-25:]))
                 raise subprocess.CalledProcessError(proc.returncode, args)
         run(make + ['olddefconfig'], 'configure.txt')
         shutil.copyfile(output / '.config', REPORT / 'resolved.config')
