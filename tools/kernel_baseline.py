@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import tarfile
+import time
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -99,7 +100,18 @@ def main():
                 'KCFLAGS=-Wno-error -Wno-unknown-warning-option']
         def run(args, name):
             with (REPORT / name).open('w') as log:
-                proc = subprocess.run(args, env=env, stdout=log, stderr=subprocess.STDOUT)
+                # Keep the full artifact log and show periodic real compiler
+                # output so long builds can be monitored without guessing.
+                last_progress = time.monotonic()
+                with subprocess.Popen(args, env=env, stdout=subprocess.PIPE,
+                                      stderr=subprocess.STDOUT, text=True,
+                                      errors='replace', bufsize=1) as proc:
+                    for line in proc.stdout:
+                        log.write(line)
+                        if time.monotonic() - last_progress >= 30 or 'error:' in line:
+                            print(f'{name}: {line.rstrip()}', flush=True)
+                            last_progress = time.monotonic()
+                    proc.wait()
             print(f'{name}: exit {proc.returncode}', flush=True)
             if proc.returncode:
                 lines = (REPORT / name).read_text(errors='replace').splitlines()
