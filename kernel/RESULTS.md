@@ -84,3 +84,39 @@ Unit masih melaporkan patch 2025-05-01 dan menjalankan kernel asli
 dicatat untuk audit, bukan bukti bahwa ada/tidak ada backport tertentu.
 
 Tidak ada boot.img, kernel binary, signing key, atau paket flashing yang dipublikasikan.
+
+## Eksperimen pasangan driver berikutnya
+
+[Run driver-probe](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38721809377)
+diluncurkan dari commit `b2aa3ccab393f99bb9bc53d3b8b87b1ee13535ab` dengan
+`source=coreelec-5.15.196` dan `driver_probe=true`. Saat catatan ini dibuat,
+pemeriksaan inti 160 modul dan objek video lolos; build penuh masih berjalan.
+Belum ada hasil kompilasi driver baru atau klaim kompatibilitas dari run tersebut.
+Run ini menambahkan source decoder publik `CoreELEC/media_modules-aml` pada
+commit `c15aebb1ac93028d0aceadf8f35dda2204d33424`, pasangan branch CoreELEC yang sama.
+
+Penelusuran dependensi secara konservatif dari 23 modul aktif yang berbeda
+menjangkau 34 modul aktif. Sebelas konsumen tambahan mencakup driver Wi-Fi/
+Bluetooth, encoder dan stream input. Ini bukan klaim bahwa semua 34 modul
+pasti perlu diganti: CRC ekspor hasil build baru yang menentukan perbedaan
+interface pada konsumen. Checker karena itu mencakup konsumen yang dipertahankan.
+Versi checker sesudah commit run juga membedakan seluruh berkas audit dari
+profil nama modul yang sedang dimuat; laporan run lama dapat dianalisis ulang
+lokal menggunakan metadata ELF yang disimpan, tanpa mengulang kompilasi.
+
+Pembacaan `/proc/kallsyms` menegaskan `sdio_get_device` dan entri ekspornya ada
+pada kernel perangkat sekarang. Pada source CoreELEC yang dipilih fungsi itu
+ada di `meson-gx-mmc.c`, tetapi tidak diekspor di sana; source wireless baru
+tidak memakai impor tersebut. Rebuild wireless dapat mengubah kebutuhan ini,
+tetapi tetap perlu pemeriksaan dependensi, bukan menambahkan CRC palsu.
+
+Ada juga perbedaan konfigurasi input yang belum diselesaikan:
+`AMLOGIC_GPIO_KEY=y` pada referensi menjadi `m` pada build publik, karena
+Kconfig publik menempatkannya di dalam `if AMLOGIC_INPUT` sementara INPUT=m.
+Perubahan penempatan driver dan opsi khusus ZTE yang tidak tersedia perlu
+ditangani sebelum uji boot. Pemeriksaan CRC saja tidak mencakup kebutuhan ini.
+
+Parser ELF baru dibandingkan dengan parser independen pada 22 modul normal-boot
+cadangan privat: seluruh CRC impor/ekspor sama. Uji sintetis juga menangkap
+perubahan ekspor provider yang membuat konsumen lama tidak cocok. Netflix,
+DRM, interface userspace decoder dan boot tetap belum diuji pada kernel baru.

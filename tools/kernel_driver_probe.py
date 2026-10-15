@@ -111,14 +111,24 @@ def probe(kernel, output, media, make, run, root, report):
             fields = line.split()
             if len(fields) >= 2:
                 kernel_exports[fields[1]] = fields[0]
-        boundary = check_boundary(kernel_exports,
-            json.loads((root / 'kernel/vendor-symbol-requirements.json').read_text()),
-            json.loads((root / 'kernel/module-exports.json').read_text()), replacements)
-        (report / 'replacement-boundary.json').write_text(json.dumps(boundary, indent=2))
+        imports = json.loads((root / 'kernel/vendor-symbol-requirements.json').read_text())
+        exports = json.loads((root / 'kernel/module-exports.json').read_text())
+        loaded = json.loads((root / 'kernel/module-scope.json').read_text())['loaded']
+        boundary = check_boundary(kernel_exports, imports, exports, replacements)
+        active = check_boundary(kernel_exports,
+            {k: v for k, v in imports.items() if loaded.get(k)},
+            {k: v for k, v in exports.items() if loaded.get(k)},
+            {k: v for k, v in replacements.items() if loaded.get(k)})
+        active['scope'] = ('Captured loaded module names, replacing same-named files only. '
+                           'New module names require a separate load/dependency plan.')
+        (report / 'replacement-boundary.json').write_text(json.dumps(
+            {'all_audited': boundary, 'captured_loaded': active}, indent=2))
         result.update(status='compiled; static boundary checked; runtime unverified',
                       rebuilt_modules=len(replacements),
                       modules_with_import_problems=len(boundary['modules_with_import_problems']),
-                      duplicate_provider_symbols=len(boundary['duplicate_providers']))
+                      duplicate_provider_symbols=len(boundary['duplicate_providers']),
+                      captured_loaded_modules_with_import_problems=len(active['modules_with_import_problems']),
+                      captured_loaded_duplicate_providers=len(active['duplicate_providers']))
         return result
     except Exception as exc:
         result.update(status='failed', error=str(exc))
