@@ -1,0 +1,33 @@
+name: Kernel ABI baseline (diagnostic only)
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-baseline
+  cancel-in-progress: false
+
+jobs:
+  baseline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install build dependencies on runner
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-18 lld-18 llvm-18 flex bison libssl-dev libelf-dev bc gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi
+      - name: Build baseline and compare vendor ABI
+        run: python3 tools/kernel_baseline.py
+      - name: Save diagnostic reports (no kernel images)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kernel-baseline-diagnostics
+          path: build/kernel-report/
+          if-no-files-found: warn
+          retention-days: 14
