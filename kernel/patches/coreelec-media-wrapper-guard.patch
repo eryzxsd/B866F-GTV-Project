@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Guard the complete optional wrapper branch while preserving its enabled behavior.
+--- a/drivers/amvdec_ports/aml_vcodec_dec.c
++++ b/drivers/amvdec_ports/aml_vcodec_dec.c
+@@ -1254,12 +1254,13 @@
+ 
+ 	switch (requester) {
+ 	case AML_FB_REQ_DEC:
+-		if (ctx->avbc_wrapper)
++#ifdef CONFIG_AMLOGIC_MEDIA_WRAPPER
++		if (ctx->avbc_wrapper) {
+ 			/* dec <==> avbcd. */
+-#ifdef CONFIG_AMLOGIC_MEDIA_WRAPPER
+ 			task->attach(task, get_avbc_ops(), ctx->avbc_wrapper);
++		} else
+ #endif
+-		else if (ctx->ge2d) {
++		if (ctx->ge2d) {
+ 			/* dec <==> ge2d. */
+ 			task->attach(task, get_ge2d_ops(), ctx->ge2d);
+ 		} else if (ctx->vpp) {

@@ -51,6 +51,19 @@ def fetch_source(name, destination):
     return {'repository': repo, 'commit': commit, 'archive_sha256': digest}
 
 
+def fetch_media(status):
+    media = WORK / 'media-source'
+    status['sources']['media'] = fetch_source('media', media)
+    patch = ROOT / 'kernel/patches/coreelec-media-wrapper-guard.patch'
+    for option in ('--dry-run', None):
+        command = ['patch', '--batch', '--forward', '-p1', '-i', str(patch)]
+        if option:
+            command.append(option)
+        subprocess.run(command, cwd=media, check=True)
+    status['media_source_patches'] = {patch.name: hashlib.sha256(patch.read_bytes()).hexdigest()}
+    return media
+
+
 def config_map(path):
     values = {}
     for line in path.read_text().splitlines():
@@ -219,13 +232,12 @@ def main():
         (REPORT / 'status.json').write_text(json.dumps(status, indent=2))
         if OBJECT_PREFLIGHT:
             from kernel_driver_probe import preflight
-            media = WORK / 'media-source'
-            status['sources']['media'] = fetch_source('media', media)
+            media = fetch_media(status)
             status['object_preflight'] = preflight(kernel, media, make, run)
             status['status'] = 'selected objects compiled; full link/modpost and ABI untested'
             (REPORT / 'summary.md').write_text(
                 '# Uji kompilasi objek media saja\n\n'
-                'Objek terpilih berhasil dikompilasi. Belum ada build vmlinux lengkap, '
+                'Objek yang dipilih konfigurasi berhasil dikompilasi. Belum ada build vmlinux lengkap, '
                 'modpost media, modul terhubung, pemeriksaan ABI penuh, atau uji boot. '
                 'Tidak untuk instalasi.\n')
             return
@@ -265,8 +277,7 @@ def main():
                             'comparison complete; no loaded-module CRC mismatches found in compared symbols; boot/provider verification pending')
         if DRIVER_PROBE:
             from kernel_driver_probe import probe
-            media = WORK / 'media-source'
-            status['sources']['media'] = fetch_source('media', media)
+            media = fetch_media(status)
             status['driver_probe'] = probe(kernel, output, media, make, run, ROOT, REPORT)
     except Exception as exc:
         status['status'] = 'failed'

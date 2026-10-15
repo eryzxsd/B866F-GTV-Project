@@ -92,19 +92,24 @@ def media_options(kernel, media):
 
 
 def preflight(kernel, media, make, run):
-    # Official Kbuild single-file targets. These do not replace full modpost/link checks.
-    targets = ['frame_provider/decoder/utils/vdec.o',
+    # Official Kbuild directory target. This does not replace full modpost/link checks.
+    required = ['frame_provider/decoder/utils/vdec.o',
                'frame_provider/decoder/h264_multi/vmh264.o',
                'frame_provider/decoder/h265/vh265.o',
                'frame_provider/decoder_v4l/h264_multi/vmh264.o',
                'amvdec_ports/aml_vcodec_dec.o', 'amvdec_ports/aml_buf_mgr.o']
-    for target in targets:
+    for target in required:
         if not (media / 'drivers' / target).with_suffix('.c').is_file():
             raise RuntimeError('Preflight source missing: ' + target)
     run(make + ['modules_prepare'], 'media-prepare.txt')
     # Keep compiling independent targets so one run reports more than the first error.
-    run(make + ['-j2', '-k', *media_options(kernel, media), *targets], 'media-object-preflight.txt')
-    return {'targets': targets, 'scope': 'compile only; no final modules or full ABI result',
+    # Kbuild's directory target compiles the configured module objects, without modpost.
+    run(make + ['-j2', '-k', *media_options(kernel, media), './'], 'media-object-preflight.txt')
+    for target in required:
+        if not (media / 'drivers' / target).is_file():
+            raise RuntimeError('Expected preflight object missing: ' + target)
+    return {'targets': ['./'], 'verified_objects': required,
+            'scope': 'configured media objects only; no final modules or full ABI result',
             'installable': False, 'boot_tested': False}
 
 
