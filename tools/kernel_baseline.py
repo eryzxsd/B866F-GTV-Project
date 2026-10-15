@@ -81,6 +81,12 @@ def main():
         output.mkdir()
         requested = ROOT / 'kernel/b866f-running.config'
         shutil.copyfile(requested, output / '.config')
+        # Public Amlogic DVB UAPI headers fail this optional standalone-header
+        # test on Ubuntu. It is a build-time test, not a kernel runtime option.
+        subprocess.run([str(kernel / 'scripts/config'), '--file', str(output / '.config'),
+                        '--disable', 'UAPI_HEADER_TEST'], check=True)
+        status['diagnostic_adjustments'] = {
+            'CONFIG_UAPI_HEADER_TEST': 'disabled: vendor DVB timespec standalone-header test failure'}
         env = os.environ.copy()
         # This old vendor Makefile supports LLVM=1, not modern LLVM=-18 suffixes.
         env['PATH'] = '/usr/lib/llvm-18/bin:' + env['PATH']
