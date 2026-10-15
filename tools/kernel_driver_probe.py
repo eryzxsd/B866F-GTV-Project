@@ -65,6 +65,57 @@ def module_metadata(data):
         signature_bytes = struct.unpack_from('>I', data, len(data) - len(marker) - 4)[0]
         if signature_bytes > len(data) - len(marker) - 12:
             raise ValueError('Module signature length exceeds file')
+    # Some LTO modules omit __kstrtabns_* labels and instead relocate the three
+    # PREL32 kernel_symbol fields directly to section symbols plus addends.
+    section_names = [strings[h[0]:].split(b'\0', 1)[0].decode() for h in headers]
+    for reloc_header in headers:
+        if reloc_header[1] != 4 or reloc_header[7] >= count:
+            continue
+        target_index = reloc_header[7]
+        if section_names[target_index] not in ('__ksymtab', '__ksymtab_gpl'):
+            continue
+        if reloc_header[9] != 24 or reloc_header[5] % 24 or reloc_header[6] >= count:
+            raise ValueError('Malformed export relocation table')
+        table = section(headers[target_index])
+        if len(table) % 12:
+            raise ValueError('Unsupported kernel_symbol entry size')
+        symbol_header = headers[reloc_header[6]]
+        if symbol_header[1] != 2 or symbol_header[9] != 24:
+            raise ValueError('Invalid relocation symbol table')
+        fields = {}
+        relocs = section(reloc_header)
+        for off in range(0, len(relocs), 24):
+            position, info, addend = struct.unpack_from('<QQq', relocs, off)
+            if position + 4 > len(table):
+                raise ValueError('Export relocation outside table')
+            if info & 0xffffffff != 261:  # R_AARCH64_PREL32
+                continue
+            symbol_index = info >> 32
+            if symbol_index * 24 + 24 > symbol_header[5]:
+                raise ValueError('Export relocation symbol outside table')
+            symbol_data = section(symbol_header)
+            _, _, _, index, value, _ = struct.unpack_from('<IBBHQQ', symbol_data, symbol_index * 24)
+            if not 0 < index < count:
+                continue
+            target = section(headers[index])
+            start = value + addend
+            if not 0 <= start < len(target):
+                raise ValueError('Export relocation target outside section')
+            if position % 12 in (4, 8):
+                end = target.find(b'\0', start)
+                if end < 0:
+                    raise ValueError('Unterminated export name or namespace')
+                fields[position] = target[start:end].decode()
+        for off in range(0, len(table), 12):
+            name = fields.get(off + 4)
+            if name not in exports:
+                continue
+            namespace = fields.get(off + 8)
+            if namespace is None:
+                continue  # No resolved field is unknown, not an empty namespace.
+            if name in namespaces and namespaces[name] != namespace:
+                raise ValueError('Conflicting export namespace representations')
+            namespaces[name] = namespace
     return {'symbol_crcs': imports, 'exports': exports,
             'weak_undefined_symbols': sorted(weak), 'unknown_export_crcs': sorted(unknown),
             'modinfo': metadata, 'export_namespaces': namespaces,

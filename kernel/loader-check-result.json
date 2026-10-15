@@ -1,0 +1,15 @@
+{
+  "scope": "captured loaded module names with same-named replacements",
+  "missing_loader_metadata": [],
+  "dependencies_outside_selected_profile": {},
+  "missing_namespace_imports": {},
+  "symbols_without_namespace_metadata": {},
+  "signature_marker_count": 47,
+  "signature_trust_verified": false,
+  "load_order_tested": false,
+  "boot_tested": false,
+  "installable": false,
+  "limits": "Static declarations only. No certificate trust, GPL symbol-policy, protected-export policy, dependency timing or userspace ABI validation.",
+  "source_build_run": "https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38771672793",
+  "recheck": "Local reanalysis with corrected provider namespace metadata; CI artifact was not modified"
+}

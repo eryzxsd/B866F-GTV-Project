@@ -13,3 +13,13 @@ Build diagnostik berikutnya mengekspor metadata sama untuk modul baru dan memeri
 Kondisi penempatan: /vendor/lib/modules menunjuk /vendor_dlkm/lib/modules, dan vendor_dlkm terpasang read-only. Driver wireless pengganti berada pada daftar startup vendor. Daftar platform/recovery ramdisk berisi 13/22 modul yang tidak termasuk 35 pengganti. Seluruh nama startup termasuk dataset, tetapi urutan dan waktu load belum diuji pada kernel baru.
 
 Recovery berbagi vendor_boot dengan ramdisk platform dan DTB. Slot B bukan fallback yang terbukti. Belum ada restore mandiri tanpa Android, dan tidak ada alasan memasang kernel hanya berdasarkan QEMU/CRC. Tidak ada flashing, module loading/unloading, reboot, atau perubahan keamanan pada pemeriksaan loader.
+
+## Hasil build dan koreksi parser namespace
+
+[Build diagnostik selesai](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38771672793). Tidak ada metadata modul hilang, dependency di luar profil, atau import namespace hilang yang terdeteksi. Report awal masih menandai 17 simbol (24 pemakaian impor) pada dua konsumen sebagai namespace belum diketahui.
+
+Kedua konsumen, sprdbt_tty_sdio.ko dan sprdwl_ng.ko, memakai provider uwe5621_bsp_sdio.ko. Pemeriksaan binary yang hash-nya sama dengan audit menunjukkan LTO menghilangkan label __kstrtabns_*, sementara relocation AArch64 PREL32 tetap merujuk string namespace kosong. Parser diperbaiki untuk membaca field nama/namespace dari tabel __ksymtab dan __ksymtab_gpl, termasuk relocation ke section symbol dengan addend.
+
+Parser terpisah berbasis pyelftools mengonfirmasi seluruh 66 ekspor provider memiliki namespace kosong. Relocation di luar tabel sengaja diuji dan ditolak. Pemeriksaan ulang lokal menggunakan artifact build yang sama dan metadata provider yang sudah dikoreksi menyelesaikan seluruh unknown namespace pada profil 131 modul/35 pengganti. Tidak perlu mengulang kompilasi untuk koreksi metadata provider ini. Report CI asli tetap menyimpan hasil sebelum koreksi; hasil ulang diberi label terpisah.
+
+Kecocokan CRC, dependency dan deklarasi namespace sekarang lolos pada profil yang ditangkap. Kepercayaan signature, GPL/protected-export policy, waktu/urutan load, boot nyata, ABI userspace dan DRM tetap belum diuji. Tidak ada perubahan firmware atau klaim siap dipasang.
