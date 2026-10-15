@@ -181,7 +181,7 @@ def main():
                    'AVB atau kelengkapan patch Mei 2026. Tidak mengunggah image atau melakukan flashing.\n')
         if TRUST_PROBE:
             summary += ('\nEksperimen trust diminta: sertifikat publik asli pada Image dan pencarian '
-                        'key di .builtin_trusted_keys. Tidak menguji load driver asli dan tidak '
+                        'keanggotaan key di .builtin_trusted_keys melalui READ/DESCRIBE. Tidak menguji load driver asli dan tidak '
                         'mengubah konfigurasi kernel STB. Lihat status.json dan serial log untuk hasil.\n')
         (REPORT / 'summary.md').write_text(summary)
         if os.environ.get('GITHUB_STEP_SUMMARY'):

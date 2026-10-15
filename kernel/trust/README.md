@@ -12,9 +12,13 @@ Subject key identifier:
 Opsi workflow QEMU `trust_probe` menambahkan sertifikat ini ke
 CONFIG_SYSTEM_TRUSTED_KEYS pada varian emulator saja. Pemeriksaan menolak
 perubahan opsi enforcement signature, memeriksa DER pada hasil Image, dan
-mencari key berdasarkan identifier di dalam .builtin_trusted_keys saat guest
-berjalan. Pencarian memakai keyctl KEYCTL_SEARCH; tidak menambahkan key saat
-runtime. Hasil tidak cukup untuk membuktikan driver asli dapat dimuat.
+mencocokkan identifier anggota .builtin_trusted_keys saat guest berjalan.
+KEYCTL_READ mengambil ID anggota ring, kemudian KEYCTL_DESCRIBE memeriksa
+identifier key asymmetric tersebut. KEYCTL_SEARCH hanya diagnostik: source
+certs/common.c memberi root VIEW/READ tetapi tidak SEARCH pada sertifikat
+built-in, sehingga kegagalan SEARCH bukan bukti sertifikat tidak dipercaya.
+Tidak ada perubahan permission atau penambahan key saat runtime. Hasil tidak
+cukup untuk membuktikan driver asli dapat dimuat.
 
 Workflow tetap hanya mengunggah laporan teks. Tidak ada image boot, private key,
 binary driver asli atau perubahan konfigurasi STB. Kernel kandidat STB belum

@@ -11,6 +11,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #ifdef B866F_TRUST_PROBE
+#include <errno.h>
 #include <linux/keyctl.h>
 #include <sys/syscall.h>
 #endif
@@ -28,7 +29,7 @@ static void require(int condition, const char *test) {
 
 #ifdef B866F_TRUST_PROBE
 static void check_original_certificate(void) {
-    /* Discover the root-owned built-in ring, then search within that ring.
+    /* Discover the root-owned built-in ring, then inspect its member IDs.
      * Merely finding a certificate elsewhere in /proc/keys is insufficient. */
     FILE *keys = fopen("/proc/keys", "r");
     require(keys != NULL, "trust-key-list-readable");
@@ -42,9 +43,32 @@ static void check_original_certificate(void) {
     }
     fclose(keys);
     require(ring != 0, "builtin-keyring-found");
+    errno = 0;
     long certificate = syscall(SYS_keyctl, KEYCTL_SEARCH, (int)ring, "asymmetric",
                                "id:821976dbe4b8a702b6f3b8804f03a4d517df1f3b", 0);
-    require(certificate > 0, "original-certificate-in-builtin-trusted-keyring");
+    printf("Trust search diagnostic: result=%ld errno=%d\n", certificate, errno);
+    /* certs/common.c grants root VIEW/READ, but not SEARCH on each built-in
+     * certificate. A userspace SEARCH can therefore fail even after the kernel
+     * has loaded the key. Do not relax permissions: read the ring's actual
+     * member IDs, then describe those keys using existing VIEW permission. */
+    int members[1024];
+    long bytes = syscall(SYS_keyctl, KEYCTL_READ, (int)ring, members, sizeof(members));
+    require(bytes >= 0 && (unsigned long)bytes <= sizeof(members) &&
+            (unsigned long)bytes % sizeof(members[0]) == 0, "builtin-keyring-members-readable");
+    int found = 0;
+    for (long i = 0; i < bytes / (long)sizeof(members[0]); i++) {
+        char description[2048];
+        long size = syscall(SYS_keyctl, KEYCTL_DESCRIBE, members[i], description, sizeof(description));
+        if (size <= 0 || (unsigned long)size > sizeof(description)) continue;
+        description[size - 1] = '\0';
+        if (strncmp(description, "asymmetric;", 11)) continue;
+        const char *identifier = strrchr(description, ':');
+        if (identifier && !strcmp(identifier, ": 821976dbe4b8a702b6f3b8804f03a4d517df1f3b")) {
+            found = 1;
+            break;
+        }
+    }
+    require(found, "original-certificate-member-of-builtin-trusted-keyring");
     puts("B866F_QEMU_ORIGINAL_CERT_TRUST_PASSED");
 }
 #endif
