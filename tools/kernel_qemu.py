@@ -82,7 +82,7 @@ def main():
         requested = ROOT / 'kernel/b866f-running.config'
         shutil.copyfile(requested, output / '.config')
         run([str(kernel / 'scripts/config'), '--file', str(output / '.config'),
-             '--disable', 'UAPI_HEADER_TEST',
+             '--disable', 'UAPI_HEADER_TEST', '--disable', 'AMLOGIC_WATERMARK',
              '--enable', 'SERIAL_AMBA_PL011',
              '--enable', 'SERIAL_AMBA_PL011_CONSOLE'], 'qemu-config-fragment.txt')
         make = ['make', '-C', str(kernel), 'O=' + str(output), 'ARCH=arm64', 'LLVM=1',
@@ -97,10 +97,14 @@ def main():
         # vendor's existing boot option to skip its unsupported FIQ SMC in QEMU.
         if after.get('CONFIG_AMLOGIC_DEBUG') != 'y':
             raise RuntimeError('Vendor debug exports must remain built in')
+        if after.get('CONFIG_AMLOGIC_WATERMARK') != 'n':
+            raise RuntimeError('QEMU-only watermark exclusion did not resolve')
         lockup = (kernel / 'common_drivers/drivers/debug/lockup.c').read_text()
         if '__setup("fiq_check_en=", fiq_check_en_setup)' not in lockup or 'if (!fiq_check_en)' not in lockup:
             raise RuntimeError('Pinned vendor FIQ opt-out is unavailable')
         status['qemu_exclusions'] = {
+            'CONFIG_AMLOGIC_WATERMARK': 'No vendor watermark secure-monitor '
+                                        'service on QEMU virt; driver untested',
             'fiq_check_en=0': 'Skip vendor FIQ debug SMC 0x820000f1 in QEMU; '
                               'keep AMLOGIC_DEBUG and GPIO exports enabled',
         }

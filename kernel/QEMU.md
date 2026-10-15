@@ -20,6 +20,10 @@ Opsi ini melewati inisialisasi FIQ yang memanggil secure monitor Amlogic.
 Tidak ada patch source tambahan. Implementasi opt-out pada source yang dipin
 akan diperiksa sebelum build. Jalur FIQ vendor tidak tercakup dalam tes ini.
 Konfigurasi referensi B866F dan build pasangan driver tidak diubah.
+Percobaan ketiga berhasil melewati inisialisasi debug tersebut, lalu panic di
+`aml_watermark_driver_init`, pada SMC `0xb200e003`. Varian emulator berikutnya
+menonaktifkan `AMLOGIC_WATERMARK`; fungsi watermark dan secure monitor vendor
+tidak diuji. Opsi ini tetap dipertahankan pada konfigurasi referensi perangkat.
 Ini **bukan konfigurasi yang identik dengan kandidat pasangan driver**.
 
 Kernel menjalankan initramfs kecil pada mesin QEMU `virt`, CPU `cortex-a53`,
