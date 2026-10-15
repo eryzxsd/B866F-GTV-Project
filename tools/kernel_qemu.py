@@ -82,7 +82,8 @@ def main():
         requested = ROOT / 'kernel/b866f-running.config'
         shutil.copyfile(requested, output / '.config')
         run([str(kernel / 'scripts/config'), '--file', str(output / '.config'),
-             '--disable', 'UAPI_HEADER_TEST', '--enable', 'SERIAL_AMBA_PL011',
+             '--disable', 'UAPI_HEADER_TEST', '--disable', 'AMLOGIC_DEBUG',
+             '--enable', 'SERIAL_AMBA_PL011',
              '--enable', 'SERIAL_AMBA_PL011_CONSOLE'], 'qemu-config-fragment.txt')
         make = ['make', '-C', str(kernel), 'O=' + str(output), 'ARCH=arm64', 'LLVM=1',
                 'LLVM_IAS=1', 'CROSS_COMPILE=aarch64-linux-gnu-',
@@ -92,6 +93,14 @@ def main():
         status['config_changes'] = {key: {'before': before.get(key), 'after': after.get(key)}
                                     for key in sorted(before.keys() | after.keys())
                                     if before.get(key) != after.get(key)}
+        # QEMU virt lacks the vendor secure monitor used by debug_lockup_init.
+        # Do not disable this in the paired-driver/STB candidate configuration.
+        if after.get('CONFIG_AMLOGIC_DEBUG') != 'n':
+            raise RuntimeError('QEMU-only AMLOGIC_DEBUG exclusion did not resolve')
+        status['qemu_exclusions'] = {
+            'CONFIG_AMLOGIC_DEBUG': 'Vendor debug init issues SMC 0x820000f1; '
+                                    'not supported by the QEMU virt platform',
+        }
         for key in ('CONFIG_SERIAL_AMBA_PL011', 'CONFIG_SERIAL_AMBA_PL011_CONSOLE',
                     'CONFIG_BLK_DEV_INITRD', 'CONFIG_RD_GZIP', 'CONFIG_ARM_GIC', 'CONFIG_ARM_PSCI_FW'):
             if after.get(key) != 'y':
