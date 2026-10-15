@@ -1,5 +1,6 @@
 """Build-only experiment. Does not install modules, package images or access ADB."""
 import json
+import hashlib
 import struct
 
 
@@ -25,7 +26,12 @@ def module_metadata(data):
     imports = {versions[i + 8:i + 64].split(b'\0', 1)[0].decode():
                hex(struct.unpack_from('<Q', versions, i)[0])
                for i in range(0, len(versions), 64)}
-    exports, weak, unknown = {}, [], []
+    metadata = {}
+    for entry in sections.get('.modinfo', b'').split(b'\0'):
+        if b'=' in entry:
+            key, value = entry.split(b'=', 1)
+            metadata.setdefault(key.decode(), []).append(value.decode())
+    exports, namespaces, weak, unknown = {}, {}, [], []
     for h in headers:
         if h[1] != 2:
             continue
@@ -35,6 +41,11 @@ def module_metadata(data):
         for i in range(h[4], h[4] + h[5], h[9]):
             name, info, _, index, value, _ = struct.unpack_from('<IBBHQQ', data, i)
             name = names[name:].split(b'\0', 1)[0].decode()
+            if name.startswith('__kstrtabns_') and 0 < index < count:
+                namespace_data = section(headers[index])
+                if value >= len(namespace_data):
+                    raise ValueError('Export namespace outside section')
+                namespaces[name[len('__kstrtabns_'):]] = namespace_data[value:].split(b'\0', 1)[0].decode()
             if index == 0 and info >> 4 == 2:
                 weak.append(name)
             if not name.startswith('__crc_'):
@@ -45,8 +56,21 @@ def module_metadata(data):
                 exports[name[6:]] = hex(value)
             else:
                 raise ValueError('Unsupported exported CRC encoding')
+    marker = b'~Module signature appended~\n'
+    has_signature = data.endswith(marker)
+    signature_bytes = None
+    if has_signature:
+        if len(data) < len(marker) + 12:
+            raise ValueError('Truncated module signature header')
+        signature_bytes = struct.unpack_from('>I', data, len(data) - len(marker) - 4)[0]
+        if signature_bytes > len(data) - len(marker) - 12:
+            raise ValueError('Module signature length exceeds file')
     return {'symbol_crcs': imports, 'exports': exports,
-            'weak_undefined_symbols': sorted(weak), 'unknown_export_crcs': sorted(unknown)}
+            'weak_undefined_symbols': sorted(weak), 'unknown_export_crcs': sorted(unknown),
+            'modinfo': metadata, 'export_namespaces': namespaces,
+            'sha256': hashlib.sha256(data).hexdigest(),
+            'signature_marker': has_signature, 'signature_bytes': signature_bytes,
+            'signature_verification': 'not performed; marker/length only'}
 
 
 def check_boundary(kernel_exports, original_imports, original_exports, replacements):
@@ -76,6 +100,47 @@ def check_boundary(kernel_exports, original_imports, original_exports, replaceme
             'duplicate_providers': duplicates,
             'boot_tested': False, 'netflix_tested': False, 'installable': False,
             'limits': 'CRC checks only. No signature, namespace, init-order, userspace ABI or DRM validation.'}
+
+
+def check_loader_metadata(kernel_namespaces, original_imports, original_loader, replacements):
+    """Static dependency/namespace observations, never signature trust or load proof."""
+    selected = {name: replacements.get(name, original_loader[name]) for name in original_imports}
+    aliases = {name.removesuffix('.ko').replace('-', '_') for name in selected}
+    for record in selected.values():
+        aliases.update(value.replace('-', '_') for value in record.get('modinfo', {}).get('name', []))
+    missing_metadata, missing_dependencies, namespace_errors, unknown_namespaces = [], {}, {}, {}
+    providers = {symbol: [('vmlinux', namespace)] for symbol, namespace in kernel_namespaces.items()}
+    for name, record in selected.items():
+        for symbol, namespace in record.get('export_namespaces', {}).items():
+            providers.setdefault(symbol, []).append((name, namespace))
+    for name, record in selected.items():
+        info = record.get('modinfo')
+        if info is None:
+            missing_metadata.append(name)
+            continue
+        deps = {dep.replace('-', '_') for line in info.get('depends', []) for dep in line.split(',') if dep}
+        if deps - aliases:
+            missing_dependencies[name] = sorted(deps - aliases)
+        imports = record.get('symbol_crcs', original_imports[name])
+        declared = set(info.get('import_ns', []))
+        for symbol in imports:
+            if symbol == 'module_layout':
+                continue
+            found = providers.get(symbol, [])
+            if not found:
+                unknown_namespaces.setdefault(name, []).append(symbol)
+            for owner, namespace in found:
+                if namespace and namespace not in declared:
+                    namespace_errors.setdefault(name, []).append({'symbol': symbol, 'provider': owner, 'namespace': namespace})
+    return {'scope': 'captured loaded module names with same-named replacements',
+            'missing_loader_metadata': sorted(missing_metadata),
+            'dependencies_outside_selected_profile': missing_dependencies,
+            'missing_namespace_imports': namespace_errors,
+            'symbols_without_namespace_metadata': unknown_namespaces,
+            'signature_marker_count': sum(bool(r.get('signature_marker')) for r in selected.values()),
+            'signature_trust_verified': False, 'load_order_tested': False,
+            'boot_tested': False, 'installable': False,
+            'limits': 'Static declarations only. No certificate trust, GPL symbol-policy, protected-export policy, dependency timing or userspace ABI validation.'}
 
 
 def media_options(kernel, media):
@@ -136,11 +201,12 @@ def probe(kernel, output, media, make, run, root, report):
         if not replacements or 'amvdec_mh264.ko' not in replacements:
             raise RuntimeError('Expected H264 decoder missing')
         (report / 'rebuilt-module-metadata.json').write_text(json.dumps(replacements, indent=2))
-        kernel_exports = {}
+        kernel_exports, kernel_namespaces = {}, {}
         for line in (output / 'vmlinux.symvers').read_text().splitlines():
             fields = line.split()
             if len(fields) >= 2:
                 kernel_exports[fields[1]] = fields[0]
+                kernel_namespaces[fields[1]] = fields[4] if len(fields) >= 5 else ''
         imports = json.loads((root / 'kernel/vendor-symbol-requirements.json').read_text())
         exports = json.loads((root / 'kernel/module-exports.json').read_text())
         loaded = json.loads((root / 'kernel/module-scope.json').read_text())['loaded']
@@ -153,6 +219,11 @@ def probe(kernel, output, media, make, run, root, report):
                            'New module names require a separate load/dependency plan.')
         (report / 'replacement-boundary.json').write_text(json.dumps(
             {'all_audited': boundary, 'captured_loaded': active}, indent=2))
+        original_loader = json.loads((root / 'kernel/module-loader-metadata.json').read_text())
+        loader = check_loader_metadata(kernel_namespaces,
+            {k: v for k, v in imports.items() if loaded.get(k)}, original_loader,
+            {k: v for k, v in replacements.items() if loaded.get(k)})
+        (report / 'loader-metadata-check.json').write_text(json.dumps(loader, indent=2))
         result.update(status='compiled; static boundary checked; runtime unverified',
                       rebuilt_modules=len(replacements),
                       modules_with_import_problems=len(boundary['modules_with_import_problems']),
