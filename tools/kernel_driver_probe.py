@@ -78,23 +78,43 @@ def check_boundary(kernel_exports, original_imports, original_exports, replaceme
             'limits': 'CRC checks only. No signature, namespace, init-order, userspace ABI or DRM validation.'}
 
 
+def media_options(kernel, media):
+    flags = ['CONFIG_AMLOGIC_MEDIA_VDEC_' + codec + '=m' for codec in (
+        'MPEG2_MULTI', 'MPEG4_MULTI', 'VC1', 'H264_MULTI', 'H264_MVC',
+        'H265', 'VP9', 'MJPEG_MULTI', 'AVS_MULTI', 'AVS2', 'AV1', 'AV1_T5D')]
+    flags += ['CONFIG_AMLOGIC_MEDIA_VENC_' + codec + '=m'
+              for codec in ('H264', 'MULTI', 'JPEG', 'COMMON')]
+    flags += ['CONFIG_AMLOGIC_MEDIA_V4L_DEC=y']
+    includes = [media / 'drivers/include', kernel / 'common_drivers/include',
+                kernel / 'common_drivers/include/uapi']
+    extra = ' '.join('-I' + str(path) for path in includes) + ' -Wno-error'
+    return ['M=' + str(media / 'drivers'), 'EXTRA_CFLAGS=' + extra, *flags]
+
+
+def preflight(kernel, media, make, run):
+    # Official Kbuild single-file targets. These do not replace full modpost/link checks.
+    targets = ['frame_provider/decoder/utils/vdec.o',
+               'frame_provider/decoder/h264_multi/vmh264.o',
+               'frame_provider/decoder/h265/vh265.o',
+               'frame_provider/decoder_v4l/h264_multi/vmh264.o',
+               'amvdec_ports/aml_vcodec_dec.o', 'amvdec_ports/aml_buf_mgr.o']
+    for target in targets:
+        if not (media / 'drivers' / target).with_suffix('.c').is_file():
+            raise RuntimeError('Preflight source missing: ' + target)
+    run(make + ['modules_prepare'], 'media-prepare.txt')
+    # Keep compiling independent targets so one run reports more than the first error.
+    run(make + ['-j2', '-k', *media_options(kernel, media), *targets], 'media-object-preflight.txt')
+    return {'targets': targets, 'scope': 'compile only; no final modules or full ABI result',
+            'installable': False, 'boot_tested': False}
+
+
 def probe(kernel, output, media, make, run, root, report):
     result = {'status': 'building', 'installable': False, 'boot_tested': False}
     try:
         # Full in-tree modules supply the legitimate modpost symbol table.
         # No KBUILD_MODPOST_WARN, signature bypass or CRC overrides are used.
         run(make + ['-j2', 'modules'], 'native-modules.txt')
-        flags = ['CONFIG_AMLOGIC_MEDIA_VDEC_' + codec + '=m' for codec in (
-            'MPEG2_MULTI', 'MPEG4_MULTI', 'VC1', 'H264_MULTI', 'H264_MVC',
-            'H265', 'VP9', 'MJPEG_MULTI', 'AVS_MULTI', 'AVS2', 'AV1', 'AV1_T5D')]
-        flags += ['CONFIG_AMLOGIC_MEDIA_VENC_' + codec + '=m'
-                  for codec in ('H264', 'MULTI', 'JPEG', 'COMMON')]
-        flags += ['CONFIG_AMLOGIC_MEDIA_V4L_DEC=y']
-        includes = [media / 'drivers/include', kernel / 'common_drivers/include',
-                    kernel / 'common_drivers/include/uapi']
-        extra = ' '.join('-I' + str(path) for path in includes) + ' -Wno-error'
-        run(make + ['-j2', 'M=' + str(media / 'drivers'), 'EXTRA_CFLAGS=' + extra,
-                    *flags, 'modules'], 'media-modules.txt')
+        run(make + ['-j2', *media_options(kernel, media), 'modules'], 'media-modules.txt')
         replacements = {}
         paths = sorted(media.rglob('*.ko'))
         wireless = output / 'common_drivers/drivers/wireless/amlogic-wireless.ko'

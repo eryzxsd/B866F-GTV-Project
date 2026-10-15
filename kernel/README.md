@@ -37,6 +37,14 @@ urutan inisialisasi, interface userspace, DRM atau Netflix.
 Artifact tetap hanya log dan metadata. Tidak menjalankan `modules_install`,
 tidak menyalin firmware, tidak membuat boot image, dan tidak menghubungi STB.
 
+`object_preflight=true` (bersama `driver_probe=true` dan sumber CoreELEC)
+menjalankan uji cepat enam objek decoder/V4L/buffer manager sebelum build penuh.
+Mode ini memakai [target satu berkas Kbuild resmi](https://www.kernel.org/doc/html/v5.15/kbuild/modules.html#building-separate-files)
+dan konfigurasi/flag yang sama dengan probe penuh. Kernel headers disiapkan,
+tetapi vmlinux lengkap dan modpost media tidak dijalankan. Hasil hijau hanya
+menunjukkan objek terpilih bisa dikompilasi, bukan kompatibilitas ABI atau boot.
+Grup antreannya terpisah sehingga uji cepat tidak membatalkan eksperimen penuh.
+
 Sumber CoreELEC mendapat patch kecil berlisensi GPL-2.0-only di `patches/`:
 makro video layer memakai field capture hanya bila VIDEOCAPTURE aktif, sesuai
 guard deklarasi struct upstream. Flag konfigurasi perangkat tidak diubah.

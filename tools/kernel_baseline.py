@@ -26,6 +26,9 @@ BASELINES = {
 SOURCE_KEY = os.environ.get('KERNEL_SOURCE', 'khadas-android14')
 SOURCES = BASELINES[SOURCE_KEY]
 DRIVER_PROBE = os.environ.get('DRIVER_PROBE') == '1'
+OBJECT_PREFLIGHT = os.environ.get('OBJECT_PREFLIGHT') == '1'
+if OBJECT_PREFLIGHT and not DRIVER_PROBE:
+    raise RuntimeError('Object preflight requires DRIVER_PROBE=1')
 if DRIVER_PROBE:
     if SOURCE_KEY != 'coreelec-5.15.196':
         raise RuntimeError('Driver probe requires the pinned CoreELEC source set')
@@ -214,6 +217,18 @@ def main():
             return
         status['status'] = 'compiling'
         (REPORT / 'status.json').write_text(json.dumps(status, indent=2))
+        if OBJECT_PREFLIGHT:
+            from kernel_driver_probe import preflight
+            media = WORK / 'media-source'
+            status['sources']['media'] = fetch_source('media', media)
+            status['object_preflight'] = preflight(kernel, media, make, run)
+            status['status'] = 'selected objects compiled; full link/modpost and ABI untested'
+            (REPORT / 'summary.md').write_text(
+                '# Uji kompilasi objek media saja\n\n'
+                'Objek terpilih berhasil dikompilasi. Belum ada build vmlinux lengkap, '
+                'modpost media, modul terhubung, pemeriksaan ABI penuh, atau uji boot. '
+                'Tidak untuk instalasi.\n')
+            return
         if SOURCE_KEY == 'coreelec-5.15.196':
             run(make + ['-j2', 'common_drivers/drivers/media/video_sink/video_hw.o'],
                 'video-capture-check.txt')

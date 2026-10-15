@@ -1,4 +1,5 @@
 name: Kernel ABI baseline (diagnostic only)
+run-name: Kernel ${{ inputs.source }} — ${{ inputs.object_preflight && 'media object preflight' || 'full ABI experiment' }}
 on:
   workflow_dispatch:
     inputs:
@@ -14,12 +15,16 @@ on:
         description: Uji build driver media bersama kernel CoreELEC (diagnostik saja)
         type: boolean
         default: false
+      object_preflight:
+        description: Hanya kompilasi objek media terpilih (CoreELEC + driver_probe)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 concurrency:
-  group: kernel-baseline-${{ inputs.source || 'khadas-android14' }}
+  group: kernel-baseline-${{ inputs.source || 'khadas-android14' }}-${{ inputs.object_preflight && 'objects' || 'full' }}
   cancel-in-progress: false
 
 jobs:
@@ -38,6 +43,7 @@ jobs:
         env:
           KERNEL_SOURCE: ${{ inputs.source || 'khadas-android14' }}
           DRIVER_PROBE: ${{ inputs.driver_probe && '1' || '0' }}
+          OBJECT_PREFLIGHT: ${{ inputs.object_preflight && '1' || '0' }}
         run: python3 tools/kernel_baseline.py
       - name: Save diagnostic reports (no kernel images)
         if: always()
