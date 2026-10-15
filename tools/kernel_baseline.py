@@ -74,6 +74,15 @@ def compare(symvers, expected):
     return result
 
 
+def summarize(comparison, loaded):
+    active = {name: rows for name, rows in comparison.items() if loaded.get(name, False)}
+    return {'audited_module_files': len(comparison), 'loaded_modules_compared': len(active),
+            'loaded_modules_with_crc_mismatches': sum(bool(rows['mismatch']) for rows in active.values()),
+            'distinct_mismatched_symbols_in_loaded_modules': len({row['symbol']
+                for rows in active.values() for row in rows['mismatch']}),
+            'module_files_with_crc_mismatches': sum(bool(rows['mismatch']) for rows in comparison.values())}
+
+
 def main():
     if WORK.exists():
         raise SystemExit('Use a fresh build/kernel-baseline directory for each run.')
@@ -201,7 +210,13 @@ def main():
         expected = json.loads((ROOT / 'kernel/vendor-symbol-requirements.json').read_text())
         comparison = compare(symvers, expected)
         (REPORT / 'abi-comparison.json').write_text(json.dumps(comparison, indent=2))
+        scope = json.loads((ROOT / 'kernel/module-scope.json').read_text())
+        aggregate = summarize(comparison, scope['loaded'])
+        status['abi_summary'] = aggregate
+        (REPORT / 'abi-summary.json').write_text(json.dumps(aggregate, indent=2))
         summary = ['# Baseline ABI (bukan pembaruan keamanan)', '',
+                   f'Modul dibandingkan: {aggregate["audited_module_files"]}; sedang dimuat saat audit: {aggregate["loaded_modules_compared"]}.',
+                   f'Modul aktif dengan CRC berbeda: **{aggregate["loaded_modules_with_crc_mismatches"]}**; simbol berbeda (unik): **{aggregate["distinct_mismatched_symbols_in_loaded_modules"]}**.', '',
                    '| Modul | Cocok | Berbeda | Tidak ada di vmlinux |',
                    '|---|---:|---:|---:|']
         for module, rows in comparison.items():
@@ -214,7 +229,9 @@ def main():
         if os.environ.get('GITHUB_STEP_SUMMARY'):
             with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary_file:
                 summary_file.write(markdown)
-        status['status'] = 'comparison complete; device compatibility unproven'
+        status['status'] = ('comparison complete; loaded-module CRC mismatches found'
+                            if aggregate['loaded_modules_with_crc_mismatches'] else
+                            'comparison complete; no loaded-module CRC mismatches found in compared symbols; boot/provider verification pending')
     except Exception as exc:
         status['status'] = 'failed'
         status['error'] = str(exc)
