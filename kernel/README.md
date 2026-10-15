@@ -25,8 +25,12 @@ menyimpan CRC objek yang sempat dikompilasi; tabel parsial ini bukan hasil ABI l
 
 `b866f-running.config` adalah konfigurasi build dari perangkat B866F Android 14.
 `vendor-symbol-requirements.json` berisi nama simbol dan CRC yang dibutuhkan
-empat contoh modul perangkat; tidak berisi binary modul, firmware, identitas
-perangkat, kredensial, atau signing key. Sampel ini tidak mencakup semua driver.
+160 modul perangkat; tidak berisi binary modul, firmware, identitas unik
+perangkat, kredensial, atau signing key. `module-scope.json` mencatat 131 modul
+yang sedang dimuat saat audit. Pembacaan langsung menemukan 147 berkas;
+cadangan vendor_boot menambahkan 13 berkas berbeda. Sembilan modul yang ada
+di kedua sumber mempunyai CRC sama. Seluruh modul yang sedang dimuat terwakili,
+tetapi ini bukan klaim mencakup setiap driver/konfigurasi yang mungkin digunakan.
 
 Runner Linux sementara terlebih dahulu membangun objek inti `kernel/module.o`
 dan memeriksa CRC `module_layout`. Jika CRC berbeda dari kebutuhan driver,
@@ -64,6 +68,13 @@ Pemeriksaan inti `module_layout` pada cabang Android 14 5.15.153 dan eksperimen
 CoreELEC 5.15.196 telah lolos: CRC sama dengan kebutuhan empat sampel perangkat,
 `0x115475ea`. Build penuh dan perbandingan simbol lain masih diproses.
 Ini bukan bukti kompatibilitas seluruh driver, apalagi hasil uji boot.
+
+Build Khadas Android 14 telah selesai. Empat sampel awal tidak memiliki CRC
+berbeda untuk simbol yang ditemukan di vmlinux. Audit lebih luas menemukan
+25 simbol berbeda yang digunakan oleh 23 modul yang sedang dimuat, terutama
+interface video. Karena itu, empat sampel awal tidak cukup untuk menyatakan
+baseline sebagai pengganti langsung. Dataset workflow diperluas ke 160 modul
+agar pemeriksaan berikutnya tidak bergantung pada empat sampel tersebut.
 
 Temuan berikut berasal dari eksperimen **5.15.137**:
 

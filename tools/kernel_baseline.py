@@ -169,7 +169,8 @@ def main():
                                            for symbols in expected.values())}
         (REPORT / 'core-abi-gate.json').write_text(json.dumps(gate, indent=2))
         status['core_abi_gate'] = gate
-        print('Core ABI gate: ' + json.dumps(gate), flush=True)
+        print('Core ABI gate: ' + json.dumps({'built': gate['built'],
+              'modules_checked': len(expected), 'matches_all_samples': gate['matches_all_samples']}), flush=True)
         if not gate['matches_all_samples']:
             status['status'] = 'diagnostic complete: module_layout mismatch; full build skipped'
             markdown = ('# Baseline: tidak kompatibel sebagai pengganti langsung\n\n'
