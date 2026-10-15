@@ -1,0 +1,32 @@
+name: Kernel QEMU boot test (not STB validation)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: kernel-qemu
+  cancel-in-progress: false
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install runner build and emulation dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-18 lld-18 llvm-18 flex bison libssl-dev libelf-dev bc patch gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi libc6-dev-arm64-cross qemu-system-arm
+      - name: Build emulator configuration and test boot
+        env:
+          KERNEL_SOURCE: coreelec-5.15.196
+        run: python3 tools/kernel_qemu.py
+      - name: Save logs and configuration only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kernel-qemu-diagnostics
+          path: build/qemu-report/
+          if-no-files-found: warn
+          retention-days: 14
