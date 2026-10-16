@@ -91,7 +91,10 @@ public final class DrawerActivity extends Activity {
         prefs = getSharedPreferences("drawer", MODE_PRIVATE);
         favorites = new HashSet<>(prefs.getStringSet("favorites", Collections.<String>emptySet()));
         hidden = new HashSet<>(prefs.getStringSet("hidden", Collections.<String>emptySet()));
-        columns = Math.max(5, Math.min(7, prefs.getInt("columns", 6)));
+        if (!prefs.getBoolean("compactTiles", false)) {
+            prefs.edit().putInt("columns", 7).putBoolean("compactTiles", true).apply();
+        }
+        columns = Math.max(5, Math.min(7, prefs.getInt("columns", 7)));
         sort = Math.max(0, Math.min(2, prefs.getInt("sort", 0)));
         banners = prefs.getBoolean("banners", true);
         if (state != null) {
@@ -183,11 +186,15 @@ public final class DrawerActivity extends Activity {
         TextView hiddenButton = button("Tersembunyi", v -> manageHidden()); addTool(toolbar, hiddenButton);
         root.addView(toolbar);
         grid = new GridView(this); grid.setId(View.generateViewId()); grid.setNumColumns(columns);
-        grid.setHorizontalSpacing(dp(14)); grid.setVerticalSpacing(dp(12));
+        grid.setHorizontalSpacing(dp(14)); grid.setVerticalSpacing(dp(5));
         grid.setStretchMode(GridView.STRETCH_COLUMN_WIDTH); grid.setSelector(android.R.color.transparent);
         grid.setClipToPadding(false); grid.setPadding(dp(3), dp(3), dp(3), dp(10));
         grid.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         grid.setAdapter(adapter);
+        grid.setOnFocusChangeListener((v, hasFocus) -> {
+            for (int i = 0; i < grid.getChildCount(); i++)
+                if (grid.getChildAt(i) instanceof Tile) ((Tile)grid.getChildAt(i)).updateSelection();
+        });
         grid.setOnItemClickListener((parent, view, pos, id) -> { if (pos < visible.size()) launch(visible.get(pos)); });
         grid.setOnItemLongClickListener((parent, view, pos, id) -> {
             if (pos < visible.size()) appMenu(visible.get(pos)); return true;
@@ -316,7 +323,9 @@ public final class DrawerActivity extends Activity {
             else dialog("Reset pengaturan drawer?").setMessage("Favorit, aplikasi tersembunyi, pencarian, dan tampilan drawer ini akan direset. Aplikasi terpasang tetap ada.")
                 .setNegativeButton("Batal", null).setPositiveButton("Reset", (x, v) -> {
                     prefs.edit().clear().apply(); favorites.clear(); hidden.clear(); query = ""; favoritesOnly = false;
-                    columns = 6; sort = 0; banners = true; cache.evictAll(); buildUi(); applyFilter(null);
+                    columns = 7; sort = 0; banners = true;
+                    prefs.edit().putBoolean("compactTiles", true).apply();
+                    cache.evictAll(); buildUi(); applyFilter(null);
                 }).show();
         }).setNegativeButton("Tutup", null).show();
     }
@@ -401,18 +410,32 @@ public final class DrawerActivity extends Activity {
         final ImageView image;
         final TextView title;
         Tile() {
-            super(DrawerActivity.this); setOrientation(VERTICAL); setPadding(dp(6), dp(6), dp(6), dp(6));
-            setBackground(focusBackground()); setFocusable(false);
+            super(DrawerActivity.this); setOrientation(VERTICAL); setPadding(dp(3), dp(3), dp(3), 0);
+            setFocusable(false);
             image = new ImageView(DrawerActivity.this); image.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            addView(image, new LinearLayout.LayoutParams(-1, dp(94)));
+            image.setPadding(dp(2), dp(2), dp(2), dp(2)); image.setClipToOutline(true);
+            addView(image, new LinearLayout.LayoutParams(-1, dp(60)));
             title = label("", 13, text); title.setGravity(Gravity.CENTER); title.setSingleLine(true);
             title.setEllipsize(TextUtils.TruncateAt.END); title.setPadding(dp(3), dp(4), dp(3), 0);
-            addView(title, new LinearLayout.LayoutParams(-1, dp(30)));
+            title.setVisibility(INVISIBLE);
+            addView(title, new LinearLayout.LayoutParams(-1, dp(22)));
+            updateSelection();
+        }
+        @Override protected void onMeasure(int widthSpec, int heightSpec) {
+            int width = MeasureSpec.getSize(widthSpec);
+            image.getLayoutParams().height = Math.max(dp(32), Math.round((width - getPaddingLeft() - getPaddingRight()) * 9f / 16f));
+            super.onMeasure(widthSpec, heightSpec);
+        }
+        private void updateSelection() {
+            boolean focused = isSelected() && grid.hasFocus();
+            GradientDrawable cover = shape(surface, focused ? accent : 0);
+            cover.setCornerRadius(dp(6)); image.setBackground(cover);
+            int inset = focused ? dp(2) : 0; image.setPadding(inset, inset, inset, inset);
+            title.setVisibility(focused ? VISIBLE : INVISIBLE);
         }
         @Override public void setSelected(boolean selected) {
             super.setSelected(selected);
-            setBackground(shape(selected && grid.hasFocus() ? Color.rgb(51,67,87) : surface,
-                selected && grid.hasFocus() ? accent : 0));
+            updateSelection();
         }
     }
 }

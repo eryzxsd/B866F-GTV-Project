@@ -9,7 +9,8 @@ aplikasi dibaca dari paket yang sudah terpasang, bukan didistribusikan oleh repo
 
 ## Fitur
 
-- Grid fokus remote yang konsisten; banner TV dengan ikon sebagai cadangan.
+- Grid banner mendatar yang ringkas seperti drawer lama, tujuh kolom secara
+  default dan nama di bawah tile yang difokuskan; ikon sebagai cadangan.
 - Cari nama aplikasi; urut A–Z, Z–A, atau terakhir dibuka **melalui drawer ini**.
 - Tahan OK atau tekan Menu untuk membuka opsi aplikasi: buka, favorit,
   sembunyikan dari drawer, atau info aplikasi Android.
@@ -56,7 +57,13 @@ adb -s ALAMAT_ADB uninstall com.local.b866f.appdrawer
 Tidak perlu reboot atau perubahan partisi. Pemeriksaan pada satu B866F bukan
 jaminan seluruh aplikasi atau firmware lain kompatibel.
 
-## Hasil pemeriksaan pratinjau 0.1
+## Hasil pemeriksaan pratinjau
+
+Versi 0.2 mengubah grid kartu besar menjadi banner 16:9 yang ringkas, mengurangi
+jarak baris, dan menampilkan nama hanya pada tile yang difokuskan. Fokus remote,
+Menu, dan scroll diperiksa ulang. Pencarian dan kontrol lain tetap tersedia.
+
+Pemeriksaan fungsi pada versi 0.1:
 
 Pada B866F Android 14, 29 aplikasi dengan activity peluncur terdeteksi. Pemeriksaan
 pencarian, A–Z/Z–A, filter favorit, sembunyikan/pulihkan, Menu, tahan OK, dan
