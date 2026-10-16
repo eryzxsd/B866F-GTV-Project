@@ -1,0 +1,28 @@
+{
+  "scope": "Accessibility scrolling freeze mitigation and limited Settings visual review on B866F Android14",
+  "settings_target_sha256": "b798e976ac4fea52d39c30f98845682bf20bbbe06224e4c592b4f43165197d1f",
+  "overlay_version_code": 20,
+  "overlay_sha256": "853e479ff206eb8bc0edaf91f60084876b5a3b9de7d505ae03a9379ac675ef91",
+  "observed_anr": "UI waits in TextToSpeech.shutdown during TextToSpeechFragment.onDestroy; initialization worker holds the same lock while waiting for getDefaultVoiceNameFor binder reply",
+  "change": "Replace eager text_to_speech fragment preview with an explicit intent to the existing TextToSpeechActivity; preserve preference keys and other accessibility controls",
+  "tts_preview_absent_on_focus": true,
+  "full_list_down_up_passes_without_process_restart": 2,
+  "explicit_tts_page_opened": true,
+  "back_to_accessibility_verified": true,
+  "reviewed_pages": [
+    "Accessibility",
+    "Network",
+    "Apps",
+    "Developer options"
+  ],
+  "visual_findings": "No heading/row collisions or unreadable focus text observed in reviewed screens; toggle thumbs visible, including disabled OEM-unlock state; application icons retain original colors",
+  "tts_engine_binder_stall_repaired": false,
+  "all_settings_pages_verified": false,
+  "accessibility_service_or_toggle_values_changed": false,
+  "base_settings_apk_modified": false,
+  "reboot_performed": false,
+  "reboot_persistence_tested": false,
+  "kernel_work_resumed": false,
+  "rollback": "Disable com.local.ebs.settingstheme with cmd overlay disable --user 0; prior signed overlay retained privately",
+  "analysis_method": "Android ANR traces plus focused Androguard DEX/AXML inspection; REA JADX unavailable, no new analysis software installed"
+}

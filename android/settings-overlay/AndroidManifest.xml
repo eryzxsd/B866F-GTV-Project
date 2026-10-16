@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.local.ebs.settingstheme" android:versionCode="16" android:versionName="2.5">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.local.ebs.settingstheme" android:versionCode="20" android:versionName="2.9">
   <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="34"/>
   <overlay android:targetPackage="com.android.tv.settings" android:resourcesMap="@xml/overlays" android:isStatic="false" android:priority="999" android:category="com.local.ebs.settings.appearance"/>
   <application android:hasCode="false" android:label="Settings appearance"/>

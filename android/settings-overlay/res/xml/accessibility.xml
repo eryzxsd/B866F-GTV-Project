@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<PreferenceScreen xmlns:custom="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android" android:title="@*com.android.tv.settings:string/accessibility_category_title" android:key="accessibility_preference_screen">
+  <PreferenceCategory android:title="@*com.android.tv.settings:string/accessibility_screen_readers_category_title" android:key="accessibility_screen_readers_category">
+    <Preference android:title="@*com.android.tv.settings:string/system_accessibility_tts_output" android:key="text_to_speech"><intent android:action="android.intent.action.MAIN" android:targetPackage="com.android.tv.settings" android:targetClass="com.android.tv.settings.system.TextToSpeechActivity"/></Preference>
+  </PreferenceCategory>
+  <PreferenceCategory android:title="@*com.android.tv.settings:string/accessibility_display_category_title" android:key="accessibility_display_category">
+    <Preference android:title="@*com.android.tv.settings:string/font_scale_settings_title" android:key="font_scale" android:fragment="com.android.tv.settings.device.displaysound.FontScalePreferenceFragment"/>
+    <com.android.tv.settings.widget.SwitchWithSoundPreference android:persistent="true" android:title="@*com.android.tv.settings:string/accessibility_toggle_bold_text_preference_title" android:key="toggle_bold_text"/>
+    <Preference xmlns:ns0="http://schemas.android.com/apk/res/com.android.tv.settings" android:title="@*com.android.tv.settings:string/accessibility_color_correction" android:key="color_correction_only_twopanel" android:fragment="com.android.tv.settings.accessibility.AccessibilityColorCorrectionPreferenceFragment" ns0:isPreferenceVisible="false"/>
+    <Preference xmlns:ns1="http://schemas.android.com/apk/res/com.android.tv.settings" android:title="@*com.android.tv.settings:string/accessibility_color_correction" android:key="color_correction_only_classic" ns1:isPreferenceVisible="false">
+      <intent android:targetPackage="com.android.tv.settings" android:action="android.intent.action.MAIN" android:targetClass="com.android.tv.settings.accessibility.AccessibilityColorCorrectionActivity"/>
+    </Preference>
+  </PreferenceCategory>
+  <PreferenceCategory android:title="@*com.android.tv.settings:string/accessibility_interaction_controls_category_title" android:key="accessibility_interaction_controls_category">
+    <Preference android:title="@*com.android.tv.settings:string/accessibility_shortcut" android:key="accessibility_shortcut" android:fragment="com.android.tv.settings.accessibility.AccessibilityShortcutFragment"/>
+  </PreferenceCategory>
+  <PreferenceCategory android:title="@*com.android.tv.settings:string/accessibility_audio_and_onscreen_text_category_title" android:key="accessibility_audio_and_onscreen_text_category">
+    <com.android.tv.settings.widget.SwitchWithSoundPreference android:persistent="true" android:title="@*com.android.tv.settings:string/accessibility_toggle_audio_description_preference_title" android:key="toggle_audio_description" android:summary="@*com.android.tv.settings:string/accessibility_audio_description_summary"/>
+    <Preference android:title="@*com.android.tv.settings:string/accessibility_captions" android:key="captions">
+      <intent android:targetPackage="com.android.tv.settings" android:action="android.intent.action.MAIN" android:targetClass="com.android.tv.settings.system.CaptionSetupActivity"/>
+    </Preference>
+  </PreferenceCategory>
+  <PreferenceCategory android:title="@*com.android.tv.settings:string/accessibility_experimental_category_title" android:key="accessibility_experimental_category">
+    <com.android.tv.settings.widget.SwitchWithSoundPreference android:persistent="true" android:title="@*com.android.tv.settings:string/accessibility_toggle_high_text_contrast_preference_title" android:key="toggle_high_text_contrast" android:summary="@*com.android.tv.settings:string/experimental_preference"/>
+  </PreferenceCategory>
+  <PreferenceCategory xmlns:ns2="http://schemas.android.com/apk/res/com.android.tv.settings" android:title="@*com.android.tv.settings:string/accessibility_services_category_title" android:key="accessibility_services_category" ns2:isPreferenceVisible="false"/>
+</PreferenceScreen>
