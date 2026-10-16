@@ -1,10 +1,12 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.local.b866f.appdrawer" android:versionCode="2" android:versionName="0.2">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.local.b866f.appdrawer" android:versionCode="3" android:versionName="0.3">
   <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="34"/>
   <uses-feature android:name="android.software.leanback" android:required="true"/>
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   <queries>
     <intent><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LEANBACK_LAUNCHER"/></intent>
     <intent><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent>
+    <intent><action android:name="android.intent.action.OPEN_DOCUMENT"/><category android:name="android.intent.category.OPENABLE"/><data android:mimeType="image/*"/></intent>
+    <intent><action android:name="android.intent.action.GET_CONTENT"/><category android:name="android.intent.category.OPENABLE"/><data android:mimeType="image/*"/></intent>
   </queries>
   <application android:label="Aplikasi GTV" android:icon="@drawable/ic_drawer" android:banner="@drawable/banner" android:allowBackup="false" android:theme="@style/DrawerTheme" android:supportsRtl="true">
     <activity android:name=".DrawerActivity" android:exported="true" android:screenOrientation="landscape">

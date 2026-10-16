@@ -17,6 +17,10 @@ aplikasi dibaca dari paket yang sudah terpasang, bukan didistribusikan oleh repo
 - Favorit diletakkan di depan; tombol Semua/Favorit memfilter daftar.
 - Tombol Tersembunyi untuk menampilkan kembali aplikasi yang disembunyikan.
 - Pilihan 5/6/7 kolom, banner/ikon, tema Gelap/Biru malam, dan reset pengaturan.
+- Animasi zoom ringan pada tile yang difokuskan dan fade nama aplikasi. Dapat
+  dimatikan di Tampilan; mengikuti pengaturan animasi sistem tanpa mengubahnya.
+- Wallpaper gambar melalui **Tampilan → Wallpaper → Pilih gambar**, dengan
+  kegelapan 35/55/75% dan opsi hapus. Scrollbar grid disembunyikan.
 - Favorit dan preferensi disimpan secara lokal. Menyembunyikan aplikasi tidak
   menonaktifkan, menghentikan, atau menghapus aplikasi tersebut.
 
@@ -32,6 +36,17 @@ belakang. Riwayat terakhir dibuka hanya mencatat peluncuran melalui drawer ini;
 bukan riwayat pemakaian seluruh sistem. Penerima perubahan paket hanya aktif
 saat activity terlihat. Cache gambar dibatasi 6 MiB dan pemuatan dilakukan di
 worker agar tidak memblokir fokus remote.
+
+Pemilihan wallpaper memakai pengelola berkas yang terpasang melalui pemilih
+gambar Android, termasuk penyimpanan internal/USB yang disediakan pengelola
+tersebut. Komponen placeholder DocumentsStub pada firmware TV dilewati.
+Drawer tidak meminta izin penyimpanan menyeluruh. Gambar pilihan pengguna dibaca
+sementara, dibatasi 32 MiB, di-decode dengan ukuran maksimum 1920×1080 serta
+orientasi gambar yang didukung Android, lalu disimpan sebagai JPEG privat.
+Salinan ini tetap tersedia setelah sumber gambar/USB dilepas. File asli tidak
+diubah. Wallpaper hanya berlaku dalam drawer ini, bukan Google TV Home.
+Penghapusan/reset menghapus salinan privat drawer. Tidak ada video wallpaper
+atau animasi yang berjalan terus saat idle.
 
 ## Build dan uji berdampingan
 
@@ -58,6 +73,14 @@ Tidak perlu reboot atau perubahan partisi. Pemeriksaan pada satu B866F bukan
 jaminan seluruh aplikasi atau firmware lain kompatibel.
 
 ## Hasil pemeriksaan pratinjau
+
+Versi 0.3 menambahkan animasi fokus, impor wallpaper gambar, pengaturan kegelapan,
+dan menyembunyikan scrollbar grid. Impor gambar melalui File Manager+ dari
+penyimpanan internal, persistensi setelah sumber gambar dihapus, kegelapan,
+pembatalan picker, dan penghapusan wallpaper telah diperiksa. Pemilihan file
+fisik dari USB dan pemilih MiX belum diuji sampai tahap impor. Sampel perpindahan
+fokus mencatat 99 frame tanpa janky frame menurut `dumpsys gfxinfo`; ini bukan
+benchmark menyeluruh. Animasi dapat dimatikan dan skala animasi sistem dipatuhi.
 
 Versi 0.2 mengubah grid kartu besar menjadi banner 16:9 yang ringkas, mengurangi
 jarak baris, dan menampilkan nama hanya pada tile yang difokuskan. Fokus remote,

@@ -2,6 +2,7 @@ package com.local.b866f.appdrawer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.animation.ValueAnimator;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -14,6 +15,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ImageDecoder;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
@@ -26,19 +28,26 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.TextUtils;
 import android.util.LruCache;
+import android.util.AtomicFile;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +75,13 @@ public final class DrawerActivity extends Activity {
     private TextView status, filterButton, sortButton;
     private EditText search;
     private final AppsAdapter adapter = new AppsAdapter();
-    private boolean favoritesOnly, banners, closed, registered;
+    private boolean favoritesOnly, banners, registered, importingWallpaper;
+    private volatile boolean closed;
+    private volatile int wallpaperGeneration;
+    private Bitmap wallpaperBitmap;
+    private ImageView wallpaperView;
+    private View wallpaperShade;
+    private static final int PICK_WALLPAPER = 41;
     private int sort, columns, loadGeneration;
     private String query = "";
     private int bg, surface, text, muted, accent;
@@ -89,6 +104,7 @@ public final class DrawerActivity extends Activity {
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         prefs = getSharedPreferences("drawer", MODE_PRIVATE);
+        if (!prefs.contains("wallpaperEnabled")) prefs.edit().putBoolean("wallpaperEnabled", wallpaperFile().exists()).apply();
         favorites = new HashSet<>(prefs.getStringSet("favorites", Collections.<String>emptySet()));
         hidden = new HashSet<>(prefs.getStringSet("hidden", Collections.<String>emptySet()));
         if (!prefs.getBoolean("compactTiles", false)) {
@@ -103,6 +119,7 @@ public final class DrawerActivity extends Activity {
             restoreKey = state.getString("selected");
         }
         buildUi();
+        loadWallpaper();
     }
 
     @Override public void onStart() {
@@ -129,7 +146,7 @@ public final class DrawerActivity extends Activity {
     }
 
     @Override public void onDestroy() {
-        closed = true; loadGeneration++;
+        closed = true; loadGeneration++; wallpaperGeneration++;
         if (registered) unregisterReceiver(packages);
         loader.shutdownNow(); images.shutdownNow(); main.removeCallbacksAndMessages(null);
         cache.evictAll(); super.onDestroy();
@@ -169,7 +186,7 @@ public final class DrawerActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         LinearLayout root = new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(bg); root.setPadding(dp(44), dp(26), dp(44), dp(14));
+        root.setPadding(dp(44), dp(26), dp(44), dp(14)); root.setClipChildren(false);
         LinearLayout header = new LinearLayout(this); header.setGravity(Gravity.CENTER_VERTICAL);
         TextView title = label("Aplikasi", 30, text);
         header.addView(title, new LinearLayout.LayoutParams(0, dp(48), 1));
@@ -188,7 +205,9 @@ public final class DrawerActivity extends Activity {
         grid = new GridView(this); grid.setId(View.generateViewId()); grid.setNumColumns(columns);
         grid.setHorizontalSpacing(dp(14)); grid.setVerticalSpacing(dp(5));
         grid.setStretchMode(GridView.STRETCH_COLUMN_WIDTH); grid.setSelector(android.R.color.transparent);
+        grid.setVerticalScrollBarEnabled(false); grid.setHorizontalScrollBarEnabled(false);
         grid.setClipToPadding(false); grid.setPadding(dp(3), dp(3), dp(3), dp(10));
+        grid.setClipChildren(false);
         grid.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         grid.setAdapter(adapter);
         grid.setOnFocusChangeListener((v, hasFocus) -> {
@@ -209,7 +228,17 @@ public final class DrawerActivity extends Activity {
         root.addView(grid, new LinearLayout.LayoutParams(-1, 0, 1));
         status = label("Memuat aplikasi…", 13, muted); status.setPadding(0, dp(10), 0, 0);
         root.addView(status, new LinearLayout.LayoutParams(-1, dp(34)));
-        setContentView(root); find.requestFocus();
+        FrameLayout backdrop = new FrameLayout(this); backdrop.setBackgroundColor(bg);
+        wallpaperView = new ImageView(this); wallpaperView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        wallpaperView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        backdrop.addView(wallpaperView, new FrameLayout.LayoutParams(-1, -1));
+        wallpaperShade = new View(this); wallpaperShade.setBackgroundColor(Color.BLACK);
+        wallpaperShade.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        wallpaperShade.setAlpha(wallpaperDim() / 100f);
+        backdrop.addView(wallpaperShade, new FrameLayout.LayoutParams(-1, -1));
+        backdrop.addView(root, new FrameLayout.LayoutParams(-1, -1));
+        showWallpaper(wallpaperBitmap);
+        setContentView(backdrop); find.requestFocus();
         grid.setNextFocusUpId(find.getId());
         for (int i = 0; i < toolbar.getChildCount(); i++) toolbar.getChildAt(i).setNextFocusDownId(grid.getId());
     }
@@ -309,7 +338,9 @@ public final class DrawerActivity extends Activity {
     }
     private void appearance() {
         String[] choices = {"Kolom: " + columns, "Gambar: " + (banners ? "Banner TV" : "Ikon aplikasi"),
-            "Tema: " + (prefs.getBoolean("blue", false) ? "Biru malam" : "Gelap"), "Pulihkan aplikasi tersembunyi", "Reset tampilan dan daftar favorit"};
+            "Tema: " + (prefs.getBoolean("blue", false) ? "Biru malam" : "Gelap"), "Wallpaper",
+            "Animasi fokus: " + (prefs.getBoolean("animations", true) ? "Aktif" : "Nonaktif"),
+            "Pulihkan aplikasi tersembunyi", "Reset tampilan dan daftar favorit"};
         dialog("Tampilan drawer").setItems(choices, (d, n) -> {
             if (n == 0) {
                 dialog("Jumlah kolom").setSingleChoiceItems(new String[]{"5 · Besar", "6 · Sedang", "7 · Ringkas"}, columns - 5,
@@ -319,15 +350,136 @@ public final class DrawerActivity extends Activity {
                 banners = !banners; prefs.edit().putBoolean("banners", banners).apply(); cache.evictAll(); adapter.notifyDataSetChanged();
             } else if (n == 2) {
                 prefs.edit().putBoolean("blue", !prefs.getBoolean("blue", false)).apply(); restoreKey = selectedKey(); buildUi(); applyFilter(restoreKey);
-            } else if (n == 3) manageHidden();
-            else dialog("Reset pengaturan drawer?").setMessage("Favorit, aplikasi tersembunyi, pencarian, dan tampilan drawer ini akan direset. Aplikasi terpasang tetap ada.")
+            } else if (n == 3) wallpaperMenu();
+            else if (n == 4) {
+                prefs.edit().putBoolean("animations", !prefs.getBoolean("animations", true)).apply();
+                for (int i = 0; i < grid.getChildCount(); i++)
+                    if (grid.getChildAt(i) instanceof Tile) ((Tile)grid.getChildAt(i)).updateSelection(true);
+            } else if (n == 5) manageHidden();
+            else dialog("Reset pengaturan drawer?").setMessage("Favorit, aplikasi tersembunyi, pencarian, wallpaper, dan tampilan drawer ini akan direset. Aplikasi terpasang tetap ada.")
                 .setNegativeButton("Batal", null).setPositiveButton("Reset", (x, v) -> {
+                    clearDrawerWallpaper();
                     prefs.edit().clear().apply(); favorites.clear(); hidden.clear(); query = ""; favoritesOnly = false;
                     columns = 7; sort = 0; banners = true;
-                    prefs.edit().putBoolean("compactTiles", true).apply();
+                    prefs.edit().putBoolean("compactTiles", true).putBoolean("wallpaperEnabled", false).apply();
                     cache.evictAll(); buildUi(); applyFilter(null);
                 }).show();
         }).setNegativeButton("Tutup", null).show();
+    }
+
+    private File wallpaperFile() { return new File(getFilesDir(), "wallpaper.jpg"); }
+    private int wallpaperDim() { return Math.max(35, Math.min(75, prefs.getInt("wallpaperDim", 55))); }
+    private void showWallpaper(Bitmap bitmap) {
+        wallpaperBitmap = bitmap; wallpaperView.setImageBitmap(bitmap);
+        wallpaperShade.setVisibility(bitmap == null ? View.GONE : View.VISIBLE);
+    }
+    private Bitmap decodeWallpaper(File file) throws IOException {
+        return ImageDecoder.decodeBitmap(ImageDecoder.createSource(file), (decoder, info, source) -> {
+            int w = info.getSize().getWidth(), h = info.getSize().getHeight();
+            if (w < 1 || h < 1 || w > 32768 || h > 32768 || (long)w * h > 200000000L)
+                throw new IllegalArgumentException("Image dimensions too large");
+            double ratio = Math.min(1d, Math.min(1920d / w, 1080d / h));
+            decoder.setTargetSize(Math.max(1, (int)Math.round(w * ratio)), Math.max(1, (int)Math.round(h * ratio)));
+            decoder.setAllocator(ImageDecoder.ALLOCATOR_SOFTWARE);
+        });
+    }
+    private void loadWallpaper() {
+        final int generation = ++wallpaperGeneration;
+        loader.execute(() -> {
+            if (!prefs.getBoolean("wallpaperEnabled", false)) { new AtomicFile(wallpaperFile()).delete(); return; }
+            if (!wallpaperFile().exists()) return;
+            try {
+                // Recover an interrupted AtomicFile write before decoding the normalized copy.
+                new AtomicFile(wallpaperFile()).openRead().close();
+                final Bitmap bitmap = decodeWallpaper(wallpaperFile());
+                main.post(() -> { if (!closed && generation == wallpaperGeneration) showWallpaper(bitmap); });
+            } catch (IOException | RuntimeException ignored) {
+                main.post(() -> { if (!closed && generation == wallpaperGeneration) toast("Wallpaper tidak dapat dibaca. Pilih gambar lain melalui Tampilan."); });
+            }
+        });
+    }
+    private void clearDrawerWallpaper() {
+        prefs.edit().putBoolean("wallpaperEnabled", false).apply();
+        ++wallpaperGeneration; showWallpaper(null);
+        loader.execute(() -> new AtomicFile(wallpaperFile()).delete());
+    }
+    private void wallpaperMenu() {
+        dialog("Wallpaper drawer").setItems(new String[]{"Pilih gambar", "Gelapkan wallpaper: " + wallpaperDim() + "%", "Hapus wallpaper"}, (d, n) -> {
+            if (n == 0) chooseWallpaper();
+            else if (n == 1) dialog("Kegelapan wallpaper").setSingleChoiceItems(new String[]{"35% · Lebih terang", "55% · Seimbang", "75% · Lebih gelap"},
+                (wallpaperDim() - 35) / 20, (x, v) -> {
+                    int dim = 35 + v * 20; prefs.edit().putInt("wallpaperDim", dim).apply(); wallpaperShade.setAlpha(dim / 100f); x.dismiss();
+                }).setNegativeButton("Batal", null).show();
+            else dialog("Hapus wallpaper drawer?").setMessage("Menghapus salinan wallpaper dalam drawer. File gambar asli tetap tersedia.")
+                .setNegativeButton("Batal", null).setPositiveButton("Hapus", (x, v) -> clearDrawerWallpaper()).show();
+        }).setNegativeButton("Tutup", null).show();
+    }
+    private void chooseWallpaper() {
+        if (importingWallpaper) { toast("Gambar masih diproses"); return; }
+        Intent pick = new Intent(Intent.ACTION_OPEN_DOCUMENT).setType("image/*").addCategory(Intent.CATEGORY_OPENABLE);
+        List<ResolveInfo> handlers = imagePickers(pick);
+        if (handlers.isEmpty()) {
+            pick.setAction(Intent.ACTION_GET_CONTENT); handlers = imagePickers(pick);
+        }
+        if (handlers.isEmpty()) { toast("Pasang pengelola berkas yang mendukung pemilihan gambar"); return; }
+        final Intent request = pick.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION).putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        final List<ResolveInfo> options = handlers;
+        if (options.size() == 1) openPicker(request, options.get(0));
+        else {
+            String[] names = new String[options.size()];
+            for (int i = 0; i < names.length; i++) names[i] = getPackageManager().getApplicationLabel(options.get(i).activityInfo.applicationInfo).toString();
+            dialog("Pilih pengelola berkas").setItems(names, (d, n) -> openPicker(request, options.get(n))).setNegativeButton("Batal", null).show();
+        }
+    }
+    private List<ResolveInfo> imagePickers(Intent request) {
+        List<ResolveInfo> real = new ArrayList<>();
+        for (ResolveInfo ri : getPackageManager().queryIntentActivities(request, PackageManager.MATCH_DEFAULT_ONLY))
+            if (ri.activityInfo.exported && ri.activityInfo.enabled && !ri.activityInfo.packageName.contains("frameworkpackagestubs")) real.add(ri);
+        return real;
+    }
+    private void openPicker(Intent request, ResolveInfo ri) {
+        request.setComponent(new ComponentName(ri.activityInfo.packageName, ri.activityInfo.name));
+        try { startActivityForResult(request, PICK_WALLPAPER); }
+        catch (RuntimeException ex) { toast("Pemilih gambar tidak dapat dibuka"); }
+    }
+    @Override protected void onActivityResult(int request, int result, Intent data) {
+        super.onActivityResult(request, result, data);
+        if (request != PICK_WALLPAPER || result != RESULT_OK || data == null) return;
+        final Uri uri = data.getData();
+        if (uri == null) { toast("Tidak ada gambar yang dipilih"); return; }
+        importingWallpaper = true; final int generation = ++wallpaperGeneration;
+        toast("Memproses wallpaper…");
+        loader.execute(() -> {
+            File temp = null; FileOutputStream destination = null; AtomicFile saved = new AtomicFile(wallpaperFile());
+            try {
+                temp = File.createTempFile("wallpaper-", ".image", getCacheDir());
+                try (InputStream in = getContentResolver().openInputStream(uri); FileOutputStream out = new FileOutputStream(temp)) {
+                    if (in == null) throw new IOException("No image stream");
+                    byte[] buffer = new byte[16384]; int count, total = 0;
+                    while ((count = in.read(buffer)) != -1) {
+                        total += count;
+                        if (total > 32 * 1024 * 1024 || closed || generation != wallpaperGeneration) throw new IOException("Import limit or cancellation");
+                        out.write(buffer, 0, count);
+                    }
+                }
+                final Bitmap bitmap = decodeWallpaper(temp);
+                if (closed || generation != wallpaperGeneration) return;
+                destination = saved.startWrite();
+                if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 92, destination)) throw new IOException("Cannot save image");
+                saved.finishWrite(destination); destination = null;
+                main.post(() -> {
+                    if (!closed && generation == wallpaperGeneration) {
+                        prefs.edit().putBoolean("wallpaperEnabled", true).apply(); showWallpaper(bitmap); toast("Wallpaper diterapkan");
+                    }
+                });
+            } catch (IOException | RuntimeException ex) {
+                if (destination != null) saved.failWrite(destination);
+                main.post(() -> { if (!closed && generation == wallpaperGeneration) toast("Gambar tidak dapat dibaca atau melebihi 32 MB. Pilih JPG, PNG, atau WebP lain."); });
+            } finally {
+                if (temp != null) temp.delete();
+                main.post(() -> { if (!closed) importingWallpaper = false; });
+            }
+        });
     }
     private void manageHidden() {
         final List<Entry> entries = new ArrayList<>();
@@ -411,7 +563,7 @@ public final class DrawerActivity extends Activity {
         final TextView title;
         Tile() {
             super(DrawerActivity.this); setOrientation(VERTICAL); setPadding(dp(3), dp(3), dp(3), 0);
-            setFocusable(false);
+            setFocusable(false); setClipChildren(false); setClipToPadding(false);
             image = new ImageView(DrawerActivity.this); image.setScaleType(ImageView.ScaleType.FIT_CENTER);
             image.setPadding(dp(2), dp(2), dp(2), dp(2)); image.setClipToOutline(true);
             addView(image, new LinearLayout.LayoutParams(-1, dp(60)));
@@ -427,11 +579,27 @@ public final class DrawerActivity extends Activity {
             super.onMeasure(widthSpec, heightSpec);
         }
         private void updateSelection() {
+            updateSelection(false);
+        }
+        private Boolean lastFocused;
+        private void updateSelection(boolean immediate) {
             boolean focused = isSelected() && grid.hasFocus();
             GradientDrawable cover = shape(surface, focused ? accent : 0);
             cover.setCornerRadius(dp(6)); image.setBackground(cover);
             int inset = focused ? dp(2) : 0; image.setPadding(inset, inset, inset, inset);
-            title.setVisibility(focused ? VISIBLE : INVISIBLE);
+            title.setVisibility(VISIBLE);
+            float scale = focused ? 1.075f : 1f;
+            if (immediate || lastFocused == null || lastFocused != focused
+                || !prefs.getBoolean("animations", true)) {
+                image.animate().cancel(); title.animate().cancel();
+                if (immediate || lastFocused == null || !prefs.getBoolean("animations", true) || !ValueAnimator.areAnimatorsEnabled()) {
+                    image.setScaleX(scale); image.setScaleY(scale); title.setAlpha(focused ? 1f : 0f);
+                } else {
+                    image.animate().scaleX(scale).scaleY(scale).setDuration(180).setInterpolator(new DecelerateInterpolator(1.5f)).start();
+                    title.animate().alpha(focused ? 1f : 0f).setDuration(140).start();
+                }
+            }
+            lastFocused = focused;
         }
         @Override public void setSelected(boolean selected) {
             super.setSelected(selected);
