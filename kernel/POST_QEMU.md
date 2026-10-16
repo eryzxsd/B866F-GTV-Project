@@ -93,3 +93,26 @@ KERNEL_SOURCE=coreelec-5.15.196 SIGNATURE_PROBE=1 KERNEL_BUILD_JOBS=4 python3 to
 ```
 
 Build membutuhkan direktori `build/kernel-baseline` yang belum ada; source, object, Image dan key build sementara tetap lokal. `KERNEL_BUILD_JOBS` dibatasi 1–8 (default 2). Simpan report sebelum eksperimen berikutnya dan jangan menghapus tree build aktif. Tidak ada akses STB atau operasi flash pada tool ini.
+
+### Hasil lokal crypto signature asli: berhasil
+
+Build lokal WSL2 Ubuntu 24.04 dengan empat job, source proyek commit
+7af4d5b39fb245b4729ca3ccdf62b087c150b96c, selesai pada 16 Oktober 2026 pukul
+10:50:44 +08:00. Durasi total dari persiapan sampai selesai adalah 31 menit
+7 detik. Ini run lokal, bukan hasil baru pada halaman GitHub Actions lama.
+Tidak ada perbandingan durasi terkontrol dengan runner GitHub.
+
+Serial log yang diperiksa ulang mencatat 46 signature asli diterima oleh API
+crypto kernel terhadap digest asli dan 46 digest yang diubah ditolak dengan
+EKEYREJECTED. Seluruh nama vector, jumlah hasil, marker akhir, keyring/core
+checks, dan shutdown bersih diverifikasi; exit QEMU 0, tanpa timeout atau
+kernel panic. DER sertifikat asli ditemukan tepat sekali pada Image. Opsi
+enforcement tetap sama. Hasil terstruktur dan hash bukti tersimpan di
+`kernel/trust/original-signature-result.json`; log dan binary tetap lokal.
+
+Hasil ini memperluas bukti dari keberadaan sertifikat ke verifikasi signature
+RSA prehashed dengan key asli di kernel emulator. Parser PKCS7 kernel dan load
+driver asli tetap belum diuji. amlogic-input memakai signer lain yang belum
+tersedia. Warning hardware vendor masih ada di emulator. Kompatibilitas B866F,
+Android, Netflix/DRM, jalur restore mandiri, dan cakupan patch Mei 2026 belum
+dibuktikan. Tidak ada pemasangan kernel atau perubahan STB pada run ini.

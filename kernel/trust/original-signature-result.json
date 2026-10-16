@@ -1,0 +1,68 @@
+{
+  "guest_checks_passed": true,
+  "clean_shutdown": true,
+  "timed_out": false,
+  "qemu_exit_code": 0,
+  "original_certificate_keyring_test_requested": true,
+  "original_certificate_keyring_test_passed": true,
+  "synthetic_loader_policy_test_requested": false,
+  "synthetic_loader_policy_test_passed": false,
+  "original_signature_crypto_test_requested": true,
+  "original_signature_crypto_test_passed": true,
+  "original_pkcs7_parser_tested": false,
+  "original_driver_load_tested": false,
+  "stb_boot_tested": false,
+  "installable": false,
+  "execution": "local WSL2 Ubuntu 24.04 on D:; not a GitHub Actions run",
+  "source_commit": "7af4d5b39fb245b4729ca3ccdf62b087c150b96c",
+  "started_at": "2026-10-16T10:19:37+08:00",
+  "finished_at": "2026-10-16T10:50:44+08:00",
+  "total_duration_seconds": 1867,
+  "build_jobs": 4,
+  "kernel_source": {
+    "repository": "CoreELEC/linux-amlogic",
+    "commit": "f231c7811a91c548f86a43e17cf43611f8747c86",
+    "archive_sha256": "f74eeae2fb4016e78a88dc73b6eb19568815d2b681d45bffd3b1e88b2191d437"
+  },
+  "driver_source": {
+    "repository": "CoreELEC/common_drivers",
+    "commit": "8a89a9aae1cb7c7993cc20b943491af435b31801",
+    "archive_sha256": "6bd236f539c53d54a83b126d418780f9cb19732ed08645fb08b05a0bf21ffb28"
+  },
+  "kernel_image_sha256": "7b4e0c3e40d1a27f0c5033243fba6dac8bb8c2b162bd9b898e57d0e3c4ae0ca6",
+  "serial_log_sha256": "f819734488440d604cb27bd6c004eb7e8dd32e2d477513b53ee53d32b72507f1",
+  "resolved_config_sha256": "62bc6777ff0995009ef2b9098c8f67bb98d9dcdc2bfaf13733659094f50b47f2",
+  "valid_signature_results": 46,
+  "changed_digest_rejections": 46,
+  "test_method": "Prehashed RSA4096/PKCS1v1.5/SHA256 via kernel verify_signature and original built-in certificate",
+  "original_signature_probe": {
+    "type": "QEMU-only built-in prehashed crypto instrumentation",
+    "vector_count": 46,
+    "source_before_sha256": "9bcb52a003f04a415a7bd69d6fe1adee54d371536f8fcd6b31cc41d23926a3e2",
+    "source_after_sha256": "0f1c40b07c01ffee683f90fad5c93bada6f13af384e83894a1c52a444d51d201",
+    "probe_sha256": "8e6f7b8f15d338f0b5bb8c85a7e8afac2ae0bfe211bd08595f48d4f83c688913",
+    "vectors_sha256": "553ac41ec0d8eee840e4b0849e137573fb6fe707635f2ab3e7b86d65b73d44b1",
+    "pkcs7_parser_tested": false,
+    "original_driver_load_tested": false,
+    "enforcement_changed": false,
+    "installable": false
+  },
+  "trust_probe": {
+    "enforcement_options_unchanged": true,
+    "certificate_sha256": "01c0d6ffe7c65ce8a9b42eed55a3bd0f4d8e5fa2b63e1f9aea13e02317e667f8",
+    "original_module_signer_skid": "821976dbe4b8a702b6f3b8804f03a4d517df1f3b",
+    "stb_configuration_changed": false,
+    "original_driver_load_tested": false,
+    "installable": false,
+    "certificate_der_occurrences_in_image": 1
+  },
+  "excluded": [
+    {
+      "module": "amlogic-input.ko",
+      "reason": "different signer; certificate not supplied"
+    }
+  ],
+  "hardware_android_netflix_compatibility_tested": false,
+  "may_2026_patch_coverage_established": false,
+  "vendor_hardware_warnings_remain": true
+}
