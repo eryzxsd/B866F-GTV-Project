@@ -36,3 +36,20 @@ cmd overlay disable --user 0 com.local.ebs.settingstheme
 Ini mengembalikan resource tampilan dari overlay tersebut ke basisnya. Untuk
 menyalakannya kembali, gunakan `cmd overlay enable --user 0` dengan nama paket
 yang sama. Build source mengikuti [panduan build](BUILD.md).
+
+## Perbaikan layout daftar pilihan, versi 21
+
+Pemeriksaan lanjutan pada **Status lokasi** menemukan kasus yang terlewat pada
+review empat halaman sebelumnya: kotak judul berelevasi menyentuh baris radio
+pertama. Kedua layout fragment preference kini memakai judul transparan tanpa
+elevasi. Grid daftar pilihan mendapat padding atas/bawah 12dp dan tinggi sesuai
+sisa ruang di bawah judul.
+
+Pada menu yang dilaporkan pengguna, jarak terukur antara batas judul dan baris
+fokus berubah dari 0 menjadi 21 piksel. Menu pilihan Bluetooth dengan judul dua
+baris juga diperiksa. Navigasi fokus dan Back bekerja; nilai lokasi tetap 3 dan
+pilihan radio tidak diubah. Halaman Aksesibilitas tetap dapat dibuka dan
+perubahan Text-to-speech versi 20 dipertahankan.
+
+Rincian ada di [hasil layout daftar pilihan](settings-list-layout-result.json).
+Ini perbaikan layout bersama, bukan klaim bahwa seluruh submenu telah diperiksa.

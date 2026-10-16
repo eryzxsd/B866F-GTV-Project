@@ -1,0 +1,55 @@
+{
+  "scope": "Shared Settings list-choice heading spacing and flat header appearance",
+  "overlay_version_code": 21,
+  "overlay_sha256": "8c3c4f56d24eb88db8828df42d12bd0feaa5a09cb2642fa7c7a0baf9bfb7fbbc",
+  "changes": [
+    "Remove root/title elevation and use transparent title container in both shared preference fragment layouts",
+    "Give list-choice grid 12dp top/bottom padding and remaining-height weight"
+  ],
+  "location_bounds": {
+    "location_before": {
+      "title_bounds": [
+        260,
+        54,
+        860,
+        182
+      ],
+      "focused_row_bounds": [
+        220,
+        182,
+        900,
+        305
+      ],
+      "gap_pixels": 0
+    },
+    "location_after": {
+      "title_bounds": [
+        260,
+        54,
+        860,
+        182
+      ],
+      "focused_row_bounds": [
+        220,
+        203,
+        900,
+        329
+      ],
+      "gap_pixels": 21
+    },
+    "location_mode_before": 3,
+    "location_mode_after": 3
+  },
+  "reviewed_list_choices": [
+    "Location status: two-line option label",
+    "Bluetooth HCI logging: two-line heading"
+  ],
+  "radio_choice_values_changed": false,
+  "location_setting_changed": false,
+  "accessibility_page_still_opens": true,
+  "accessibility_tts_deferred_launch_preserved": true,
+  "base_settings_apk_modified": false,
+  "reboot_performed": false,
+  "all_settings_pages_verified": false,
+  "previous_review_gap": "Earlier four-page review did not include the list-choice layout that showed title/header overlap"
+}
