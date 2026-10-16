@@ -151,3 +151,39 @@ emulator. Header luar signature modul masih diperiksa oleh tool host, bukan
 mod_check_sig di kernel pada percobaan ini. Relocation, init/dependency driver
 asli, hardware B866F, Android/Netflix dan patch Mei 2026 tetap belum terbukti.
 Warning hardware vendor masih ada. Tidak ada akses atau perubahan STB.
+
+## Delapan modul asli berhasil dimuat di QEMU
+
+`tools/kernel_original_load_probe.py` memakai ulang Image lokal yang sama dan
+memasukkan delapan file asli yang hash-nya cocok dengan audit ke initramfs
+privat. Urutan load: libarc4, mii, usbnet, cdc_ether, cdc_ncm, r8152, zsmalloc,
+zram. Kali ini kode init modul asli benar-benar dijalankan oleh kernel emulator,
+bukan hanya pembacaan byte atau fixture sintetis.
+
+Seluruh `finit_module` berhasil dengan flags 0. Setiap modul ditemukan pada
+/proc/modules dengan state Live dan ukuran positif. Semua modul kemudian
+di-unload dalam urutan terbalik dengan O_NONBLOCK, tanpa force, dan dipastikan
+tidak lagi berstatus Live. Tidak ada pengubahan signature, vermagic, CRC,
+namespace, atau binary asli. Enam provider protected-export yang diaudit
+(libarc4, mii, usbnet, cdc_ether, cdc_ncm, r8152) termasuk di dalam delapan modul.
+
+Perbedaan nomor versi awal vermagic tidak dipaksa lewat: source same_magic pada
+kernel yang dipin memang membandingkan bagian sesudah nomor versi bila modul
+memiliki CRC. Pemeriksaan CRC termasuk module_layout tetap aktif. Keberhasilan
+ini memakai perilaku normal kernel MODVERSIONS, bukan IGNORE_VERMAGIC atau
+IGNORE_MODVERSIONS. Tidak ada pesan Unknown symbol, CRC disagreement, invalid
+module atau verification failed pada serial log percobaan ini.
+
+Keyring/core checks dan prehashed crypto checks kembali lolos; shutdown bersih,
+exit 0, tanpa timeout atau kernel panic, dan hash Image tetap sama. Run akhir
+memerlukan sekitar 6 detik dengan build kernel yang sudah tersedia. Hasil dan
+hash log: `kernel/trust/original-load-result.json`. Dua belas guard tests lolos
+di Windows dan Ubuntu. Binary asli, initramfs dan Image tetap lokal; runner
+menolak CI. Workflow hanya memeriksa source dan guard tests fitur ini.
+
+Ini memvalidasi jalur header/signature, link simbol, dependency dan init/unload
+untuk delapan modul tersebut pada QEMU. Perangkat USB tidak dipasang ke guest,
+network guest dinonaktifkan, dan operasi perangkat keras USB/network maupun
+I/O zram belum diuji. Driver Amlogic/Wi-Fi lain, boot B866F, Android, Netflix/DRM,
+jalur restore mandiri, dan cakupan patch Mei 2026 belum terbukti. Warning vendor
+untuk hardware yang tidak ada di QEMU tetap muncul. Tidak ada akses STB.

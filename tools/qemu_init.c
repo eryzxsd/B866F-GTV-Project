@@ -10,7 +10,7 @@
 #include <sys/utsname.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#ifdef B866F_TRUST_PROBE
+#if defined(B866F_TRUST_PROBE) || defined(B866F_ORIGINAL_LOAD_PROBE)
 #include <errno.h>
 #include <linux/keyctl.h>
 #include <sys/syscall.h>
@@ -114,6 +114,59 @@ static void check_pkcs7(void) {
 }
 #endif
 
+#ifdef B866F_ORIGINAL_LOAD_PROBE
+static const char *original_modules[] = {
+    "libarc4", "mii", "usbnet", "cdc_ether", "cdc_ncm", "r8152", "zsmalloc", "zram"
+};
+
+static int original_live(const char *name) {
+    FILE *file = fopen("/proc/modules", "r");
+    require(file != NULL, "original-proc-modules-readable");
+    char line[1024], found_name[128], state[32], dependencies[512];
+    unsigned long size;
+    unsigned int references;
+    int found = 0;
+    while (fgets(line, sizeof(line), file)) {
+        if (sscanf(line, "%127s %lu %u %511s %31s", found_name, &size,
+                   &references, dependencies, state) == 5 && !strcmp(found_name, name)) {
+            found = size > 0 && !strcmp(state, "Live");
+            break;
+        }
+    }
+    fclose(file);
+    return found;
+}
+
+static void check_original_load(void) {
+    const size_t count = sizeof(original_modules) / sizeof(original_modules[0]);
+    for (size_t i = 0; i < count; i++) {
+        char path[160];
+        snprintf(path, sizeof(path), "/original/%s.ko", original_modules[i]);
+        int file = open(path, O_RDONLY);
+        require(file >= 0, "original-module-file-readable");
+        errno = 0;
+        long result = syscall(SYS_finit_module, file, "", 0);
+        int error = errno;
+        close(file);
+        printf("B866F_ORIGINAL_LOAD: %s result=%ld errno=%d flags=0\n",
+               original_modules[i], result, error);
+        require(result == 0, "original-module-loaded");
+        require(original_live(original_modules[i]), "original-module-live");
+        printf("B866F_ORIGINAL_LIVE: %s\n", original_modules[i]);
+    }
+    for (size_t i = count; i > 0; i--) {
+        const char *name = original_modules[i - 1];
+        errno = 0;
+        long result = syscall(SYS_delete_module, name, O_NONBLOCK);
+        int error = errno;
+        printf("B866F_ORIGINAL_UNLOAD: %s result=%ld errno=%d\n", name, result, error);
+        require(result == 0, "original-module-unloaded");
+        require(!original_live(name), "original-module-absent");
+    }
+    puts("B866F_QEMU_ORIGINAL_LOAD_PASSED count=8");
+}
+#endif
+
 int main(void) {
     int console = open("/dev/console", O_RDWR);
     if (console < 0) return 1;
@@ -163,8 +216,15 @@ int main(void) {
 #ifdef B866F_PKCS7_PROBE
     check_pkcs7();
 #endif
+#ifdef B866F_ORIGINAL_LOAD_PROBE
+    check_original_load();
+#endif
     puts("B866F_QEMU_CORE_TESTS_PASSED");
+#ifdef B866F_ORIGINAL_LOAD_PROBE
+    puts("Eight original modules load-tested only; STB hardware, Android, DRM and patch coverage UNTESTED.");
+#else
     puts("Virtual hardware only; STB boot, drivers, DRM and patch coverage UNTESTED.");
+#endif
     sync();
     reboot(RB_POWER_OFF);
     for (;;) pause();
