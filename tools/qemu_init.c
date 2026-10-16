@@ -10,6 +10,11 @@
 #include <sys/utsname.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#ifdef B866F_ZRAM_IO_PROBE
+#include <sys/sysmacros.h>
+#include <sys/ioctl.h>
+#include <linux/fs.h>
+#endif
 #if defined(B866F_TRUST_PROBE) || defined(B866F_ORIGINAL_LOAD_PROBE)
 #include <errno.h>
 #include <linux/keyctl.h>
@@ -116,7 +121,16 @@ static void check_pkcs7(void) {
 
 #ifdef B866F_ORIGINAL_LOAD_PROBE
 static const char *original_modules[] = {
-    "libarc4", "mii", "usbnet", "cdc_ether", "cdc_ncm", "r8152", "zsmalloc", "zram"
+    "libarc4", "mii", "usbnet", "cdc_ether", "cdc_ncm", "r8152", "zsmalloc", "zram",
+#ifdef B866F_HID_LOAD_PROBE
+    "hid_roccat", "hid_roccat_common", "hid_apple", "hid_elecom", "hid_lg_g15",
+    "hid_logitech_dj", "hid_logitech_hidpp", "hid_logitech", "hid_magicmouse",
+    "hid_microsoft", "hid_multitouch", "hid_nintendo", "hid_picolcd", "hid_plantronics",
+    "hid_prodikeys", "hid_roccat_arvo", "hid_roccat_isku", "hid_roccat_kone",
+    "hid_roccat_koneplus", "hid_roccat_konepure", "hid_roccat_kovaplus", "hid_roccat_lua",
+    "hid_roccat_pyra", "hid_roccat_ryos", "hid_roccat_savu", "hid_steam", "hid_uclogic",
+    "hid_wiimote", "wacom",
+#endif
 };
 
 static int original_live(const char *name) {
@@ -137,6 +151,59 @@ static int original_live(const char *name) {
     return found;
 }
 
+#ifdef B866F_ZRAM_IO_PROBE
+static void sysfs_write(const char *path, const char *value) {
+    int file = open(path, O_WRONLY);
+    require(file >= 0, "zram-sysfs-writable");
+    require(write(file, value, strlen(value)) == (ssize_t)strlen(value), "zram-sysfs-write");
+    close(file);
+}
+
+static void check_zram_io(void) {
+    require(mount("sysfs", "/sys", "sysfs", 0, NULL) == 0, "zram-sysfs-mount");
+    sysfs_write("/sys/block/zram0/disksize", "1048576\n");
+    unsigned int major_number, minor_number;
+    FILE *info = fopen("/sys/block/zram0/dev", "r");
+    require(info != NULL, "zram-device-number-readable");
+    require(fscanf(info, "%u:%u", &major_number, &minor_number) == 2, "zram-device-number");
+    fclose(info);
+    require(mknod("/dev/zram-test", S_IFBLK | 0600, makedev(major_number, minor_number)) == 0,
+            "zram-guest-device-node");
+    static unsigned char written[65536], received[65536];
+    for (size_t i = 0; i < sizeof(written); i++)
+        written[i] = (unsigned char)((i * 73 + (i / 4096) * 17) % 251);
+    int file = open("/dev/zram-test", O_RDWR);
+    require(file >= 0, "zram-device-open");
+    require(write(file, written, sizeof(written)) == (ssize_t)sizeof(written), "zram-write-64k");
+    require(fsync(file) == 0, "zram-flush-writes");
+    /* Drop the block-device cache so readback exercises zram decompression. */
+    require(ioctl(file, BLKFLSBUF, 0) == 0, "zram-drop-block-cache");
+    require(lseek(file, 0, SEEK_SET) == 0, "zram-seek");
+    require(read(file, received, sizeof(received)) == (ssize_t)sizeof(received), "zram-read-64k");
+    require(memcmp(written, received, sizeof(written)) == 0, "zram-readback-matches");
+    close(file);
+    unsigned long long original, compressed, allocated;
+    info = fopen("/sys/block/zram0/mm_stat", "r");
+    require(info != NULL, "zram-stats-readable");
+    require(fscanf(info, "%llu %llu %llu", &original, &compressed, &allocated) == 3,
+            "zram-stats-parsed");
+    fclose(info);
+    printf("B866F_ZRAM_STATS: original=%llu compressed=%llu allocated=%llu\n",
+           original, compressed, allocated);
+    require(original == sizeof(written) && compressed > 0 && compressed < original && allocated > 0,
+            "zram-compression-and-allocation-confirmed");
+    sysfs_write("/sys/block/zram0/reset", "1\n");
+    info = fopen("/sys/block/zram0/mm_stat", "r");
+    require(info != NULL, "zram-reset-stats-readable");
+    require(fscanf(info, "%llu %llu %llu", &original, &compressed, &allocated) == 3,
+            "zram-reset-stats-parsed");
+    fclose(info);
+    require(original == 0 && compressed == 0 && allocated == 0, "zram-reset-freed-memory");
+    require(unlink("/dev/zram-test") == 0, "zram-guest-node-removed");
+    puts("B866F_QEMU_ZRAM_IO_PASSED bytes=65536");
+}
+#endif
+
 static void check_original_load(void) {
     const size_t count = sizeof(original_modules) / sizeof(original_modules[0]);
     for (size_t i = 0; i < count; i++) {
@@ -154,6 +221,9 @@ static void check_original_load(void) {
         require(original_live(original_modules[i]), "original-module-live");
         printf("B866F_ORIGINAL_LIVE: %s\n", original_modules[i]);
     }
+#ifdef B866F_ZRAM_IO_PROBE
+    check_zram_io();
+#endif
     for (size_t i = count; i > 0; i--) {
         const char *name = original_modules[i - 1];
         errno = 0;
@@ -163,7 +233,7 @@ static void check_original_load(void) {
         require(result == 0, "original-module-unloaded");
         require(!original_live(name), "original-module-absent");
     }
-    puts("B866F_QEMU_ORIGINAL_LOAD_PASSED count=8");
+    printf("B866F_QEMU_ORIGINAL_LOAD_PASSED count=%zu\n", count);
 }
 #endif
 
@@ -221,7 +291,7 @@ int main(void) {
 #endif
     puts("B866F_QEMU_CORE_TESTS_PASSED");
 #ifdef B866F_ORIGINAL_LOAD_PROBE
-    puts("Eight original modules load-tested only; STB hardware, Android, DRM and patch coverage UNTESTED.");
+    puts("Original module load checks only; STB hardware, Android, DRM and patch coverage UNTESTED.");
 #else
     puts("Virtual hardware only; STB boot, drivers, DRM and patch coverage UNTESTED.");
 #endif

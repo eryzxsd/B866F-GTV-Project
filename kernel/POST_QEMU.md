@@ -187,3 +187,28 @@ network guest dinonaktifkan, dan operasi perangkat keras USB/network maupun
 I/O zram belum diuji. Driver Amlogic/Wi-Fi lain, boot B866F, Android, Netflix/DRM,
 jalur restore mandiri, dan cakupan patch Mei 2026 belum terbukti. Warning vendor
 untuk hardware yang tidak ada di QEMU tetap muncul. Tidak ada akses STB.
+
+## Cakupan diperluas: 37 modul dan I/O zram
+
+Profil `--hid --zram-io` pada runner lokal memperluas delapan modul awal dengan
+29 driver/helper HID. Semua 37 file asli lolos hash check, finit_module flags 0,
+state Live, dan unload normal dalam urutan dependency terbalik. Nama path di
+initramfs dinormalisasi ke underscore agar cocok dengan nama internal modul;
+isi file, modinfo, CRC dan signature tidak diubah. Tidak ada perangkat HID/USB
+fisik atau network guest yang dipasang.
+
+Setelah load, guest membuat zram 1 MiB, menulis 64 KiB pola nonuniform, fsync,
+dan membuang cache block device dengan BLKFLSBUF sebelum readback. Data kembali
+identik. Statistik driver menunjukkan 65.536 byte data asli, 4.832 byte
+terkompresi, dan 16.384 byte alokasi. Reset mengembalikan seluruh statistik
+memori ke nol, lalu device node guest dihapus dan seluruh modul di-unload.
+Ini menguji kompresi/dekompresi, alokasi dan pembebasan pada zram/zsmalloc asli,
+melampaui init/unload saja. Bukan uji swap/memory-pressure Android.
+
+Core/keyring/prehashed checks, shutdown bersih dan hash Image yang sama kembali
+terverifikasi. Run gabungan sekitar 13,41 detik dengan Image yang sudah tersedia.
+Tiga belas guard tests lolos di Windows dan Ubuntu. Hasil terstruktur:
+`kernel/trust/hid-zram-result.json`. Source, hash dan hasil saja diterbitkan;
+seluruh input original dan initramfs tetap privat. Fungsi perangkat HID/USB
+nyata, driver vendor tersisa, boot Android/Netflix dan patch coverage belum
+terbukti. Audit userspace terpisah ada di `security/README.md`.
