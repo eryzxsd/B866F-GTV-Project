@@ -26,6 +26,23 @@ import java.util.Map;
 
 /** Local, passive TV cards. No input interception, root, networking, or content logging. */
 public final class CardListener extends NotificationListenerService {
+    private static CardListener connected;
+    private StatusBarNotification displayedNotification;
+    @Override public void onListenerConnected() { connected = this; super.onListenerConnected(); }
+    static StatusBarNotification currentCard() {
+        return connected == null ? null : connected.displayedNotification;
+    }
+    static void hideCurrentCard() { if (connected != null) connected.hide(); }
+    static boolean isActive(String key) {
+        if (connected == null) return false;
+        try { for (StatusBarNotification n : connected.getActiveNotifications()) if (key.equals(n.getKey())) return true; }
+        catch (RuntimeException ignored) { }
+        return false;
+    }
+    static boolean dismiss(String key) {
+        if (!isActive(key)) return false;
+        connected.cancelNotification(key); return true;
+    }
     private final Handler ui = new Handler(Looper.getMainLooper());
     private final Map<String, String> seen = new LinkedHashMap<String, String>() {
         private static final long serialVersionUID = 1L;
@@ -84,6 +101,7 @@ public final class CardListener extends NotificationListenerService {
         v.setIncludeFontPadding(false); return v;
     }
     private void show(StatusBarNotification sbn, String title, String body) {
+        if (NotificationDetailsActivity.visible) return;
         PowerManager power = (PowerManager)getSystemService(POWER_SERVICE);
         KeyguardManager lock = (KeyguardManager)getSystemService(KEYGUARD_SERVICE);
         if (!Settings.canDrawOverlays(this) || !power.isInteractive() || lock.isKeyguardLocked()) return;
@@ -120,7 +138,9 @@ public final class CardListener extends NotificationListenerService {
         String app = sbn.getPackageName();
         try { app = getPackageManager().getApplicationLabel(getPackageManager().getApplicationInfo(app, 0)).toString(); }
         catch (Exception ignored) { }
-        TextView footer = label("Notifikasi dari " + app, 13, Color.rgb(171, 178, 179), false, 1);
+        TextView footer = label(HomeKeyService.isConnected()
+                ? "Tekan & tahan ⌂ untuk melihat info selengkapnya"
+                : "Notifikasi dari " + app, 13, Color.rgb(171, 178, 179), false, 1);
         footer.setPadding(dp(16), dp(10), dp(16), dp(12)); box.addView(footer);
         WindowManager wm = (WindowManager)getSystemService(WINDOW_SERVICE);
         int width = Math.min(dp(376), getResources().getDisplayMetrics().widthPixels - dp(40));
@@ -130,7 +150,10 @@ public final class CardListener extends NotificationListenerService {
                 android.graphics.PixelFormat.TRANSLUCENT);
         params.gravity = Gravity.TOP | Gravity.RIGHT; params.x = dp(32); params.y = dp(32);
         params.setTitle("B866F notification card");
-        try { wm.addView(box, params); card = box; displayedKey = sbn.getKey(); ui.postDelayed(hideTask, 6500); }
+        long duration = sbn.getPackageName().equals(getPackageName())
+                && "b866f_preview".equals(sbn.getTag())
+                && sbn.getNotification().extras.getBoolean("b866f_hold_preview") ? 25000 : 6500;
+        try { wm.addView(box, params); card = box; displayedKey = sbn.getKey(); displayedNotification = sbn; ui.postDelayed(hideTask, duration); }
         catch (RuntimeException ignored) { hide(); }
     }
     private void hide() {
@@ -139,7 +162,7 @@ public final class CardListener extends NotificationListenerService {
             try { ((WindowManager)getSystemService(WINDOW_SERVICE)).removeViewImmediate(card); }
             catch (RuntimeException ignored) { }
         }
-        card = null; displayedKey = null;
+        card = null; displayedKey = null; displayedNotification = null;
     }
     @Override public void onNotificationRemoved(final StatusBarNotification sbn) {
         if (sbn == null) return;
@@ -147,6 +170,6 @@ public final class CardListener extends NotificationListenerService {
             seen.remove(sbn.getKey()); if (sbn.getKey().equals(displayedKey)) hide();
         } });
     }
-    @Override public void onListenerDisconnected() { hide(); seen.clear(); super.onListenerDisconnected(); }
-    @Override public void onDestroy() { hide(); ui.removeCallbacksAndMessages(null); super.onDestroy(); }
+    @Override public void onListenerDisconnected() { connected = null; hide(); seen.clear(); super.onListenerDisconnected(); }
+    @Override public void onDestroy() { connected = null; hide(); ui.removeCallbacksAndMessages(null); super.onDestroy(); }
 }

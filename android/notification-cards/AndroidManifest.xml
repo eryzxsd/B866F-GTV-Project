@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.local.b866f.notificationcards" android:versionCode="1" android:versionName="0.1">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.local.b866f.notificationcards" android:versionCode="2" android:versionName="0.2">
   <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="34"/>
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
@@ -6,6 +6,11 @@
     <service android:name=".CardListener" android:label="B866F notification cards" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" android:exported="true">
       <intent-filter><action android:name="android.service.notification.NotificationListenerService"/></intent-filter>
     </service>
+    <service android:name=".HomeKeyService" android:label="B866F: tahan Home untuk notifikasi" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" android:exported="true">
+      <intent-filter><action android:name="android.accessibilityservice.AccessibilityService"/></intent-filter>
+      <meta-data android:name="android.accessibilityservice" android:resource="@xml/home_key_service"/>
+    </service>
+    <activity android:name=".NotificationDetailsActivity" android:theme="@style/DetailsTheme" android:exported="false" android:excludeFromRecents="true"/>
     <activity android:name=".PreviewActivity" android:label="Uji kartu notifikasi" android:exported="true" android:excludeFromRecents="true"/>
   </application>
 </manifest>
