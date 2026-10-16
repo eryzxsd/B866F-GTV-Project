@@ -1,5 +1,8 @@
 # Panel notifikasi Google TV
 
+Untuk popup aplikasi di pojok kanan atas, lihat [KARTU-NOTIFIKASI.md](KARTU-NOTIFIKASI.md).
+Pengalihan panel pada halaman ini tidak mengaktifkan semua popup aplikasi.
+
 Launcher Google TV 1.0.994451607 yang diuji sudah memiliki dashboard dan kartu
 notifikasi asli. Pada basis B866F Android 14 ini, resource framework
 `android:string/config_notificationHandlerPackage` diarahkan overlay bawaan
