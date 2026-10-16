@@ -8,6 +8,13 @@ while [ "$(getprop sys.boot_completed)" != "1" ]; do
 done
 [ -f "$MODDIR/disable" ] && exit 0
 [ -f "$MODDIR/remove" ] && exit 0
+if [ -x "$MODDIR/bin/gtv-notification-panel" ]; then
+  if [ -f "$MODDIR/disable_gtv_notifications" ]; then
+    "$MODDIR/bin/gtv-notification-panel" restore --refresh
+  else
+    "$MODDIR/bin/gtv-notification-panel" apply --refresh
+  fi
+fi
 if [ ! -f "$MODDIR/disable_twopanel" ]; then
   if cmd overlay fabricate --target com.android.tv.settings --name EbsTvSettingsTwoPanel com.android.tv.settings:string/config_tvSettingsFlavor string TwoPanel; then
     if cmd overlay enable --user 0 com.android.shell:EbsTvSettingsTwoPanel; then

@@ -1,0 +1,50 @@
+#!/system/bin/sh
+# Route the system notification entry to the installed Google TV dashboard.
+# No APK replacement, notification listener grant, or resident process.
+OVERLAY=com.android.shell:B866FGtvNotifications
+RESOURCE=android:string/config_notificationHandlerPackage
+LAUNCHER=com.google.android.apps.tv.launcherx
+ACTION=${1:-status}
+REFRESH=${2:-}
+
+[ "$(id -u)" = 0 ] || { echo 'Jalankan sebagai root.' >&2; exit 1; }
+case "$ACTION" in apply|restore|status) ;; *) echo 'Gunakan: apply|restore|status [--refresh]' >&2; exit 2 ;; esac
+case "$REFRESH" in ''|--refresh) ;; *) exit 2 ;; esac
+before=$(cmd overlay lookup android "$RESOURCE") || exit 1
+[ "$ACTION" = status ] && { printf '%s\n' "$before"; exit 0; }
+
+if [ "$ACTION" = apply ]; then
+    handler=$(cmd package resolve-activity --brief -a android.app.action.OPEN_NOTIFICATION_HANDLER_PANEL -p "$LAUNCHER") || exit 1
+    case "$handler" in
+        *com.google.android.apps.tv.launcherx/.dashboard.DashboardHandler*) ;;
+        *) echo 'Dashboard Google TV tidak tersedia; pulihkan routing firmware.' >&2; ACTION=restore ;;
+    esac
+fi
+if [ "$ACTION" = apply ]; then
+    cmd overlay fabricate --target android --name B866FGtvNotifications "$RESOURCE" string "$LAUNCHER" || exit 1
+    cmd overlay enable --user 0 "$OVERLAY" || exit 1
+    after=$(cmd overlay lookup android "$RESOURCE") || exit 1
+    if [ "$after" != "$LAUNCHER" ]; then
+        cmd overlay disable --user 0 "$OVERLAY"
+        echo 'Override tidak terverifikasi; dinonaktifkan.' >&2
+        exit 1
+    fi
+else
+    # Disabling this overlay restores the firmware's underlying resource value.
+    # A new installation may not have created the overlay yet.
+    if cmd overlay list --user 0 | grep -Fq "$OVERLAY"; then
+        cmd overlay disable --user 0 "$OVERLAY" || exit 1
+    fi
+    after=$(cmd overlay lookup android "$RESOURCE") || exit 1
+fi
+
+printf 'Notification handler: %s\n' "$after"
+if [ "$REFRESH" = --refresh ] && [ "$before" != "$after" ]; then
+    # TvNotificationPanel caches this resource in its constructor. Refresh only
+    # after a real routing change, never on each boot or in a polling loop.
+    for ui_pid in $(pidof com.android.systemui); do
+        case "$ui_pid" in ''|*[!0-9]*) exit 1 ;; esac
+        [ "$ui_pid" -gt 1 ] || exit 1
+        kill -TERM "$ui_pid" || exit 1
+    done
+fi

@@ -1,5 +1,6 @@
 * text=auto
 *.sh text eol=lf
+module/bin/gtv-notification-panel text eol=lf
 *.go text eol=lf
 *.py text eol=lf
 *.patch text eol=lf -whitespace

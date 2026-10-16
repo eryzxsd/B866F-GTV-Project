@@ -13,6 +13,7 @@ if [ "$MODPATH/launcher-managed-components.json" != "$previous_launcher" ] && [ 
   set_perm "$MODPATH/launcher-managed-components.json" 0 0 0600
 fi
 set_perm "$MODPATH/service.sh" 0 0 0755
+set_perm "$MODPATH/bin/gtv-notification-panel" 0 0 0755
 set_perm "$MODPATH/bin/gtv-launcher-switch" 0 0 0755
 set_perm "$MODPATH/bin/gtv-samba-control" 0 0 0755
 if [ -f "$MODPATH/samba/runtime.tar.gz" ]; then
