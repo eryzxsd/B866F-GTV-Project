@@ -74,6 +74,11 @@ jaminan seluruh aplikasi atau firmware lain kompatibel.
 
 ## Hasil pemeriksaan pratinjau
 
+Versi 0.5 menyatukan zoom, border, dan fade nama pada satu progress animasi.
+Zoom dikurangi dari 7,5% menjadi 4%; padding gambar tidak lagi berubah saat
+fokus berpindah. Pergantian arah memakai progress yang sedang berjalan tanpa
+mereset ukuran tile. Batas viewport versi 0.4 dipertahankan.
+
 Versi 0.4 membatasi gambar grid ke viewport tersendiri. Zoom tile tetap aktif,
 tetapi baris yang digulir tidak lagi menggambar di atas toolbar atau teks
 petunjuk bawah. Pilihan jumlah kolom pengguna dipertahankan.

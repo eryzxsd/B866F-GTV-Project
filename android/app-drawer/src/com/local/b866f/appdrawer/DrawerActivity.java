@@ -569,11 +569,20 @@ public final class DrawerActivity extends Activity {
     private final class Tile extends LinearLayout {
         final ImageView image;
         final TextView title;
+        final GradientDrawable focusOutline;
+        private ValueAnimator focusAnimator;
+        private float focusProgress;
+        private boolean focusInitialized, lastFocused;
         Tile() {
             super(DrawerActivity.this); setOrientation(VERTICAL); setPadding(dp(3), dp(3), dp(3), 0);
             setFocusable(false); setClipChildren(false); setClipToPadding(false);
             image = new ImageView(DrawerActivity.this); image.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            image.setPadding(dp(2), dp(2), dp(2), dp(2)); image.setClipToOutline(true);
+            // Draw the focus border over the image instead of changing padding.
+            // This keeps artwork geometry stable throughout focus changes.
+            GradientDrawable cover = shape(surface, 0); cover.setCornerRadius(dp(6));
+            image.setBackground(cover); image.setClipToOutline(true);
+            focusOutline = shape(Color.TRANSPARENT, 0); focusOutline.setCornerRadius(dp(6));
+            image.setForeground(focusOutline);
             addView(image, new LinearLayout.LayoutParams(-1, dp(60)));
             title = label("", 13, text); title.setGravity(Gravity.CENTER); title.setSingleLine(true);
             title.setEllipsize(TextUtils.TruncateAt.END); title.setPadding(dp(3), dp(4), dp(3), 0);
@@ -589,25 +598,38 @@ public final class DrawerActivity extends Activity {
         private void updateSelection() {
             updateSelection(false);
         }
-        private Boolean lastFocused;
         private void updateSelection(boolean immediate) {
+            if (image == null || title == null || focusOutline == null) return;
             boolean focused = isSelected() && grid.hasFocus();
-            GradientDrawable cover = shape(surface, focused ? accent : 0);
-            cover.setCornerRadius(dp(6)); image.setBackground(cover);
-            int inset = focused ? dp(2) : 0; image.setPadding(inset, inset, inset, inset);
-            title.setVisibility(VISIBLE);
-            float scale = focused ? 1.075f : 1f;
-            if (immediate || lastFocused == null || lastFocused != focused
-                || !prefs.getBoolean("animations", true)) {
-                image.animate().cancel(); title.animate().cancel();
-                if (immediate || lastFocused == null || !prefs.getBoolean("animations", true) || !ValueAnimator.areAnimatorsEnabled()) {
-                    image.setScaleX(scale); image.setScaleY(scale); title.setAlpha(focused ? 1f : 0f);
+            if (immediate || !focusInitialized || lastFocused != focused) {
+                if (focusAnimator != null) focusAnimator.cancel();
+                float target = focused ? 1f : 0f;
+                if (immediate || !focusInitialized || !prefs.getBoolean("animations", true) || !ValueAnimator.areAnimatorsEnabled()) {
+                    applyFocusProgress(target);
                 } else {
-                    image.animate().scaleX(scale).scaleY(scale).setDuration(180).setInterpolator(new DecelerateInterpolator(1.5f)).start();
-                    title.animate().alpha(focused ? 1f : 0f).setDuration(140).start();
+                    // One progress value synchronizes the zoom, outline and label.
+                    // Reversals start at the current value, without resetting scale.
+                    focusAnimator = ValueAnimator.ofFloat(focusProgress, target);
+                    focusAnimator.setDuration(180);
+                    focusAnimator.setInterpolator(new DecelerateInterpolator(1.5f));
+                    focusAnimator.addUpdateListener(a -> applyFocusProgress((Float)a.getAnimatedValue()));
+                    focusAnimator.start();
                 }
             }
-            lastFocused = focused;
+            focusInitialized = true; lastFocused = focused;
+        }
+        private void applyFocusProgress(float progress) {
+            focusProgress = progress;
+            float scale = 1f + 0.04f * progress;
+            image.setScaleX(scale); image.setScaleY(scale);
+            focusOutline.setStroke(dp(2), (Math.round(255f * progress) << 24) | (accent & 0x00ffffff));
+            title.setVisibility(VISIBLE); title.setAlpha(progress);
+        }
+        @Override protected void onDetachedFromWindow() {
+            if (focusAnimator != null) focusAnimator.cancel();
+            if (focusInitialized) applyFocusProgress(lastFocused ? 1f : 0f);
+            focusInitialized = false;
+            super.onDetachedFromWindow();
         }
         @Override public void setSelected(boolean selected) {
             super.setSelected(selected);
