@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:id="@*com.android.tv.settings:id/main_frame" android:background="?android:attr/windowBackground" android:layout_width="match_parent" android:layout_height="match_parent" android:transitionGroup="false" android:elevation="0dp">
-  <FrameLayout android:id="@*com.android.tv.settings:id/decor_title_container" android:background="@android:color/transparent" android:layout_width="match_parent" android:layout_height="wrap_content" android:transitionGroup="false" android:elevation="0dp">
+  <FrameLayout android:id="@*com.android.tv.settings:id/decor_title_container" android:background="?android:attr/windowBackground" android:layout_width="match_parent" android:layout_height="wrap_content" android:transitionGroup="false" android:elevation="1dp" android:outlineProvider="none">
     <TextView android:id="@*com.android.tv.settings:id/decor_title" android:layout_width="match_parent" android:layout_height="wrap_content" style="?android:attr/titleTextStyle" android:singleLine="false" android:maxLines="2" android:ellipsize="end" android:autoSizeTextType="uniform" android:autoSizeMinTextSize="24sp" android:autoSizeMaxTextSize="32sp" android:autoSizeStepGranularity="1sp" />
   </FrameLayout>
   <TextView android:id="@android:id/message" android:visibility="gone" android:layout_width="match_parent" android:layout_height="wrap_content" style="?android:attr/subtitleTextStyle" />

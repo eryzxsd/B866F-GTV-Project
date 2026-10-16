@@ -1,0 +1,21 @@
+{
+  "scope": "Keep fixed Settings headings readable while menu rows scroll behind them",
+  "overlay_version_code": 22,
+  "overlay_sha256": "6cd1827e2bc9442029dc8db900835e5156d385a3d43dea94edeed497b72d0f02",
+  "cause": "Version21 transparent title background exposed offscreen Leanback rows behind the fixed title",
+  "change": "Both shared title containers use the same opaque window background as the page, elevation1dp for drawing order and outlineProvider none for no shadow",
+  "visual_reproduction": "Main Settings scrolled to Device preferences, matching the reported overlapping Setelan heading",
+  "observed_after": "Setelan readable with offscreen account/profile row occluded; no raised header box or shadow observed",
+  "checks": {
+    "main_scroll_cycles": 2,
+    "settings_process_survived_scrolling": true,
+    "location_list_gap_pixels": 21,
+    "location_mode_unchanged": true
+  },
+  "prior_tts_deferred_navigation_preserved": true,
+  "prior_list_padding_and_weight_preserved": true,
+  "settings_values_changed": false,
+  "base_settings_apk_modified": false,
+  "reboot_performed": false,
+  "all_settings_pages_verified": false
+}

@@ -53,3 +53,16 @@ perubahan Text-to-speech versi 20 dipertahankan.
 
 Rincian ada di [hasil layout daftar pilihan](settings-list-layout-result.json).
 Ini perbaikan layout bersama, bukan klaim bahwa seluruh submenu telah diperiksa.
+
+## Judul tetap terbaca saat menggulir, versi 22
+
+Header transparan versi 21 memperlihatkan baris yang sudah digulir keluar area
+daftar di belakang tulisan **Setelan**. Koreksi ini memakai background header
+opaque yang sama dengan halaman. Elevasi 1dp menempatkannya di atas baris, dengan
+`outlineProvider="none"` agar tidak menampilkan bayangan kotak.
+
+Kedua layout header bersama diperbarui. Reproduksi pada menu utama yang digulir
+ke Preferensi Perangkat menunjukkan judul terbaca dan baris Akun & Profil tidak
+lagi terlihat di belakangnya. Dua siklus gulir selesai tanpa restart proses.
+Gap 21 piksel pada daftar Status lokasi tetap terjaga; nilai lokasi tidak berubah.
+Hasil ada di [catatan header saat scroll](settings-header-scroll-result.json).
