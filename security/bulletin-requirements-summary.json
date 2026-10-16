@@ -1,0 +1,123 @@
+{
+  "scope": "May 2025 through May 2026 published bulletin requirements",
+  "coverage_established": false,
+  "months": [
+    {
+      "month": "2025-05",
+      "url": "https://source.android.com/docs/security/bulletin/2025-05-01",
+      "html_sha256": "778cedda5f12245dc41b9332cf566fe35e9f1dc77e1074eac51bafe5c9208ed8",
+      "extraction_status": "rows_parsed",
+      "rows": 46,
+      "android14_platform_rows": 18,
+      "kernel_rows": 0
+    },
+    {
+      "month": "2025-06",
+      "url": "https://source.android.com/docs/security/bulletin/2025-06-01",
+      "html_sha256": "575388b9e685e0057ed22241c933e446b2d58fdad381748454c51fe5c52c61f7",
+      "extraction_status": "rows_parsed",
+      "rows": 34,
+      "android14_platform_rows": 14,
+      "kernel_rows": 0
+    },
+    {
+      "month": "2025-07",
+      "url": "https://source.android.com/docs/security/bulletin/2025-07-01",
+      "html_sha256": "07aba981e1ddfba0c9cd5111eddbd6fbdfd10e760a1921ab96506acaf5a2b4da",
+      "extraction_status": "explicit_no_patches",
+      "rows": 0,
+      "android14_platform_rows": 0,
+      "kernel_rows": 0
+    },
+    {
+      "month": "2025-08",
+      "url": "https://source.android.com/docs/security/bulletin/2025-08-01",
+      "html_sha256": "2f2654cfa42bda8230a1c4b97b84b4f6bdf189c7aa1ed29d0e560bee2ff179d2",
+      "extraction_status": "rows_parsed",
+      "rows": 6,
+      "android14_platform_rows": 2,
+      "kernel_rows": 0
+    },
+    {
+      "month": "2025-09",
+      "url": "https://source.android.com/docs/security/bulletin/2025-09-01",
+      "html_sha256": "d10f0f653710f4d774d8f9210820cfc4324478c080ae76eaa7be0221fc79920b",
+      "extraction_status": "rows_parsed",
+      "rows": 108,
+      "android14_platform_rows": 44,
+      "kernel_rows": 3
+    },
+    {
+      "month": "2025-10",
+      "url": "https://source.android.com/docs/security/bulletin/2025-10-01",
+      "html_sha256": "9266555432bff9e2e3cdf205ed3a08968bd3747e602018347e721eb84da46f5f",
+      "extraction_status": "no_rows_manual_review_required",
+      "rows": 0,
+      "android14_platform_rows": 0,
+      "kernel_rows": 0
+    },
+    {
+      "month": "2025-11",
+      "url": "https://source.android.com/docs/security/bulletin/2025-11-01",
+      "html_sha256": "2510276a1378550d8731b7ca5364d0026ce56fd4842e0105b2d0bdb126e978b4",
+      "extraction_status": "rows_parsed",
+      "rows": 1,
+      "android14_platform_rows": 1,
+      "kernel_rows": 0
+    },
+    {
+      "month": "2025-12",
+      "url": "https://source.android.com/docs/security/bulletin/2025-12-01",
+      "html_sha256": "d502f15f95e8975a8f89f10f15844d37eedd61bc419f75553884ec517c64b2b6",
+      "extraction_status": "rows_parsed",
+      "rows": 99,
+      "android14_platform_rows": 37,
+      "kernel_rows": 9
+    },
+    {
+      "month": "2026-01",
+      "url": "https://source.android.com/docs/security/bulletin/2026/2026-01-01",
+      "html_sha256": "21bb66feef5989fb1f18deec5bc4c0468715c43b9b3da199958bb98b55004710",
+      "extraction_status": "rows_parsed",
+      "rows": 1,
+      "android14_platform_rows": 0,
+      "kernel_rows": 0
+    },
+    {
+      "month": "2026-02",
+      "url": "https://source.android.com/docs/security/bulletin/2026/2026-02-01",
+      "html_sha256": "42db54f5e97d5cd133aac9de7b594c1b220c7ce5ca611759192c409096d12bdb",
+      "extraction_status": "explicit_no_patches",
+      "rows": 0,
+      "android14_platform_rows": 0,
+      "kernel_rows": 0
+    },
+    {
+      "month": "2026-03",
+      "url": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "html_sha256": "c8be499da33b87c2874357045c1ed363bd6534de5e4435aec4c1f8489b18c71e",
+      "extraction_status": "rows_parsed",
+      "rows": 109,
+      "android14_platform_rows": 39,
+      "kernel_rows": 15
+    },
+    {
+      "month": "2026-04",
+      "url": "https://source.android.com/docs/security/bulletin/2026/2026-04-01",
+      "html_sha256": "2d24bac6e1cadc0b41d7c83f41efea8ae484699f855afdd9e053326fdff44c5a",
+      "extraction_status": "rows_parsed",
+      "rows": 5,
+      "android14_platform_rows": 1,
+      "kernel_rows": 0
+    },
+    {
+      "month": "2026-05",
+      "url": "https://source.android.com/docs/security/bulletin/2026/2026-05-01",
+      "html_sha256": "2333d4f9aba33720413b973cb2cb6cdb0b9bde251796dd662a05fd2154820c72",
+      "extraction_status": "rows_parsed",
+      "rows": 1,
+      "android14_platform_rows": 1,
+      "kernel_rows": 0
+    }
+  ]
+}

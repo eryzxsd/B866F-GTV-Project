@@ -1,0 +1,717 @@
+{
+  "scope": "Kernel rows in ASBs May 2025 through May 2026; tested candidate source/config only",
+  "candidate_source": {
+    "repository": "https://github.com/CoreELEC/linux-amlogic",
+    "commit": "f231c7811a91c548f86a43e17cf43611f8747c86"
+  },
+  "resolved_config_sha256": "62bc6777ff0995009ef2b9098c8f67bb98d9dcdc2bfaf13733659094f50b47f2",
+  "kernel_image_sha256": "7b4e0c3e40d1a27f0c5033243fba6dac8bb8c2b162bd9b898e57d0e3c4ae0ca6",
+  "running_stb_patch_presence_checked": false,
+  "full_android_patch_coverage_established": false,
+  "installable": false,
+  "review_method": "Official commit diff reverse dry-run with fuzz=0 plus scoped source/config review. Failed diff matches remain manual unless independently explained.",
+  "additional_primary_references": [
+    "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2025/38xxx/CVE-2025-38349.json",
+    "https://github.com/gregkh/linux/commit/f2451def095c1743adcfcb0cb5dadc86034e162a",
+    "https://github.com/torvalds/linux/commit/b46f4eaa4f0ec38909fb0072eea3aeddb32f954e"
+  ],
+  "unique_kernel_cves_reviewed": 26,
+  "rows": [
+    {
+      "cve": "CVE-2025-21755",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2025-09-01",
+      "patch_level": "2025-09-05",
+      "status": "fix_logic_present_source_review",
+      "reason": "Binding removal is guarded by SOCK_DEAD; release sets SOCK_DEAD before transport release and orphans afterward. Exact BPF callback patch differs; no claim that every linked prerequisite was merged.",
+      "candidate_files_sha256": {
+        "net/vmw_vsock/af_vsock.c": "615d3da2a8d768fffa3a2b8b323d44ffdc12fee35e377d8842c64fc078559f5b"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "9241eb16e35eb5fb700caf060ff0efb0e0a0fcd7",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "50854473806ad532c32bdf23327823b860670849",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "537268adf4cdb2b5ec905c01ffa919a71556ffa8",
+          "diff_match": "reverse_patch_matches"
+        },
+        {
+          "commit": "e2647b0fb4204838e32275f85859b029dc9f36b4",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "7f11cc02d9eeec5c0eca76ddfa5f5f1c3c6688f2",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "cd0ebcd1757913ed6232b90203f586cd4b59de42",
+          "diff_match": "reverse_patch_matches"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-38352",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2025-09-01",
+      "patch_level": "2025-09-05",
+      "status": "official_fix_reverse_patch_matches",
+      "reason": "Published patch reverses without fuzz.",
+      "candidate_files_sha256": {
+        "kernel/time/posix-cpu-timers.c": "d9f769b3f1d5f017b83aa4ad4341b434d4546a5a016ead4ca32224ced3ee3f92"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "157f357d50b5038e5eaad0b2b438f923ac40afeb",
+          "diff_match": "reverse_patch_matches"
+        },
+        {
+          "commit": "1bf1aa362e6b9573a310fcd14f35bc875b42ba83",
+          "diff_match": "reverse_patch_matches"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-021701",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2025-09-01",
+      "patch_level": "2025-09-05",
+      "status": "official_fix_reverse_patch_matches",
+      "reason": "Identifier preserved exactly as published in the ASB; published patch reverses without fuzz.",
+      "candidate_files_sha256": {
+        "net/ethtool/netlink.c": "d287261bc654da540f3718321a3195ed2994f129139de155713070a507a272ae"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "cdd207534a0c4a4f2e4684b90794924a0550e66d",
+          "diff_match": "reverse_patch_matches"
+        },
+        {
+          "commit": "2afd0800a730081c941189e3174ed0a30f4c59e7",
+          "diff_match": "reverse_patch_matches"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-48623",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2025-12-01",
+      "patch_level": "2025-12-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "3b6fab0ff24f7108c71a4d9c12567455cb2a5a81",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "e76cff4952af4ac4652dc74ffbd134ff57c47895",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-48624",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2025-12-01",
+      "patch_level": "2025-12-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "0668e45a43398a07c3aa2ae08903097657efd87e",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-48637",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2025-12-01",
+      "patch_level": "2025-12-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "4cfc9c2d8815577832cafbfcd7f98025f0da718d",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "aff2255dbe38dc7c57bac8d3ba9feed989289b20",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-48638",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2025-12-01",
+      "patch_level": "2025-12-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "0429b7af308cf65c84109c08d06b01950dcd57fe",
+          "diff_match": "reverse_patch_matches"
+        },
+        {
+          "commit": "96ebe96170d67df5072afa2ce84622f5a0ff552a",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2024-35970",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2025-12-01",
+      "patch_level": "2025-12-05",
+      "status": "fix_logic_present_source_review",
+      "reason": "manage_oob clears u->oob_skb before consuming or unlinking the urgent skb. Candidate uses older garbage collection; missing prerequisite refactors do not establish missing fix. Compared with upstream b46f4eaa4f0ec38909fb0072eea3aeddb32f954e.",
+      "candidate_files_sha256": {
+        "net/unix/af_unix.c": "5456a14fec9bd9306f91816c596ed11fb6e94e1b79465e113395e4ddd7e3f58f"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "97154bcf4d1b7cabefec8a72cff5fbb91d5afb7b",
+          "diff_match": "forward_patch_matches"
+        },
+        {
+          "commit": "a70bd568b1a682fb2369cf201b55354c583bda42",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "4be073d59068eda364fda37ba6c26791f7a007c6",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "f8d73c6178dacb760b7ff130fc5edf5f184b29ee",
+          "diff_match": "forward_patch_matches"
+        },
+        {
+          "commit": "328840c93bd6a4871dd10908d01b41eab83eb8e2",
+          "diff_match": "forward_patch_matches"
+        },
+        {
+          "commit": "cec9cb02cef8636e77325c123461fa7e57ae8770",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "fb219cbb0bad43458d05d939b2370f7097b4a1fb",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "476cb9bc9b615a99bf4824b8fc5d74bed7e190bd",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "b077571da99fbb30ffc632a3cad3bd1e10407eaf",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "ffef32ddaf832cc8df33395215acdae68da23ab8",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "844c9666eb966696bffc72e34edb3164f26e9a98",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "769fc01f230f7576f8553dd8ff3901d42b1fb3b3",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "80df4d17af5efb6565cc75921a9911d5055c4fc7",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "16dca90335394c7e118628afd6d7003b44274a22",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "279ed20d5fd4efc7b0436806a6a6c8293c9023af",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "f5ea8b439d23e00d158ab1bb735172d67110533d",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "0c40a05117a289a0eac810a0df93f69b689343dc",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "250c362acdf831214f4e4c58c864b65eccb72d86",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "1e4d62adebcd635f86ce151e56f47952216f81bf",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "b22b0a7597c8839728ecac1618d82086cb3678db",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "b9f8dfdb54980fdc3e6f913f1ae681f21204d3f7",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "67a3a58da1fbc9b2a50a38b9b1e1cf50f6452342",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "11d208f893526b9847dfedce65237fa185c2b7fd",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "5ada288086f00785b8d777e0a124de9e25660af8",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "a130d07d24b95f5b807dd89b9d2302a873ba3bec",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "95a397ac6bca28eff328caee6082071a32716e9e",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "ddd6979a1553523fa8f0ba378e656e31f2172464",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "5156d49ed91e4b574903b17c3e0e10bb86824820",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "a213abada81b086661a4f0d342a95435c3bc542e",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-38236",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2025-12-01",
+      "patch_level": "2025-12-05",
+      "status": "fix_logic_present_source_review",
+      "reason": "unix_stream_recv_urg unlinks the previous consumed zero-length urgent skb, then consume_skb(read_skb) after releasing the lock. Additional MSG_PEEK fix changes context, preventing exact reverse match.",
+      "candidate_files_sha256": {
+        "net/unix/af_unix.c": "5456a14fec9bd9306f91816c596ed11fb6e94e1b79465e113395e4ddd7e3f58f"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "a12237865b48a73183df252029ff5065d73d305e",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "fad0a2c16062ac7c606b93166a7ce9d265bab976",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-38349",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2025-12-01",
+      "patch_level": "2025-12-05",
+      "status": "affected_refcount_implementation_absent_source_review",
+      "reason": "Candidate lacks ep_refcount_dec_and_test and ep_clear_and_put; it retains epmutex during destruction. Linux CNA identifies the affected refcount conversion introduced in stable 5.15.209; compared with introducing commit f2451def095c1743adcfcb0cb5dadc86034e162a. This conclusion uses source, not only the version number.",
+      "candidate_files_sha256": {
+        "fs/eventpoll.c": "d0e43aed711ec99abb398bf6214da2b4dc8f39bf4fcf087efbfb62433b8122bf"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "da1160c4a8687538ed5ae4fab9a49b150a04a9e4",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "d12def49bbdb0887ccda3729104ae113966a5b2d",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-48610",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2025-12-01",
+      "patch_level": "2025-12-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "19fbea31785113700731f4b458d7e20d05777729",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "cac44a0bcfc58c85082b13220b4adcac43ccf369",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-38500",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2025-12-01",
+      "patch_level": "2025-12-05",
+      "status": "affected_feature_absent_in_candidate_source",
+      "reason": "Candidate has no collect_md xfrm interface feature or collect_md field; CONFIG_XFRM_INTERFACE=y alone does not imply that affected later feature exists.",
+      "candidate_files_sha256": {
+        "net/xfrm/xfrm_interface_core.c": "6942d46e018aad977f6d2c396a95e41710b5d2b8d510be78fa03ef8737da0a62"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "a8d4748b954584ab7bd800f1a4e46d5b0eeb5ce4",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "bfebdb85496e1da21d3cf05de099210915c3e706",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2024-43859",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "official_fix_reverse_patch_matches_feature_disabled",
+      "reason": "Official patch variant reverses without fuzz; CONFIG_F2FS_FS is disabled.",
+      "candidate_files_sha256": {
+        "fs/f2fs/f2fs.h": "2fad01951e3a8abf215cb1596345f2ca3a3665593b73e00ff9c3df226bc36db8",
+        "fs/f2fs/file.c": "3e45d4ec724eaba652dbe1d4c93a62a439eb31d96b962a13a75413a02df1bd66",
+        "fs/f2fs/inode.c": "a51b273c6626cca183e142553c5ab87d8e3a339894dad3e651c40f49e3b25e61"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "7f97e742f769557693fcf14bd5c1fa06c9478320",
+          "diff_match": "reverse_patch_matches"
+        },
+        {
+          "commit": "5f04969136db674f133781626e0b692c5f2bf2f0",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2026-0037",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "6c400c2e2e46f3a1117ce5da316ecdc1dbb1a031",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2026-0038",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "configured_features_disabled_source_change_not_present",
+      "reason": "CONFIG_ARM64_MTE and CONFIG_VIRTUALIZATION are disabled. Generic head.S and HCR changes are included in the official patch, so this is not marked patched merely because KVM is disabled.",
+      "candidate_files_sha256": {
+        "arch/arm64/include/asm/kvm_arm.h": "40b43838ef50eb4e2e55d881b99c1515e3e16cd4d71de3e8601f4491fee740d5",
+        "arch/arm64/kernel/head.S": "3377a7f90826b2af5a30a121470cd3302d38ce1e0a43d235fbd0659223efc76d",
+        "arch/arm64/kvm/arm.c": "8d42bee8203552469e433cc9826bd6bcbcd05d05f27505ccf7daabfa8c14ec86"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "652b7b6bf9a62cc12c3a071bab4e92314f046739",
+          "diff_match": "forward_patch_matches"
+        },
+        {
+          "commit": "f090d4b083a9ef4831f99e692c239542dd385cb4",
+          "diff_match": "forward_patch_matches"
+        },
+        {
+          "commit": "7e1d15d29b7fe0f858926a8bcaf929b75db9e52a",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "b23a5bfa1fb8f9525e21f095a87486a2bd856321",
+          "diff_match": "forward_patch_matches"
+        },
+        {
+          "commit": "513ea99ae008b81dd266bf6e361627c058ddde41",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "1bf8033b56a45165602f8116e0a0d2e767f1e8ae",
+          "diff_match": "forward_patch_matches"
+        },
+        {
+          "commit": "d884f499434c224285c30d460681f1ce76a8cf1f",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-38616",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "configured_feature_disabled",
+      "reason": "CONFIG_TLS is disabled in the resolved diagnostic configuration. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "net/tls/Kconfig": "7db748235fb7fb9d7f9e49ff570f36dafd3489e1ba63aeb4ddec2c3c2d045a55"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "f1fe99919f629f980d0b8a7ff16950bffe06a859",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "eb0336f213fe88bbdb7d2b19c9c9ec19245a3155",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-38618",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "official_fix_reverse_patch_matches",
+      "reason": "All three published patch variants reverse without fuzz. Ordinary autobind returns a concrete non-reserved port in separate QEMU test; not an exhaustive regression test.",
+      "candidate_files_sha256": {
+        "net/vmw_vsock/af_vsock.c": "615d3da2a8d768fffa3a2b8b323d44ffdc12fee35e377d8842c64fc078559f5b"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "f6266e6d89233aa417e1c684c10102ef1b966ee5",
+          "diff_match": "reverse_patch_matches"
+        },
+        {
+          "commit": "1ccd273c6de4baef8a0a70971bfa3c8e69fc71d9",
+          "diff_match": "reverse_patch_matches"
+        },
+        {
+          "commit": "31fc378e731204bbc3a556beb8e10d2a46e4c774",
+          "diff_match": "reverse_patch_matches"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-39682",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "configured_feature_disabled",
+      "reason": "CONFIG_TLS is disabled in the resolved diagnostic configuration. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "net/tls/Kconfig": "7db748235fb7fb9d7f9e49ff570f36dafd3489e1ba63aeb4ddec2c3c2d045a55"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "2902c3ebcca52ca845c03182000e8d71d3a5196f",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "74715c47d57ccbff2f2f00bb9d87288e10642325",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "3439c15ae91a517cf3c650ea15a8987699416ad9",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-39946",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "configured_feature_disabled",
+      "reason": "CONFIG_TLS is disabled in the resolved diagnostic configuration. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "net/tls/Kconfig": "7db748235fb7fb9d7f9e49ff570f36dafd3489e1ba63aeb4ddec2c3c2d045a55"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "1257aa4519ee5d49e465b0dcc85cc7e4a24619d5",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "c4bcbf924ba0823fcdc960c02e0409dbcd345a50",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "8f4e429a1e36e588f434772dceca9068dc1208cc",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2026-0029",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "ae242b26371808a221578b89c937568781719d2c",
+          "diff_match": "forward_patch_matches"
+        },
+        {
+          "commit": "42eff3b2fd3a906ac8cdb6284d3265bc0856b56b",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "749cf1743eb22eff1851c68a533147e1af97a9bf",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2026-0027",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "3af14d2057f2f3df97472cef6b293113b020d1e6",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "a47e0e78ad5b4e153b40fc1c9def11991aa6ca0c",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "5161b3e75fb025bb4ebb11fbf1ac037021e56719",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2026-0028",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "986614312222d4b3bdcf16840cdb4abdaed8a42d",
+          "diff_match": "reverse_patch_matches"
+        },
+        {
+          "commit": "aff2255dbe38dc7c57bac8d3ba9feed989289b20",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "f3a4b4d4a1fe2aface7de74ac257b8705b6de472",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2026-0030",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "986614312222d4b3bdcf16840cdb4abdaed8a42d",
+          "diff_match": "reverse_patch_matches"
+        },
+        {
+          "commit": "aff2255dbe38dc7c57bac8d3ba9feed989289b20",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "f3a4b4d4a1fe2aface7de74ac257b8705b6de472",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2026-0031",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "986614312222d4b3bdcf16840cdb4abdaed8a42d",
+          "diff_match": "reverse_patch_matches"
+        },
+        {
+          "commit": "aff2255dbe38dc7c57bac8d3ba9feed989289b20",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "f3a4b4d4a1fe2aface7de74ac257b8705b6de472",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2025-40266",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "c562f4013ec6771ede259cbec802c85dfdfdf00e",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "a45fbd0b57716dd1cc1dd5cfcf7a2756afcbc263",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "8cb652476b6303efe2584d38be8b20a84c141f95",
+          "diff_match": "manual_review"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2026-0032",
+      "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-03-01",
+      "patch_level": "2026-03-05",
+      "status": "configured_feature_disabled",
+      "reason": "All published fixes concern KVM/pKVM or its SMMU integration; CONFIG_VIRTUALIZATION is disabled. Not claimed patched in source or in the running STB.",
+      "candidate_files_sha256": {
+        "arch/arm64/kvm/Kconfig": "0f73c037e1dc8012ba04f8172394a5c61c3c24b7938c983f8a60e1c278770200"
+      },
+      "official_fix_comparisons": [
+        {
+          "commit": "048aebb861d2f3ed4d260a4c9f4e72a43cae9b1e",
+          "diff_match": "manual_review"
+        },
+        {
+          "commit": "33eb6bde43d03bd826214bbb390de62ca19621b9",
+          "diff_match": "manual_review"
+        }
+      ]
+    }
+  ]
+}

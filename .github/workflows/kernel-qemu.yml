@@ -34,6 +34,9 @@ jobs:
       - name: Check trust experiment guards and guest syntax
         run: |
           python3 -m unittest discover -s tools -p 'test_kernel*probe.py' -v
+          python3 -m unittest discover -s tools -p 'test_kernel_patch_match.py' -v
+          python3 -m unittest discover -s tools -p 'test_security_bulletin_inventory.py' -v
+          aarch64-linux-gnu-gcc -static -O2 -Wall -Wextra -Werror -fsyntax-only tools/qemu_socket_init.c
           aarch64-linux-gnu-gcc -static -O2 -Wall -Wextra -Werror -DB866F_TRUST_PROBE=1 -fsyntax-only tools/qemu_init.c
           aarch64-linux-gnu-gcc -static -O2 -Wall -Wextra -Werror -DB866F_TRUST_PROBE=1 -DB866F_LOADER_PROBE=1 -fsyntax-only tools/qemu_init.c
           aarch64-linux-gnu-gcc -static -O2 -Wall -Wextra -Werror -DB866F_TRUST_PROBE=1 -DB866F_PKCS7_PROBE=1 -fsyntax-only tools/qemu_init.c

@@ -1,0 +1,22 @@
+{
+  "status": "21 ordinary socket API checks passed; clean QEMU shutdown",
+  "installable": false,
+  "stb_accessed": false,
+  "stb_boot_tested": false,
+  "android_tested": false,
+  "security_coverage_established": false,
+  "guest_network": "none",
+  "kernel_image_sha256": "7b4e0c3e40d1a27f0c5033243fba6dac8bb8c2b162bd9b898e57d0e3c4ae0ca6",
+  "resolved_config_sha256": "62bc6777ff0995009ef2b9098c8f67bb98d9dcdc2bfaf13733659094f50b47f2",
+  "source_sha256": {
+    "kernel_socket_probe.py": "b067b63f3d510430df26d11adc48ac5e9b5d6f95f45a5403eaaaae7dfb6a9738",
+    "qemu_socket_init.c": "9e78c15ae47f2e8aebf87aab22556119dabe5989408119b5e442b1cb603969b2"
+  },
+  "socket_api_checks_passed": true,
+  "clean_shutdown": true,
+  "qemu_exit_code": 0,
+  "timed_out": false,
+  "check_count": 21,
+  "duration_seconds": 4.45,
+  "serial_sha256": "fcbfcc593522027ec424bbae014236d191a037ce0566437a12b0f790cddbd969"
+}

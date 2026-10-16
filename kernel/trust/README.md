@@ -24,7 +24,12 @@ Workflow tetap hanya mengunggah laporan teks. Tidak ada image boot, private key,
 binary driver asli atau perubahan konfigurasi STB. Kernel kandidat STB belum
 mendapat sertifikat ini dan seluruh hasil masih eksperimen, bukan update Android.
 
-Hasil QEMU terakhir berhasil: [run 38787178937](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38787178937).
+Hasil awal uji sertifikat QEMU berhasil: [run 38787178937](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38787178937).
 Lihat qemu-result.json untuk fingerprint, hash artifact dan batas cakupan. Keanggotaan
 sertifikat pada trusted keyring dan core checks terverifikasi, disertai shutdown
-bersih. Driver asli dan hardware STB belum diuji.
+bersih. Run tersebut belum memuat driver asli. Eksperimen lokal berikutnya
+memverifikasi PKCS7 lengkap, memuat/melepas 37 modul asli, dan menguji I/O zram;
+lihat `pkcs7-result.json`, `hid-zram-result.json` dan dokumentasi kernel utama.
+`socket-api-result.json` menambahkan 21 pemeriksaan API socket normal pada Image
+emulator yang sama. Hardware STB, Android dan Netflix tetap belum diuji dengan
+kernel kandidat. Review persyaratan patch ada pada [audit keamanan](../../security/README.md).

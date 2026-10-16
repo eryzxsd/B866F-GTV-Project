@@ -32,6 +32,8 @@ Samba memakai SMB2/3, login wajib, signing wajib, dan pembatasan jaringan lokal.
 Eksperimen source build di GitHub Actions didokumentasikan dalam
 [pemeriksaan ABI kernel](kernel/README.md). Workflow hanya menghasilkan laporan
 diagnostik; tidak menghasilkan paket instalasi atau menulis partisi STB.
+Temuan patch Android dan batas cakupan kandidat dicatat dalam
+[audit keamanan](security/README.md), terpisah dari keberhasilan boot emulator.
 
 ## Mulai dari sini
 
