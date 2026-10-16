@@ -9,6 +9,7 @@ Kustomisasi Google TV untuk **ZTE B866F V1.1 dengan basis EBS Project Android 14
 ## Fitur
 
 - Tampilan Settings dua panel, perbaikan jarak baris, fokus, ikon, dan sakelar.
+- [Aplikasi GTV](docs/DRAWER-APLIKASI.md): drawer mandiri dengan pencarian, favorit, aplikasi tersembunyi, dan pilihan grid; diuji berdampingan dengan drawer lama.
 - Menu **B866F GTV Project → Ganti launcher**: mendeteksi launcher HOME yang terpasang, memilih default, dan menghentikan launcher sebelumnya setelah pilihan baru terverifikasi. Komponen HOME yang dinonaktifkan oleh alat dicatat untuk pemulihan.
 - Menu **Samba server**: berbagi folder internal `Shared` dan USB secara terpisah, kata sandi, akses tulis opsional, dan mulai saat boot opsional.
 - Layanan kompatibilitas profil lokal untuk Google TV Home **1.0.994451607**. Hanya launcher dengan paket dan sertifikat Google yang sesuai dapat memanggil layanan. Profil anak/multi-profil belum didukung.

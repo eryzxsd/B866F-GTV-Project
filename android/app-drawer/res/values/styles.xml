@@ -1,0 +1,15 @@
+<resources>
+  <style name="DrawerTheme" parent="android:style/Theme.Material.NoActionBar">
+    <item name="android:colorAccent">#A8C7FA</item>
+    <item name="android:windowBackground">#101416</item>
+    <item name="android:alertDialogTheme">@style/DrawerDialogTheme</item>
+  </style>
+  <style name="DrawerDialogTheme" parent="android:style/Theme.Material.Dialog.Alert">
+    <item name="android:colorAccent">#A8C7FA</item>
+    <item name="android:colorBackground">#23292D</item>
+    <item name="android:colorBackgroundFloating">#23292D</item>
+    <item name="android:windowBackground">@drawable/dialog_background</item>
+    <item name="android:textColorPrimary">#F1F3F4</item>
+    <item name="android:textColorSecondary">#B7C0C8</item>
+  </style>
+</resources>

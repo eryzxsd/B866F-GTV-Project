@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--component',choices=['tools','profile-compat','settings-overlay','notification-cards'],required=True)
+    p.add_argument('--component',choices=['tools','profile-compat','settings-overlay','notification-cards','app-drawer'],required=True)
     p.add_argument('--build-tools',type=Path,required=True)
     p.add_argument('--android-jar',type=Path,required=True)
     p.add_argument('--framework-apk',type=Path);p.add_argument('--settings-apk',type=Path)
@@ -34,7 +34,9 @@ def main():
             if path.exists():shutil.rmtree(path)
             path.mkdir()
         compiler=[a.java,'-jar',a.ecj,'-1.8'] if a.ecj else [a.javac,'-source','8','-target','8']
-        run(*compiler,'-encoding','UTF-8','-bootclasspath',a.android_jar,'-d',classes,*sources)
+        # The drawer's lambdas need the Java runtime bootstrap types during compilation.
+        classpath_flag='-classpath' if a.component=='app-drawer' else '-bootclasspath'
+        run(*compiler,'-encoding','UTF-8',classpath_flag,a.android_jar,'-d',classes,*sources)
         run(a.java,'-cp',a.build_tools/'lib/d8.jar','com.android.tools.r8.D8','--min-api','28','--lib',a.android_jar,'--output',dex,*classes.rglob('*.class'))
         with zipfile.ZipFile(b/'unsigned.apk','a') as z:z.write(dex/'classes.dex','classes.dex')
     run(tool('zipalign'),'-f','4',b/'unsigned.apk',b/'aligned.apk')
