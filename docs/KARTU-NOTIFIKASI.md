@@ -1,5 +1,13 @@
 # Kartu notifikasi di pojok kanan atas
 
+**Masalah versi 0.2 pada firmware uji:** jangan aktifkan accessibility service
+**B866F: tahan Home untuk notifikasi** untuk pemakaian normal. Setelah service ini
+diaktifkan, perpindahan Beranda/Aplikasi terasa berbeda dan fokus Setelan cepat
+dapat terjebak di Bantuan & Masukan. Pengguna mengonfirmasi kedua masalah hilang
+setelah hanya service Home tersebut dinonaktifkan. Kartu popup biasa tetap aktif.
+Fitur tahan Home dinonaktifkan pada perangkat uji; source eksperimen dipertahankan
+untuk investigasi, bukan direkomendasikan sebagai fitur stabil.
+
 Komponen opsional `android/notification-cards` menampilkan kartu gelap dengan
 sudut membulat, ikon, judul, isi, dan nama aplikasi pengirim. Ini berbeda dari
 [panel notifikasi](NOTIFIKASI.md). Kartu ini meniru tampilannya, bukan komponen
@@ -63,10 +71,11 @@ Akses notifikasi memungkinkan aplikasi membaca notifikasi. Source ini memakainya
 hanya untuk kartu lokal dan tidak meminta izin internet. Akses juga dapat diatur
 melalui Settings → Special app access.
 
-Untuk fitur tahan Home, aktifkan **B866F: tahan Home untuk notifikasi** melalui
-Settings → Accessibility. Izin tambahan ini bersifat opsional; kartu biasa tetap
-bekerja tanpa handler Home. Jangan mengganti daftar `enabled_accessibility_services`
-secara keseluruhan dari skrip karena dapat menghapus pilihan service pengguna lain.
+Handler tahan Home memakai izin tambahan melalui Settings → Accessibility,
+tetapi **biarkan nonaktif pada firmware ini** karena regresi navigasi di atas.
+Kartu biasa tetap bekerja tanpa handler Home. Jangan mengganti daftar
+`enabled_accessibility_services` secara keseluruhan dari skrip karena dapat
+menghapus pilihan service pengguna lain.
 
 Uji notifikasi berlabel jelas; pesan contoh berakhir setelah 10 detik:
 
