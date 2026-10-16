@@ -1,0 +1,41 @@
+{
+  "guest_checks_passed": true,
+  "clean_shutdown": true,
+  "timed_out": false,
+  "qemu_exit_code": 0,
+  "original_certificate_keyring_test_requested": true,
+  "original_certificate_keyring_test_passed": true,
+  "synthetic_loader_policy_test_requested": true,
+  "synthetic_loader_policy_test_passed": true,
+  "original_driver_load_tested": false,
+  "stb_boot_tested": false,
+  "installable": false,
+  "run_url": "https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38830704133",
+  "source_commit": "62f03cd2e9e0f5d96b9a95123853ceb259fd3944",
+  "artifact_id": 12017802502,
+  "artifact_zip_sha256": "ec3214e959f769abc3804334593ed4ade544e81d0c390dd1c36a165ae318994c",
+  "fixture": {
+    "fixture_type": "synthetic, not an original STB driver",
+    "protected_export": "arc4_crypt",
+    "generated_protected_header_checked": true,
+    "trusted_signer": "ephemeral runner kernel build key, not original vendor key",
+    "fixture_sha256": {
+      "unsigned": "ced37fe1a92c48ef070a1f17e8cf3d1fbbebc93d39d80ae6969e70b765f08ced",
+      "trusted": "e6377f6f90392da326277b8a19d89f572a92de58d27263fbb2ec0ea44e489460",
+      "tampered": "7065ffef4bab80d7cf513dc3d117e1ba06f927683d8ef6e533b17a0467629007",
+      "untrusted": "67fa0954d1ade56d2603637eced02e9320f64deda8a47dd882543d857a534d21"
+    },
+    "original_driver_load_tested": false,
+    "installable": false
+  },
+  "observed_errno": {
+    "trusted": 0,
+    "unsigned_protected_export": 13,
+    "untrusted_signer_protected_export": 13,
+    "tampered_signature": 129
+  },
+  "signature_enforcement_options_unchanged": true,
+  "android_tested": false,
+  "netflix_drm_tested": false,
+  "may_2026_patch_coverage_verified": false
+}

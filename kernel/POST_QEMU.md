@@ -67,3 +67,11 @@ Opsi loader_probe pada workflow QEMU menambahkan fixture GPL minimal yang mengek
 Artifact tetap hanya teks; seluruh key sementara dan binary fixture tinggal pada runner. Hasil runtime masih menunggu. Sertifikat asli tetap diperiksa di keyring emulator, tetapi percobaan ini belum menguji signature/driver asli maupun membuktikan kernel siap dipasang.
 
 [Run loader pertama](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38817456141) berhasil membangun kernel dan menjalankan compile/LTO/modpost fixture, tetapi link modul berhenti karena scripts/module.lds belum dibuat. QEMU belum dijalankan pada run ini, sehingga tidak ada hasil runtime baru. Target Kbuild modules_prepare kini dipanggil sebelum build eksternal, dan keberadaan linker script diperiksa. Tidak ada CRC, signature atau enforcement bypass yang ditambahkan; hasil menunggu run ulang.
+
+### Hasil loader sintetis: berhasil
+
+[Run yang diperbaiki berhasil](https://github.com/eryzxsd/B866F-GTV-Project/actions/runs/38830704133), commit 62f03cd2e9e0f5d96b9a95123853ceb259fd3944. SHA-256 artifact ec3214e959f769abc3804334593ed4ade544e81d0c390dd1c36a165ae318994c diverifikasi sebelum membaca bukti. Hasil dicatat di kernel/trust/loader-result.json.
+
+Fixture trusted berhasil init dan unload tepat sekali. Fixture unsigned dan signer asing masing-masing ditolak dengan errno 13 disertai pesan exports protected symbol arc4_crypt. Signature yang diubah ditolak dengan errno 129. Marker loader policy, original certificate keyring dan core checks lengkap, diikuti power down bersih, exit 0 dan tanpa timeout atau kernel panic. Opsi enforcement tetap sama dengan referensi. Tidak ada binary atau private key yang diterbitkan.
+
+Ini membuktikan mekanisme loader pada varian emulator untuk fixture sintetis dengan key build runner sementara. Signature vendor/driver asli, kernel pada B866F, Android, Netflix/DRM dan cakupan patch Mei 2026 tetap belum diuji. Tidak ada akses atau perubahan STB.
