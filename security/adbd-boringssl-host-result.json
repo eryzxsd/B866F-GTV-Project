@@ -1,0 +1,38 @@
+{
+  "scope": "Extracted pinned AOSP guard expressions against a host crypto API",
+  "passed": true,
+  "crypto": "BoringSSL",
+  "aosp_boringssl_host_library_tested": true,
+  "cases": [
+    {
+      "name": "same-key",
+      "compare_result": 1,
+      "old_accepts": true,
+      "fixed_accepts": true
+    },
+    {
+      "name": "different-key",
+      "compare_result": 0,
+      "old_accepts": false,
+      "fixed_accepts": false
+    },
+    {
+      "name": "different-key-type",
+      "compare_result": -1,
+      "old_accepts": true,
+      "fixed_accepts": false
+    }
+  ],
+  "base_source_sha256": "3110ba57946b6f08a0b5a27ffe3667006b424dd90557a30822c908e993e11ba6",
+  "backported_source_sha256": "66366cd66152a1bc81b01717bade175f9f7ce5a4aea927d0559e4bb1cac1b043",
+  "template_sha256": "c94050236c2a1d742098632b29a27629756b0cb92bb04adc72ee602e5bc008f5",
+  "runner_sha256": "05ad0fbed23d3076141ada2aac5813792103d507355dae6fe44297fd0a52ec9f",
+  "android_boringssl_tested": false,
+  "full_adbd_built": false,
+  "android_runtime_tested": false,
+  "stb_accessed": false,
+  "key_material_serialized": false,
+  "runtime_exploitability_tested": false,
+  "boringssl_source_commit": "d513cbc24acec3bfefe3fccb0d963bfcea876a03",
+  "host_crypto_archive_sha256": "4390e4759da25a2a16556c4e7a3ba8d000756f37bda535f5674471cb108d2ac6"
+}

@@ -1,0 +1,70 @@
+<manifest>
+  <remote name="aosp" fetch="https://android.googlesource.com/" />
+  <default remote="aosp" sync-j="2" />
+  <!-- Experimental Android 14 adbd binary subset. Requires documented sparse source view and single source patch. Not firmware or an APEX installer. -->
+  <project path="build/make" name="platform/build" revision="b35e3ff0c85a9ccdd6654abd842db2441ca58d99" clone-depth="1">
+    <linkfile src="CleanSpec.mk" dest="build/CleanSpec.mk" />
+    <linkfile src="buildspec.mk.default" dest="build/buildspec.mk.default" />
+    <linkfile src="core" dest="build/core" />
+    <linkfile src="envsetup.sh" dest="build/envsetup.sh" />
+    <linkfile src="target" dest="build/target" />
+    <linkfile src="tools" dest="build/tools" />
+  </project>
+  <project path="build/soong" name="platform/build/soong" revision="9387734632ba3bf381bd57a638ac1216108c59f4" clone-depth="1">
+    <linkfile src="root.bp" dest="Android.bp" />
+    <linkfile src="bootstrap.bash" dest="bootstrap.bash" />
+  </project>
+  <project path="build/blueprint" name="platform/build/blueprint" revision="58e389be699fdcebb823ae78520fe453a13c41e4" clone-depth="1" />
+  <project path="packages/modules/adb" name="platform/packages/modules/adb" revision="0c88a54d6300ddc98f27bfc3ade96190b53b7c86" clone-depth="1" />
+  <project path="bionic" name="platform/bionic" revision="e4df46f213d8d363017dce7ded5d1f2159614425" clone-depth="1" />
+  <project path="system/apex" name="platform/system/apex" revision="a24a26fb74ef4c7cecec3672d5c47f857a2ac470" clone-depth="1" />
+  <project path="prebuilts/go/linux-x86" name="platform/prebuilts/go/linux-x86" revision="e3733cb310c7b759ae6e1a261110e00b39bb2073" clone-depth="1" />
+  <project path="prebuilts/build-tools" name="platform/prebuilts/build-tools" revision="f61cfbcb609173e1040753a2b9e8fbe8517343f9" clone-depth="1" />
+  <project path="prebuilts/bazel/common" name="platform/prebuilts/bazel/common" revision="332cb88de5a3973e574d49742e39b264dff8aad3" clone-depth="1" />
+  <project path="external/golang-protobuf" name="platform/external/golang-protobuf" revision="006432683595a3dc20cbd2e42384cfe15c3df6bb" clone-depth="1" />
+  <project path="external/starlark-go" name="platform/external/starlark-go" revision="312f9e324bdf0bde540b9a64d05ce0db85180478" clone-depth="1" />
+  <project path="build/bazel" name="platform/build/bazel" revision="08d33ee82cec685686e57b11530feae9914e8912" clone-depth="1">
+    <linkfile src="bazel.WORKSPACE" dest="WORKSPACE" />
+    <linkfile src="bazel.BUILD" dest="BUILD" />
+  </project>
+  <project path="external/go-cmp" name="platform/external/go-cmp" revision="109c2090c33718463ffd63c13d3114ad606a5f40" clone-depth="1" />
+  <project path="external/spdx-tools" name="platform/external/spdx-tools" revision="ebb31f5b2730c9fb243dab7b7efb177532e26583" clone-depth="1" />
+  <project path="system/tools/aidl" name="platform/system/tools/aidl" revision="23976e002584bf67d90cd1298c6cde31d7e76068" clone-depth="1" />
+  <project path="system/tools/xsdc" name="platform/system/tools/xsdc" revision="13f3561ace86ee04565f3c7eccc30b7209db0f9c" clone-depth="1" />
+  <project path="packages/modules/common" name="platform/packages/modules/common" revision="b2ae601de2b8f0b4beab0b8b3033dc12bc365434" clone-depth="1" />
+  <project path="system/core" name="platform/system/core" revision="f53626de0f57e5ba91931d8c2154a83407c1d570" clone-depth="1" />
+  <project path="system/libbase" name="platform/system/libbase" revision="b082e1445ae49943bdff3f0799ed00f7bee61325" clone-depth="1" />
+  <project path="system/logging" name="platform/system/logging" revision="0d18f57987b1dbf3494ca7d2b13645eac002d3cd" clone-depth="1" />
+  <project path="system/unwinding" name="platform/system/unwinding" revision="566f50ac91133ab989bf6d43c139c36582605ba1" clone-depth="1" />
+  <project path="frameworks/native" name="platform/frameworks/native" revision="dac2b8cba53eee8eaafeef667130d82d9e9471fc" clone-depth="1" />
+  <project path="external/boringssl" name="platform/external/boringssl" revision="d513cbc24acec3bfefe3fccb0d963bfcea876a03" clone-depth="1" />
+  <project path="external/libcxx" name="platform/external/libcxx" revision="c8a228094ab9f5e1ebe1dea9cbfc3d88e0cd90c6" clone-depth="1" />
+  <project path="external/libcxxabi" name="platform/external/libcxxabi" revision="52da827128bd62d5a17190305b1b0e5c715e43f8" clone-depth="1" />
+  <project path="external/protobuf" name="platform/external/protobuf" revision="a52fe2fe3645eb9651b686283050bcae6bff3c95" clone-depth="1" />
+  <project path="external/lz4" name="platform/external/lz4" revision="84f58b77bf411403c4d34d8b10960a73a1ef1f0e" clone-depth="1" />
+  <project path="external/zstd" name="platform/external/zstd" revision="ec5ee68e86be391df425bc33d6dadab8aca5fef4" clone-depth="1" />
+  <project path="external/brotli" name="platform/external/brotli" revision="41682b66d624278551e3abe91b3106728fcde16a" clone-depth="1" />
+  <project path="external/libcap" name="platform/external/libcap" revision="b49bfcb8f0dcb84e532ba4cd4631318bc503245e" clone-depth="1" />
+  <project path="external/minijail" name="platform/external/minijail" revision="7c6e5552c35b707eebb2f88808a6dd7cf17fbc6f" clone-depth="1" />
+  <project path="external/selinux" name="platform/external/selinux" revision="48691508f03d1b3861522fdbf7536a9c4d325700" clone-depth="1" />
+  <project path="external/mdnsresponder" name="platform/external/mdnsresponder" revision="2f61810072cd2e4873561841340a341750ff29fc" clone-depth="1" />
+  <project path="system/sepolicy" name="platform/system/sepolicy" revision="7595d4f4c36d27150d247701f3f87fb512b68d18" clone-depth="1" />
+  <project path="system/tools/hidl" name="platform/system/tools/hidl" revision="aed54501bd16136bc4f20e727ba76d95080102f1" clone-depth="1" />
+  <project path="system/libhidl" name="platform/system/libhidl" revision="69123db938e2d4b7d129e8d7bedbfdb98ec6e5b8" clone-depth="1" />
+  <project path="hardware/interfaces" name="platform/hardware/interfaces" revision="40e9f1537e308ed49e3b561ce333e3f2bb64f31e" clone-depth="1" />
+  <project path="kernel/configs" name="kernel/configs" revision="9b952fc1e77d5409018e914470d91160e073e8b2" clone-depth="1" />
+  <project path="test/vts" name="platform/test/vts" revision="4acf5bd0d5d7473eb7be055645b9da670a0424a5" clone-depth="1" />
+  <project path="system/libvintf" name="platform/system/libvintf" revision="1393fde74244b587e7eae3be1e5af89492920ecb" clone-depth="1" />
+  <project path="prebuilts/clang/host/linux-x86" name="platform/prebuilts/clang/host/linux-x86" revision="425c8149f17c8d9914bf690b4d5abe45a13fb993" clone-depth="1" />
+  <project path="prebuilts/jdk/jdk17" name="platform/prebuilts/jdk/jdk17" revision="d902a953282732fdb6f5cf3fbbfd0b0c516639f1" clone-depth="1" />
+  <project path="external/zlib" name="platform/external/zlib" revision="c593f6b430ce6137abc4a056fc1483d60d0053a7" clone-depth="1" />
+  <project path="external/fmtlib" name="platform/external/fmtlib" revision="73fbe7d97129e68db4914df2fd8cbcaff3aaf7c8" clone-depth="1" />
+  <project path="external/pcre" name="platform/external/pcre" revision="ab75be1a6917782b6a0d4f7e0b74c21994268342" clone-depth="1" />
+  <project path="external/python/cpython3" name="platform/external/python/cpython3" revision="5a9e3adfedf645faa6305dba9018831356a6268f" clone-depth="1" />
+  <project path="external/sqlite" name="platform/external/sqlite" revision="4d00da940ec329ca22070479bd83da494f22e268" clone-depth="1" />
+  <project path="external/gwp_asan" name="platform/external/gwp_asan" revision="39b9e2866a51a6f6d41c46ab08c3e6dcade9f797" clone-depth="1" />
+  <project path="external/scudo" name="platform/external/scudo" revision="28347238df9543b3fe7d62e7bed4294e43feca8f" clone-depth="1" />
+  <project path="external/arm-optimized-routines" name="platform/external/arm-optimized-routines" revision="b2b2cccd18aac973895758763105af9489acde47" clone-depth="1" />
+  <project path="development" name="platform/development" revision="47e9cb521910706834fd048c4dbadf3bfb1d7be8" clone-depth="1" />
+  <project path="prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.17-4.8" name="platform/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.17-4.8" revision="5f3d16b433e141c0e6f44ee0a249ca3da8056227" clone-depth="1" />
+</manifest>

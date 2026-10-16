@@ -65,6 +65,17 @@ dicocokkan atau diuji runtime. Percobaan awal dengan object key kosong yang
 sama tidak memenuhi asumsi error pada OpenSSL host; hasil tersebut disimpan
 privat dan tidak dihitung sebagai pengujian error `-2`.
 
+Uji tambahan pada `adbd-boringssl-host-result.json` memakai **BoringSSL AOSP
+yang dipatok dan dibangun untuk Linux host**, bukan OpenSSL sistem. Tiga kelas
+key yang sama juga lolos: hasil `1` diterima, `0` dan `-1` ditolak backport.
+Hash archive host dicatat. Ini tetap pengujian ekspresi guard, bukan daemon
+atau runtime Android ARM. Untuk mengulang dengan checkout build lokal yang
+sudah menghasilkan archive host BoringSSL:
+
+```text
+python tools/adbd_compare_host.py --original LOCAL_AOSP_AUTH_CPP --backported NEW_SOURCE_DIRECTORY/daemon/auth.cpp --output NEW_HOST_REPORT --android-build LOCAL_ANDROID_TREE
+```
+
 ### Persyaratan build dan paket
 
 `adbd-build-packaging-review.json` mencatat ABI dari salinan daemon asli yang
@@ -72,8 +83,10 @@ sudah ada: **ARM32 ELF**, interpreter `/system/bin/linker`, serta dependency
 `libadbd_auth.so`, `libadbd_fs.so`, dan library Android lain. Kernel ARM64 tidak
 berarti daemon penggantinya boleh langsung berupa binary Linux ARM64.
 Target source yang relevan ialah Soong `adbd` dan APEX `com.android.adbd` di
-source tree Android 14 dengan dependency/API yang kompatibel. Daemon lengkap
-dan APEX belum dibangun; uji host di atas tidak menggantikannya.
+source tree Android 14 dengan dependency/API yang kompatibel. **Binary daemon
+ARM32 dengan backport kini berhasil dibangun dan diperiksa secara offline.**
+APEX belum dibangun dan daemon belum dijalankan pada Android atau STB.
+Uji host di atas tetap terpisah dari hasil build daemon.
 
 Untuk update APEX normal, [AOSP mensyaratkan verifikasi signature payload dan
 container](https://source.android.com/docs/core/ota/apex#signing-options).
@@ -82,6 +95,119 @@ signing kompatibel belum diverifikasi tersedia. Memperbesar version code atau
 memakai key pengembangan sendiri tidak membuktikan paket akan diterima.
 Tidak ada perubahan signature enforcement, penggantian daemon, atau instalasi
 APEX yang dilakukan dalam pekerjaan ini.
+
+### Checkout eksperimen build modul
+
+Checkout terpisah kini disiapkan untuk build modul Android 14. Manifest
+`adbd-build-seed-manifest.xml` mencatat commit proyek yang dipatok serta link
+root sesuai manifest AOSP. Subset berisi **52 proyek** dan berhasil menghasilkan
+target binary `adbd` dengan source view serta konfigurasi di bawah. Ini bukan
+manifest firmware EBS atau source tree Android lengkap.
+Backport source diterapkan setelah hash awal `daemon/auth.cpp` cocok.
+
+Source view juga memakai Git sparse-checkout pada proyek `development`, hanya
+direktori `sdk` yang menyediakan genrule versi platform-tools. Sample APK dari
+proyek itu memerlukan SDK Java lengkap dan tidak diperlukan untuk target ini.
+Pada checkout eksperimen baru yang bersih, jalankan:
+
+```text
+git -C development sparse-checkout set --cone sdk
+```
+
+Commit dan isi source SDK tetap asli; tidak dibuat file API/header pengganti.
+Manifest tanpa source view ini tidak mereproduksi eksperimen yang sama.
+
+Pemeriksaan konfigurasi Soong berhasil menghasilkan `TARGET_PRODUCT=module_arm`,
+`TARGET_ARCH=arm`, `TARGET_ARCH_VARIANT=armv7-a-neon`,
+`TARGET_CPU_ABI=armeabi-v7a`, dan `TARGET_BUILD_VARIANT=user`.
+Pemilihan variant tersebut tidak mengaktifkan adb root atau menonaktifkan auth.
+Target modul resmi dapat dipilih melalui helper `banchan com.android.adbd arm user`
+pada source tree yang dependency-nya lengkap. Konfigurasi target sendiri bukan
+bukti ABI/runtime atau signature APEX sudah benar.
+
+Untuk checkout Linux baru, gunakan repo client dan dependency host build AOSP
+yang sesuai. Manifest dapat dipilih melalui:
+
+```sh
+repo init -u https://github.com/eryzxsd/B866F-GTV-Project -b main -m security/adbd-build-seed-manifest.xml
+repo sync -j2
+git -C development sparse-checkout set --cone sdk
+```
+
+Simpan salinan source asli di luar checkout. Jalankan
+`tools/prepare_adbd_backport.py` dari repo proyek dengan input source asli dan
+direktori staging baru seperti contoh sebelumnya. Salin hanya hasil
+`daemon/auth.cpp` yang hash-nya diverifikasi ke
+`packages/modules/adb/daemon/auth.cpp` dalam checkout eksperimen. Jangan
+menerapkan perubahan ini pada tree firmware yang sedang dipakai tanpa review.
+Perintah build yang berhasil, dari root checkout Android:
+
+```sh
+unset ALLOW_MISSING_DEPENDENCIES
+export TARGET_PRODUCT=module_arm
+export TARGET_BUILD_VARIANT=user
+export TARGET_BUILD_TYPE=release
+export TARGET_BUILD_APPS=com.android.adbd
+export OUT_DIR="$PWD/out"
+export BUILD_BROKEN_DISABLE_BAZEL=1
+bash build/soong/soong_ui.bash --make-mode -j1 adbd
+```
+
+Output binary berada pada
+`out/target/product/module_arm/apex/com.android.adbd/bin/adbd`. Ini direktori
+staging build, **bukan APEX bertanda tangan atau paket siap instalasi**. Manifest
+dan perintah tersebut merekam konfigurasi eksperimen yang sudah digunakan;
+checkout kedua dari nol belum diuji terpisah.
+
+Build lokal memakai satu job. Checkout/output berada di disk Linux WSL pada D:,
+terpisah dari kernel emulator yang sudah berhasil. Ruang kosong partisi Windows
+tetap dipantau: angka kapasitas virtual dari `df` di dalam WSL tidak membuktikan
+ruang fisik D: tersedia. Tidak diunduh seluruh 1.224 proyek manifest Android 14.
+
+Percobaan build awal menemukan dependency Go untuk build system yang belum
+ada (`go-cmp` dan SPDX tools); kedua proyek kemudian ditambahkan dari AOSP.
+Wrapper shell percobaan awal mengaburkan exit code. Wrapper Python berikutnya
+mencatat return code proses secara langsung dan memeriksa pesan kegagalan;
+percobaan yang gagal tidak dihitung sukses. Tidak ada module/library palsu atau perubahan signature enforcement untuk
+melewati dependency yang hilang. Status eksperimen dan tahap terakhir dicatat
+pada `adbd-module-bootstrap-result.json`. Build terakhir selesai dengan exit code
+0, 2.395 action Ninja, dan 59 stamp paket pengujian build tool. Jumlah action
+bukan jumlah tes daemon. Waktu 714 detik adalah percobaan terakhir dengan cache
+dari tahap sebelumnya, bukan waktu total setup atau clean build.
+
+Mode unbundled AOSP sendiri mengaktifkan `Allow_missing_dependencies` pada
+konfigurasi Soong. Ini mengizinkan graph subset dianalisis; dependency target
+tetap diperiksa Ninja. Percobaan awal berhenti pada target `adbd` saat
+`libunwind`, `libclang_rt.builtins`, dan `libclang_rt.ubsan_minimal` belum ada.
+Prebuilt compiler dan dependency asli kemudian ditambahkan, dan target binary
+berhasil link. Flag tersebut sendiri tidak membuktikan dependency lengkap.
+Percobaan discovery
+dengan override environment juga tidak menghasilkan daemon dan tidak digunakan
+sebagai hasil validasi. Fallback Soong resmi `BUILD_BROKEN_DISABLE_BAZEL=1`
+dipakai untuk menghindari kebutuhan mixed build Bazel dalam eksperimen ini.
+
+Baseline source masih memakai build ID Android 14 `UP1A.231105.003` dengan
+backport spesifik di atas. Ini baseline eksperimen build/ABI, bukan kandidat
+rilis keamanan yang telah diaudit terhadap seluruh perubahan sejak 2023.
+
+`adbd-system-api-baseline.json` mencocokkan sembilan import `LIBADBD_AUTH` dan
+satu import `LIBADBD_FS` dari consumer asli dengan symbol map source yang
+dipatok. `adbd_auth_prompt_user_with_id` berstatus WEAK pada consumer asli;
+keberadaan import opsional tidak membuktikan provider perangkat mengekspornya.
+Binary kandidat kini dibandingkan dengan consumer asli: sepuluh import tersebut
+cocok dalam nama, versi dan binding, termasuk simbol WEAK. Sepuluh nama library
+dinamis juga sama. Namun seluruh import dinamis tidak identik: ada empat import
+libc/libm tambahan dan sebelas helper ARM lama yang tidak lagi diimpor. Rincian
+tercatat pada hasil build. Export provider perangkat belum diperiksa, sehingga
+kecocokan sebagian ini belum membuktikan ABI atau runtime kompatibel.
+
+Binary yang dibangun berukuran 1.800.012 byte, ELF32 ARM PIE, interpreter
+`/system/bin/linker`, SHA-256
+`a59c42a5cfd108bb33a1cc50ef5ca75bec98ac5043516e5655e51dee4b127d16`.
+Disassembly LLVM, byte executable, serta relocation PLT/GOT mengonfirmasi
+callback hasil build memanggil `EVP_PKEY_cmp` lalu membandingkan hasilnya dengan
+`1` sebelum masuk jalur key cocok. Ini inspeksi kode statis; koneksi TLS daemon
+Android belum diuji. Binary dan log lengkap tetap lokal dan tidak dibagikan.
 
 Perbaikan adbd saja juga belum cukup untuk menyatakan seluruh perangkat berada
 pada patch level Mei 2026. Framework, System, Mainline, kernel, serta komponen

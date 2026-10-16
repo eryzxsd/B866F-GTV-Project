@@ -51,9 +51,10 @@
     "signature_enforcement_changes_proposed": false
   },
   "stb_accessed": false,
-  "full_daemon_built": false,
+  "full_daemon_built": true,
   "apex_built": false,
   "installed": false,
   "source_abi_compatibility_verified": false,
-  "full_may_2026_patch_coverage_established": false
+  "full_may_2026_patch_coverage_established": false,
+  "native_build_result": "adbd-module-bootstrap-result.json"
 }

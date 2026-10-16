@@ -1,0 +1,97 @@
+{
+  "scope": "Focused original ARM32 consumer imports versus pinned AOSP system API symbol maps",
+  "original_daemon_sha256": "4aa3308e1286e64856ed77bc6083455f7811fb1954dc96f6046c92954b7da310",
+  "method": "LLVM 18 dynamic symbol inspection; exact symbol/version lookup in public AOSP maps",
+  "imports": [
+    {
+      "name": "adbd_auth_new",
+      "version": "LIBADBD_AUTH",
+      "binding": "GLOBAL",
+      "source_map_declares_symbol": true,
+      "source_map_introduced_api": 30
+    },
+    {
+      "name": "adbd_auth_run",
+      "version": "LIBADBD_AUTH",
+      "binding": "GLOBAL",
+      "source_map_declares_symbol": true,
+      "source_map_introduced_api": 30
+    },
+    {
+      "name": "adbd_auth_notify_auth",
+      "version": "LIBADBD_AUTH",
+      "binding": "GLOBAL",
+      "source_map_declares_symbol": true,
+      "source_map_introduced_api": 30
+    },
+    {
+      "name": "adbd_auth_prompt_user_with_id",
+      "version": "LIBADBD_AUTH",
+      "binding": "WEAK",
+      "source_map_declares_symbol": true,
+      "source_map_introduced_api": 30
+    },
+    {
+      "name": "adbd_auth_get_public_keys",
+      "version": "LIBADBD_AUTH",
+      "binding": "GLOBAL",
+      "source_map_declares_symbol": true,
+      "source_map_introduced_api": 30
+    },
+    {
+      "name": "adbd_auth_notify_disconnect",
+      "version": "LIBADBD_AUTH",
+      "binding": "GLOBAL",
+      "source_map_declares_symbol": true,
+      "source_map_introduced_api": 30
+    },
+    {
+      "name": "adbd_auth_tls_device_disconnected",
+      "version": "LIBADBD_AUTH",
+      "binding": "GLOBAL",
+      "source_map_declares_symbol": true,
+      "source_map_introduced_api": 30
+    },
+    {
+      "name": "adbd_auth_prompt_user",
+      "version": "LIBADBD_AUTH",
+      "binding": "GLOBAL",
+      "source_map_declares_symbol": true,
+      "source_map_introduced_api": 30
+    },
+    {
+      "name": "adbd_auth_tls_device_connected",
+      "version": "LIBADBD_AUTH",
+      "binding": "GLOBAL",
+      "source_map_declares_symbol": true,
+      "source_map_introduced_api": 30
+    },
+    {
+      "name": "adbd_fs_config",
+      "version": "LIBADBD_FS",
+      "binding": "GLOBAL",
+      "source_map_declares_symbol": true,
+      "source_map_introduced_api": null
+    }
+  ],
+  "source_maps": {
+    "LIBADBD_AUTH": {
+      "path": "frameworks/native/libs/adbd_auth/libadbd_auth.map.txt",
+      "sha256": "aa312470a858cd7e381f676eb8f2ba9682dc5f2e5e84cd2e07e45df3cc37a3b8"
+    },
+    "LIBADBD_FS": {
+      "path": "packages/modules/adb/libs/libadbd_fs/libadbd_fs.map.txt",
+      "sha256": "4275602b00b3eaa1b1b84b12ae9e5ae69f96b7d41c4cd3d17e7abc7eec8600ac"
+    }
+  },
+  "source_commits": {
+    "frameworks/native": "dac2b8cba53eee8eaafeef667130d82d9e9471fc",
+    "packages/modules/adb": "0c88a54d6300ddc98f27bfc3ade96190b53b7c86"
+  },
+  "original_imports_match_source_maps": true,
+  "installed_provider_exports_inspected": false,
+  "candidate_binary_compared": false,
+  "complete_abi_compatibility_established": false,
+  "stb_accessed": false,
+  "weak_symbol_note": "adbd_auth_prompt_user_with_id is WEAK in the captured consumer. A rebuilt daemon must not assume this proves the installed provider exports it."
+}

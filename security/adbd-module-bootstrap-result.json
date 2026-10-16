@@ -1,0 +1,172 @@
+{
+  "scope": "Experimental Android 14 ARM32 adbd source build plus offline ELF/code inspection; no deployment",
+  "cve_backport": "CVE-2026-0073",
+  "source_profile": {
+    "project_count": 52,
+    "all_pinned_heads_verified": true,
+    "only_tracked_source_change": "packages/modules/adb/daemon/auth.cpp: EVP_PKEY_cmp result == 1",
+    "source_sha256": "66366cd66152a1bc81b01717bade175f9f7ce5a4aea927d0559e4bb1cac1b043",
+    "development_sparse_checkout": [
+      "sdk"
+    ],
+    "build_id": "UP1A.231105.003",
+    "full_security_history_audited": false
+  },
+  "build": {
+    "returncode": 0,
+    "duration_seconds": 714.03,
+    "failed_diagnostic_present": false,
+    "allow_missing_dependencies_env_override": false,
+    "effective_allow_missing_dependencies": true,
+    "bazel_mixed_build_disabled": true,
+    "scope": "Build attempt only; artifact and Android runtime validation separate",
+    "product": "module_arm",
+    "variant": "user",
+    "target": "adbd",
+    "target_build_apps": [
+      "com.android.adbd"
+    ],
+    "arch": "arm",
+    "arch_variant": "armv7-a-neon",
+    "abi": "armeabi-v7a",
+    "jobs": 1,
+    "compiler": "Android clang 17.0.2 / clang-r487747c",
+    "completed_ninja_actions": 2395,
+    "build_tool_test_package_stamps": 59,
+    "selected_binary_target_dependencies_satisfied": true,
+    "full_android_dependency_closure_verified": false
+  },
+  "artifact": {
+    "sha256": "a59c42a5cfd108bb33a1cc50ef5ca75bec98ac5043516e5655e51dee4b127d16",
+    "size_bytes": 1800012,
+    "elf32_arm": true,
+    "pie": true,
+    "interpreter": "/system/bin/linker",
+    "needed": [
+      "libadbd_fs.so",
+      "liblog.so",
+      "libselinux.so",
+      "libbase.so",
+      "libadbd_auth.so",
+      "libcrypto.so",
+      "libc++.so",
+      "libc.so",
+      "libm.so",
+      "libdl.so"
+    ]
+  },
+  "unstripped_artifact_sha256": "1e30d95d06493d711bb5c7ea3591578e32b442324e581aae7a25b168c613f8e3",
+  "original_sha256": "4aa3308e1286e64856ed77bc6083455f7811fb1954dc96f6046c92954b7da310",
+  "offline_comparison": {
+    "needed_library_sets_equal": true,
+    "focused_auth_fs_imports_and_bindings_equal": true,
+    "focused_import_count": 10,
+    "optional_prompt_user_with_id_remains_weak": true,
+    "original_dynamic_import_count": 661,
+    "candidate_dynamic_import_count": 654,
+    "imports_added": [
+      {
+        "name": "ceilf",
+        "version": "LIBC",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "memcpy",
+        "version": "LIBC",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "memmove",
+        "version": "LIBC",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "memset",
+        "version": "LIBC",
+        "binding": "GLOBAL"
+      }
+    ],
+    "imports_removed": [
+      {
+        "name": "__aeabi_memclr",
+        "version": "LIBC_N",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "__aeabi_memclr4",
+        "version": "LIBC_N",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "__aeabi_memclr8",
+        "version": "LIBC_N",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "__aeabi_memcpy",
+        "version": "LIBC_N",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "__aeabi_memcpy4",
+        "version": "LIBC_N",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "__aeabi_memcpy8",
+        "version": "LIBC_N",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "__aeabi_memmove",
+        "version": "LIBC_N",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "__aeabi_memmove4",
+        "version": "LIBC_N",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "__aeabi_memset",
+        "version": "LIBC_N",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "__aeabi_memset4",
+        "version": "LIBC_N",
+        "binding": "GLOBAL"
+      },
+      {
+        "name": "__aeabi_memset8",
+        "version": "LIBC_N",
+        "binding": "GLOBAL"
+      }
+    ],
+    "installed_provider_exports_inspected": false,
+    "complete_abi_compatibility_established": false
+  },
+  "compiled_guard": {
+    "method": "LLVM 18 disassembly, checked executable bytes and ARM PLT-to-GOT relocation",
+    "callsite_elf_va": "0x000a665e",
+    "plt_elf_va": "0x0016eef0",
+    "got_elf_va": "0x00173f00",
+    "relocation_symbol": "EVP_PKEY_cmp",
+    "result_saved_in": "r6",
+    "comparison_elf_va": "0x000a6676",
+    "comparison": "cmp r6, #1; beq equality path",
+    "source_correlated_callback": "adbd_tls_verify_cert public-key iteration lambda",
+    "exact_one_guard_present": true,
+    "android_runtime_execution_observed": false
+  },
+  "full_daemon_built": true,
+  "apex_built": false,
+  "android_runtime_tested": false,
+  "stb_accessed": false,
+  "installed": false,
+  "apex_signing_compatibility_verified": false,
+  "signature_enforcement_changed": false,
+  "recovery_verified": false,
+  "hardware_or_netflix_compatibility_established": false,
+  "full_may_2026_patch_coverage_established": false
+}
