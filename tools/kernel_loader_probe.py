@@ -21,6 +21,11 @@ def build(root, kernel, output, work, make, run):
     symvers = output / 'vmlinux.symvers'
     if any(line.split()[1] == 'arc4_crypt' for line in symvers.read_text().splitlines() if line.strip()):
         raise RuntimeError('Fixture export already belongs to vmlinux')
+    # Image alone does not generate the linker script needed by external .ko
+    # files in this vendor tree. Use Kbuild's normal preparation target.
+    run(make + ['modules_prepare'], 'loader-modules-prepare.txt')
+    if not (output / 'scripts/module.lds').is_file():
+        raise RuntimeError('modules_prepare did not generate scripts/module.lds')
     # This fixture imports only kernel symbols. Use the exact generated kernel
     # table for external modpost; never invent CRCs or suppress modpost errors.
     if not (output / 'Module.symvers').exists():
