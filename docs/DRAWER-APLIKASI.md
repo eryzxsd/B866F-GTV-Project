@@ -74,6 +74,10 @@ jaminan seluruh aplikasi atau firmware lain kompatibel.
 
 ## Hasil pemeriksaan pratinjau
 
+Versi 0.4 membatasi gambar grid ke viewport tersendiri. Zoom tile tetap aktif,
+tetapi baris yang digulir tidak lagi menggambar di atas toolbar atau teks
+petunjuk bawah. Pilihan jumlah kolom pengguna dipertahankan.
+
 Versi 0.3 menambahkan animasi fokus, impor wallpaper gambar, pengaturan kegelapan,
 dan menyembunyikan scrollbar grid. Impor gambar melalui File Manager+ dari
 penyimpanan internal, persistensi setelah sumber gambar dihapus, kegelapan,

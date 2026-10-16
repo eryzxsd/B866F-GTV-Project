@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ImageDecoder;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
@@ -186,7 +187,7 @@ public final class DrawerActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         LinearLayout root = new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(dp(44), dp(26), dp(44), dp(14)); root.setClipChildren(false);
+        root.setPadding(dp(44), dp(26), dp(44), dp(14));
         LinearLayout header = new LinearLayout(this); header.setGravity(Gravity.CENTER_VERTICAL);
         TextView title = label("Aplikasi", 30, text);
         header.addView(title, new LinearLayout.LayoutParams(0, dp(48), 1));
@@ -225,7 +226,14 @@ public final class DrawerActivity extends Activity {
             }
             return false;
         });
-        root.addView(grid, new LinearLayout.LayoutParams(-1, 0, 1));
+        // Allow tile zoom inside the grid, but clip all scrolling content at the
+        // viewport boundary so offscreen rows cannot cover the toolbar/footer.
+        FrameLayout viewport = new FrameLayout(this);
+        viewport.setClipChildren(true);
+        viewport.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
+            v.setClipBounds(new Rect(0, 0, right - left, bottom - top)));
+        viewport.addView(grid, new FrameLayout.LayoutParams(-1, -1));
+        root.addView(viewport, new LinearLayout.LayoutParams(-1, 0, 1));
         status = label("Memuat aplikasi…", 13, muted); status.setPadding(0, dp(10), 0, 0);
         root.addView(status, new LinearLayout.LayoutParams(-1, dp(34)));
         FrameLayout backdrop = new FrameLayout(this); backdrop.setBackgroundColor(bg);
