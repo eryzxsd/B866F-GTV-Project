@@ -116,3 +116,38 @@ driver asli tetap belum diuji. amlogic-input memakai signer lain yang belum
 tersedia. Warning hardware vendor masih ada di emulator. Kompatibilitas B866F,
 Android, Netflix/DRM, jalur restore mandiri, dan cakupan patch Mei 2026 belum
 dibuktikan. Tidak ada pemasangan kernel atau perubahan STB pada run ini.
+
+## Verifikasi PKCS7 lengkap secara lokal: berhasil
+
+Eksperimen berikutnya memakai ulang Image lokal yang sama, tanpa rebuild kernel.
+Helper GPL kecil dibangun dengan Kbuild normal, CRC/namespace asli dan signature
+key build lokal, lalu dimuat hanya di QEMU. Input 47 file modul asli diperiksa
+hash-nya dan dimasukkan ke initramfs privat sebagai pasangan body/signature.
+Helper membaca byte sebagai data; tidak memuat atau menjalankan driver asli.
+
+API `verify_pkcs7_signature` dipanggil dengan VERIFY_USE_SECONDARY_KEYRING dan
+VERIFYING_MODULE_SIGNATURE, sama dengan jalur pada kernel/module_signing.c yang
+dipin. Hasilnya: 46 signature terhadap isi lengkap diterima; 46 perubahan satu
+byte isi ditolak dengan EKEYREJECTED (-129); 46 CMS yang dipotong satu byte
+ditolak dengan EBADMSG (-74). amlogic-input.ko ditolak dengan ENOKEY (-126),
+sesuai signer lain yang sertifikatnya belum tersedia. Itu bukan bukti signature
+file tersebut rusak.
+
+Keyring/core checks dan eksperimen prehashed sebelumnya kembali lolos. Helper
+berhasil load/unload, QEMU power down bersih, exit 0, tanpa timeout/kernel panic.
+Image tetap memiliki hash yang sama sebelum dan sesudah run. Uji ulang sukses
+memerlukan sekitar 19 detik untuk build helper dan boot/verifikasi emulator;
+angka ini tidak mencakup penyiapan source atau percobaan compile pertama yang
+gagal karena include linux/mm.h belum ditambahkan. Log percobaan pertama tetap
+disimpan secara lokal. Hasil terstruktur: `kernel/trust/pkcs7-result.json`.
+
+`tools/kernel_pkcs7_probe.py` menolak CI dan hash input/build yang berbeda.
+Tidak ada input asli, initramfs privat, helper binary, Image, atau private key
+yang diterbitkan. Sebelas guard tests lolos pada Windows dan Ubuntu, termasuk
+penolakan input berbeda serta bukti runtime yang tidak lengkap/negatif gagal.
+
+Ini membuktikan parsing CMS dan verifikasi isi/trust untuk 46 file asli pada
+emulator. Header luar signature modul masih diperiksa oleh tool host, bukan
+mod_check_sig di kernel pada percobaan ini. Relocation, init/dependency driver
+asli, hardware B866F, Android/Netflix dan patch Mei 2026 tetap belum terbukti.
+Warning hardware vendor masih ada. Tidak ada akses atau perubahan STB.

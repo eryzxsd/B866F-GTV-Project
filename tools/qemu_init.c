@@ -103,6 +103,17 @@ static void check_loader_policy(void) {
 }
 #endif
 
+#ifdef B866F_PKCS7_PROBE
+static void check_pkcs7(void) {
+    int file = open("/pkcs7-probe.ko", O_RDONLY);
+    require(file >= 0, "pkcs7-helper-readable");
+    require(syscall(SYS_finit_module, file, "", 0) == 0, "pkcs7-helper-load-and-checks");
+    close(file);
+    require(syscall(SYS_delete_module, "b866f_pkcs7_probe", O_NONBLOCK) == 0,
+            "pkcs7-helper-unload");
+}
+#endif
+
 int main(void) {
     int console = open("/dev/console", O_RDWR);
     if (console < 0) return 1;
@@ -148,6 +159,9 @@ int main(void) {
 #endif
 #ifdef B866F_LOADER_PROBE
     check_loader_policy();
+#endif
+#ifdef B866F_PKCS7_PROBE
+    check_pkcs7();
 #endif
     puts("B866F_QEMU_CORE_TESTS_PASSED");
     puts("Virtual hardware only; STB boot, drivers, DRM and patch coverage UNTESTED.");
