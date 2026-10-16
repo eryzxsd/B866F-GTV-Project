@@ -15,7 +15,8 @@ import kernel_trust_probe as trust
 ROOT = baseline.ROOT
 REPORT = ROOT / 'build/qemu-report'
 LOADER_PROBE = os.environ.get('LOADER_PROBE') == '1'
-TRUST_PROBE = os.environ.get('TRUST_PROBE') == '1' or LOADER_PROBE
+SIGNATURE_PROBE = os.environ.get('SIGNATURE_PROBE') == '1'
+TRUST_PROBE = os.environ.get('TRUST_PROBE') == '1' or LOADER_PROBE or SIGNATURE_PROBE
 
 
 def archive_entry(name, data=b'', mode=stat.S_IFDIR | 0o755, major=0, minor=0):
@@ -27,7 +28,8 @@ def archive_entry(name, data=b'', mode=stat.S_IFDIR | 0o755, major=0, minor=0):
     return result + b'\0' * (-len(result) % 4)
 
 
-def classify(log, timed_out, returncode, trust_probe=False, loader_probe=False):
+def classify(log, timed_out, returncode, trust_probe=False, loader_probe=False,
+             signature_probe=False):
     reached = 'B866F_QEMU_CORE_TESTS_PASSED' in log
     trust_passed = 'B866F_QEMU_ORIGINAL_CERT_TRUST_PASSED' in log
     failed = 'B866F_QEMU_FAIL:' in log or 'Kernel panic' in log
@@ -39,6 +41,12 @@ def classify(log, timed_out, returncode, trust_probe=False, loader_probe=False):
                      log.count('exports protected symbol arc4_crypt') == 2)
     if loader_probe and not loader_passed:
         failed = True
+    signature_passed = False
+    if signature_probe:
+        from kernel_original_signature_probe import check_log, load_vectors
+        signature_passed = check_log(log, load_vectors(ROOT / 'kernel/trust/original-signature-vectors.json'))
+        if not signature_passed:
+            failed = True
     return {'guest_checks_passed': reached and not failed,
             'clean_shutdown': reached and not failed and not timed_out and returncode == 0,
             'timed_out': timed_out, 'qemu_exit_code': returncode,
@@ -46,6 +54,9 @@ def classify(log, timed_out, returncode, trust_probe=False, loader_probe=False):
             'original_certificate_keyring_test_passed': trust_probe and trust_passed and not failed,
             'synthetic_loader_policy_test_requested': loader_probe,
             'synthetic_loader_policy_test_passed': loader_probe and loader_passed and not failed,
+            'original_signature_crypto_test_requested': signature_probe,
+            'original_signature_crypto_test_passed': signature_probe and signature_passed and not failed,
+            'original_pkcs7_parser_tested': False,
             'original_driver_load_tested': False,
             'stb_boot_tested': False, 'installable': False}
 
@@ -55,9 +66,13 @@ def main():
         raise RuntimeError('This test requires the pinned CoreELEC source')
     if baseline.WORK.exists():
         raise RuntimeError('Requires a fresh runner build directory')
+    jobs = int(os.environ.get('KERNEL_BUILD_JOBS', '2'))
+    if not 1 <= jobs <= 8:
+        raise ValueError('KERNEL_BUILD_JOBS must be between 1 and 8')
     baseline.WORK.mkdir(parents=True)
     REPORT.mkdir(parents=True)
     status = {'status': 'preparing', 'installable': False, 'stb_boot_tested': False,
+              'build_jobs': jobs,
               'configuration': 'separate QEMU variant, not the paired-driver configuration',
               'coverage': 'core Linux boot/syscalls only; Amlogic hardware and Android untested'}
     env = os.environ.copy()
@@ -109,6 +124,9 @@ def main():
             shutil.copyfile(certificate, kernel / certificate_path)
             run([str(kernel / 'scripts/config'), '--file', str(output / '.config'),
                  '--set-str', 'SYSTEM_TRUSTED_KEYS', certificate_path], 'trust-config-fragment.txt')
+        if SIGNATURE_PROBE:
+            from kernel_original_signature_probe import instrument
+            status['original_signature_probe'] = instrument(ROOT, kernel)
         make = ['make', '-C', str(kernel), 'O=' + str(output), 'ARCH=arm64', 'LLVM=1',
                 'LLVM_IAS=1', 'CROSS_COMPILE=aarch64-linux-gnu-',
                 'CROSS_COMPILE_COMPAT=arm-linux-gnueabi-', 'KCFLAGS=-Wno-error -Wno-unknown-warning-option']
@@ -141,7 +159,7 @@ def main():
         shutil.copyfile(output / '.config', REPORT / 'qemu-resolved.config')
         status['status'] = 'building QEMU kernel variant'
         (REPORT / 'status.json').write_text(json.dumps(status, indent=2))
-        run(make + ['-j2', 'Image'], 'compile.txt')
+        run(make + ['-j' + str(jobs), 'Image'], 'compile.txt')
         image = output / 'arch/arm64/boot/Image'
         status['kernel_image_sha256'] = hashlib.sha256(image.read_bytes()).hexdigest()
         if TRUST_PROBE:
@@ -181,10 +199,12 @@ def main():
                     process.kill()
                     code = process.wait()
         result = classify((REPORT / 'qemu-serial.txt').read_text(errors='replace'), timed_out, code,
-                          trust_probe=TRUST_PROBE, loader_probe=LOADER_PROBE)
+                          trust_probe=TRUST_PROBE, loader_probe=LOADER_PROBE,
+                          signature_probe=SIGNATURE_PROBE)
         status.update(result)
         if result['clean_shutdown']:
-            status['status'] = ('QEMU core, keyring and synthetic loader policy checks passed' if LOADER_PROBE
+            status['status'] = ('QEMU core, keyring and original-signature crypto checks passed' if SIGNATURE_PROBE
+                                else 'QEMU core, keyring and synthetic loader policy checks passed' if LOADER_PROBE
                                 else 'QEMU core and original-certificate keyring checks passed' if TRUST_PROBE
                                 else 'QEMU core checks passed')
         else:
@@ -209,6 +229,11 @@ def main():
             summary += ('\nUji loader memakai modul fixture sintetis dan key build runner sementara. '
                         'Bukan load driver asli atau signature dengan private key vendor. '
                         'Binary fixture, Image dan private key tidak diunggah.\n')
+        if SIGNATURE_PROBE:
+            summary += ('\nUji crypto signature asli memakai 46 digest SHA256 dan signature RSA publik. '
+                        'Instrumentasi built-in khusus QEMU memanggil verify_signature pada keyring asli, '
+                        'serta wajib menolak digest yang diubah. Tidak memuat isi modul asli dan tidak '
+                        'menguji parser PKCS7, loader driver asli, atau hardware. Lihat status dan serial log.\n')
         (REPORT / 'summary.md').write_text(summary)
         if os.environ.get('GITHUB_STEP_SUMMARY'):
             with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:

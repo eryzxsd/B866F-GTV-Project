@@ -10,6 +10,10 @@ on:
         description: Uji load fixture sintetis, signature dan protected export di QEMU saja
         type: boolean
         default: false
+      signature_probe:
+        description: Uji crypto 46 signature asli memakai digest saja, tanpa binary driver
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -37,6 +41,7 @@ jobs:
           KERNEL_SOURCE: coreelec-5.15.196
           TRUST_PROBE: ${{ inputs.trust_probe && '1' || '0' }}
           LOADER_PROBE: ${{ inputs.loader_probe && '1' || '0' }}
+          SIGNATURE_PROBE: ${{ inputs.signature_probe && '1' || '0' }}
         run: python3 tools/kernel_qemu.py
       - name: Save logs and configuration only
         if: always()

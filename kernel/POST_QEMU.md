@@ -75,3 +75,21 @@ Artifact tetap hanya teks; seluruh key sementara dan binary fixture tinggal pada
 Fixture trusted berhasil init dan unload tepat sekali. Fixture unsigned dan signer asing masing-masing ditolak dengan errno 13 disertai pesan exports protected symbol arc4_crypt. Signature yang diubah ditolak dengan errno 129. Marker loader policy, original certificate keyring dan core checks lengkap, diikuti power down bersih, exit 0 dan tanpa timeout atau kernel panic. Opsi enforcement tetap sama dengan referensi. Tidak ada binary atau private key yang diterbitkan.
 
 Ini membuktikan mekanisme loader pada varian emulator untuk fixture sintetis dengan key build runner sementara. Signature vendor/driver asli, kernel pada B866F, Android, Netflix/DRM dan cakupan patch Mei 2026 tetap belum diuji. Tidak ada akses atau perubahan STB.
+
+## Uji crypto signature asli dengan digest saja
+
+Opsi `signature_probe` menyiapkan eksperimen terpisah: verifikasi RSA4096/PKCS1v1.5/SHA256 atas 46 digest modul asli menggunakan sertifikat asli di built-in keyring. Vector publik berisi nama modul, hash file, digest isi yang ditandatangani, dan signature RSA publik. Tidak ada isi binary driver atau private key. `amlogic-input.ko` dikecualikan karena sertifikat signer berbeda belum tersedia.
+
+Generator lokal `tools/kernel_signature_vectors.py` memeriksa hash file terhadap audit privat, membaca format DER CMS detached yang ketat (tanpa signed attributes atau konten tertanam), dan memverifikasi setiap signature secara independen melalui cryptography dengan Prehashed SHA256. Generator membutuhkan paket Python cryptography; build QEMU memakai vector JSON yang sudah diterbitkan dan tidak memerlukan paket tersebut atau akses file modul asli.
+
+Instrumentasi `certs/system_keyring.c` hanya berlaku saat opsi eksperimen diminta dan menolak source dengan hash berbeda. Setelah sertifikat dimuat, instrumentasi memanggil API kernel `verify_signature` untuk setiap vector. Setiap signature wajib diterima dengan digest asli dan ditolak dengan EKEYREJECTED setelah satu byte digest diubah. Classifier mewajibkan seluruh 46 hasil positif, 46 hasil negatif, marker akhir, core/keyring checks, tanpa panic/failure, dan shutdown bersih. Permission keyring dan enforcement signature tidak diubah. Hasil runtime belum ditetapkan pada saat eksperimen disiapkan.
+
+Ini menguji API crypto prehashed, **bukan parser PKCS7 di kernel, load driver asli, urutan boot atau kompatibilitas hardware/Android/Netflix**. Instrumentasi diagnostik bukan perubahan kernel yang siap dipasang. Patch keamanan Android Mei 2026 tetap membutuhkan audit dan pembaruan komponen terpisah; angka versi kernel atau keberhasilan QEMU saja tidak cukup.
+
+Untuk menjalankan secara lokal pada Linux dengan dependency build yang sama seperti workflow:
+
+```sh
+KERNEL_SOURCE=coreelec-5.15.196 SIGNATURE_PROBE=1 KERNEL_BUILD_JOBS=4 python3 tools/kernel_qemu.py
+```
+
+Build membutuhkan direktori `build/kernel-baseline` yang belum ada; source, object, Image dan key build sementara tetap lokal. `KERNEL_BUILD_JOBS` dibatasi 1–8 (default 2). Simpan report sebelum eksperimen berikutnya dan jangan menghapus tree build aktif. Tidak ada akses STB atau operasi flash pada tool ini.

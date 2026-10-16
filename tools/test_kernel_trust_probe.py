@@ -9,9 +9,43 @@ from kernel_qemu import classify
 from kernel_trust_probe import certificate_der, check_config, check_image
 from kernel_loader_probe import tamper_signature
 from kernel_module_signature_audit import MARKER, split_signature
+from kernel_original_signature_probe import load_vectors, check_log, instrument
+from kernel_signature_vectors import raw_signature, elements
 
 
 class TrustProbeChecks(unittest.TestCase):
+    def test_signature_probe_requires_every_positive_and_negative_result(self):
+        vectors = load_vectors(ROOT / 'kernel/trust/original-signature-vectors.json')
+        log = ''.join('B866F_ORIGINAL_SIG: ' + row['module'] + ' valid=0\n' +
+                      'B866F_ORIGINAL_SIG: ' + row['module'] + ' changed_digest=-129\n'
+                      for row in vectors)
+        log += 'B866F_QEMU_ORIGINAL_SIGNATURE_CRYPTO_PASSED count=46\n'
+        self.assertTrue(check_log(log, vectors))
+        self.assertFalse(check_log(log.replace('changed_digest=-129', 'changed_digest=0', 1), vectors))
+        self.assertFalse(check_log(log + 'B866F_ORIGINAL_SIG: cdc_ether.ko valid=0', vectors))
+        self.assertFalse(check_log(log.replace('count=46', 'count=45'), vectors))
+        core = 'B866F_QEMU_CORE_TESTS_PASSED B866F_QEMU_ORIGINAL_CERT_TRUST_PASSED\n'
+        self.assertFalse(classify(core, False, 0, True, signature_probe=True)['clean_shutdown'])
+        self.assertTrue(classify(core + log, False, 0, True, signature_probe=True)['clean_shutdown'])
+        self.assertFalse(classify(core + log, True, -9, True, signature_probe=True)['clean_shutdown'])
+
+    def test_instrumentation_rejects_unpinned_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            kernel = Path(directory)
+            (kernel / 'certs').mkdir()
+            source = kernel / 'certs/system_keyring.c'
+            source.write_text('unexpected source')
+            with self.assertRaises(ValueError):
+                instrument(ROOT, kernel)
+            self.assertEqual(source.read_text(), 'unexpected source')
+
+    def test_cms_parser_rejects_nonminimal_and_truncated_der(self):
+        for bad in (b'\x30\x80', b'\x30\x81\x01\x00', b'\x30\x82\x00\x80', b'\x30\x02\x00'):
+            with self.assertRaises(ValueError):
+                elements(bad)
+        with self.assertRaises(ValueError):
+            raw_signature(b'\x30\x00', 1)
+
     def test_real_public_certificate_and_enforcement_guard(self):
         der = certificate_der(ROOT / 'kernel/trust/original-module-signer.crt')
         reference = config_map(ROOT / 'kernel/b866f-running.config')
