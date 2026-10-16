@@ -1,0 +1,61 @@
+/* Host API regression only; not Android adbd or an authentication bypass test.
+ * The runner inserts the guard expressions extracted from pinned AOSP source.
+ * Generated keys exist only in this process and are never serialized.
+ */
+#include <cstdio>
+#include <cstdlib>
+#include <openssl/crypto.h>
+#include <openssl/evp.h>
+
+struct Key {
+    EVP_PKEY *value;
+    EVP_PKEY *get() const { return value; }
+};
+
+static bool old_guard(Key known_evp, Key evp_pkey) { return @OLD_EXPRESSION@; }
+static bool fixed_guard(Key known_evp, Key evp_pkey) { return @FIXED_EXPRESSION@; }
+
+static void require(bool ok, const char *message)
+{
+    if (!ok) {
+        std::fprintf(stderr, "ADBD_HOST_FAIL:%s\n", message);
+        std::exit(1);
+    }
+}
+
+static Key key(int type)
+{
+    EVP_PKEY_CTX *context = EVP_PKEY_CTX_new_id(type, nullptr);
+    require(context != nullptr && EVP_PKEY_keygen_init(context) == 1, "keygen-init");
+    EVP_PKEY *result = nullptr;
+    require(EVP_PKEY_keygen(context, &result) == 1, "keygen");
+    EVP_PKEY_CTX_free(context);
+    return {result};
+}
+
+static void compare(const char *name, Key known, Key candidate, int expected_class)
+{
+    int result = EVP_PKEY_cmp(known.get(), candidate.get());
+    require(expected_class < 0 ? result < 0 : result == expected_class, "comparison-class");
+    bool old_accepts = old_guard(known, candidate);
+    bool fixed_accepts = fixed_guard(known, candidate);
+    require(old_accepts == (result != 0), "original-expression-result");
+    require(fixed_accepts == (expected_class == 1), "fixed-expression-result");
+    std::printf("ADBD_HOST_CASE:%s cmp=%d old_accepts=%d fixed_accepts=%d\n",
+                name, result, old_accepts, fixed_accepts);
+}
+
+int main()
+{
+    std::printf("ADBD_HOST_CRYPTO:%s\n", OpenSSL_version(OPENSSL_VERSION));
+    Key rsa1 = key(EVP_PKEY_RSA);
+    Key rsa2 = key(EVP_PKEY_RSA);
+    Key different_type = key(EVP_PKEY_ED25519);
+    compare("same-key", rsa1, rsa1, 1);
+    compare("different-key", rsa1, rsa2, 0);
+    compare("different-key-type", rsa1, different_type, -1);
+    EVP_PKEY_free(rsa1.get());
+    EVP_PKEY_free(rsa2.get());
+    EVP_PKEY_free(different_type.get());
+    std::puts("ADBD_HOST_COMPARE_TEST_PASSED");
+}

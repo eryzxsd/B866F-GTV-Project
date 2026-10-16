@@ -31,6 +31,58 @@ privat. Contoh argumen Ghidra (ganti placeholder dengan path lokal):
 analyzeHeadless PROJECT_DIR AUDIT_NAME -import LOCAL_ADBD -readOnly -deleteProject -analysisTimeoutPerFile 180 -scriptPath tools -postScript InspectAdbd.java PRIVATE_REPORT
 ```
 
+### Backport source Android 14 dan uji kontrak crypto
+
+Backport khusus source disiapkan untuk `daemon/auth.cpp` AOSP pada commit
+`0c88a54d6300ddc98f27bfc3ade96190b53b7c86`. Patch ada di
+`patches/adbd-android14-CVE-2026-0073.patch`; perubahan hanya menambahkan syarat
+`== 1`, mempertahankan logging Android 14 yang ada. Tool menolak hash input
+yang berbeda dan output yang sudah ada. Source asli tidak ditimpa.
+`adbd-source-backport-result.json` mencatat hash dan pengujian guard tersebut.
+
+```text
+python tools/prepare_adbd_backport.py --source LOCAL_AOSP_AUTH_CPP --output NEW_SOURCE_DIRECTORY
+python tools/adbd_compare_host.py --original LOCAL_AOSP_AUTH_CPP --backported NEW_SOURCE_DIRECTORY/daemon/auth.cpp --output NEW_HOST_REPORT
+```
+
+Input diambil dari [source AOSP yang dipatok](https://android.googlesource.com/platform/packages/modules/adb/+/0c88a54d6300ddc98f27bfc3ade96190b53b7c86/daemon/auth.cpp).
+Uji host memerlukan Linux, g++, dan development library libcrypto. Ekspresi
+guard diambil dari dua source yang hash-nya diverifikasi, kemudian dikompilasi
+dan dijalankan dengan key RSA/Ed25519 nyata yang hanya berada di memori.
+Hasil pada `adbd-host-comparison-result.json`:
+
+| Perbandingan | Hasil API | Kondisi lama menerima | Backport menerima |
+|---|---:|---|---|
+| Key yang sama | 1 | Ya | Ya |
+| Key RSA berbeda | 0 | Tidak | Tidak |
+| Jenis key berbeda | -1 | Ya | Tidak |
+
+Ini memakai OpenSSL host, bukan runtime BoringSSL Android. Review terpisah
+pada header dan implementasi BoringSSL Android 14 yang dipatok juga menemukan
+kontrak hasil negatif sebagai error, termasuk `-1` untuk jenis berbeda dan `-2`
+untuk perbandingan yang tidak didukung. Library BoringSSL dari perangkat belum
+dicocokkan atau diuji runtime. Percobaan awal dengan object key kosong yang
+sama tidak memenuhi asumsi error pada OpenSSL host; hasil tersebut disimpan
+privat dan tidak dihitung sebagai pengujian error `-2`.
+
+### Persyaratan build dan paket
+
+`adbd-build-packaging-review.json` mencatat ABI dari salinan daemon asli yang
+sudah ada: **ARM32 ELF**, interpreter `/system/bin/linker`, serta dependency
+`libadbd_auth.so`, `libadbd_fs.so`, dan library Android lain. Kernel ARM64 tidak
+berarti daemon penggantinya boleh langsung berupa binary Linux ARM64.
+Target source yang relevan ialah Soong `adbd` dan APEX `com.android.adbd` di
+source tree Android 14 dengan dependency/API yang kompatibel. Daemon lengkap
+dan APEX belum dibangun; uji host di atas tidak menggantikannya.
+
+Untuk update APEX normal, [AOSP mensyaratkan verifikasi signature payload dan
+container](https://source.android.com/docs/core/ota/apex#signing-options).
+Identitas signer yang diterima firmware ini belum diketahui dan material
+signing kompatibel belum diverifikasi tersedia. Memperbesar version code atau
+memakai key pengembangan sendiri tidak membuktikan paket akan diterima.
+Tidak ada perubahan signature enforcement, penggantian daemon, atau instalasi
+APEX yang dilakukan dalam pekerjaan ini.
+
 Perbaikan adbd saja juga belum cukup untuk menyatakan seluruh perangkat berada
 pada patch level Mei 2026. Framework, System, Mainline, kernel, serta komponen
 vendor yang berlaku perlu diperiksa dan diperbarui. Driver asli yang lolos load

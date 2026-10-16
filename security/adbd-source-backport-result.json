@@ -1,0 +1,23 @@
+{
+  "scope": "Source-only Android 14 adbd key comparison backport",
+  "cve": "CVE-2026-0073",
+  "base_repository": "https://android.googlesource.com/platform/packages/modules/adb",
+  "base_commit": "0c88a54d6300ddc98f27bfc3ade96190b53b7c86",
+  "base_file": "daemon/auth.cpp",
+  "base_sha256": "3110ba57946b6f08a0b5a27ffe3667006b424dd90557a30822c908e993e11ba6",
+  "upstream_fix_commit": "842d331f9e5fb10770a09379e19240daea057dba",
+  "backported_file_sha256": "66366cd66152a1bc81b01717bade175f9f7ce5a4aea927d0559e4bb1cac1b043",
+  "change": "Accept EVP_PKEY_cmp only when its result equals 1; preserve existing logging",
+  "source_input_modified": false,
+  "full_adbd_built": false,
+  "apex_built": false,
+  "apex_signing_compatibility_verified": false,
+  "stb_accessed": false,
+  "installed": false,
+  "full_may_2026_patch_coverage_established": false,
+  "source_guards_checked": {
+    "wrong_input_rejected": true,
+    "existing_output_preserved": true,
+    "original_source_hash_unchanged": true
+  }
+}

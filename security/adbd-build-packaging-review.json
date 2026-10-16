@@ -1,0 +1,59 @@
+{
+  "scope": "Offline original daemon ABI inventory and source build/packaging requirements",
+  "original_daemon_sha256": "4aa3308e1286e64856ed77bc6083455f7811fb1954dc96f6046c92954b7da310",
+  "original_daemon_abi": "ELF32 ARM EABI5 PIE",
+  "interpreter": "/system/bin/linker",
+  "needed_libraries": [
+    "libc.so",
+    "libdl.so",
+    "libm.so",
+    "liblog.so",
+    "libc++.so",
+    "libcrypto.so",
+    "libbase.so",
+    "libadbd_auth.so",
+    "libadbd_fs.so",
+    "libselinux.so"
+  ],
+  "method": "LLVM 18 readelf on an existing private original copy; no new device access",
+  "boringssl_reference": {
+    "repository": "https://android.googlesource.com/platform/external/boringssl",
+    "commit": "d513cbc24acec3bfefe3fccb0d963bfcea876a03",
+    "source_sha256": {
+      "src/include/openssl/evp.h": "df3442ae98b11d83a44c64fae4c9b4367fe5628e925f6fe67ed15cd09724b755",
+      "src/crypto/evp/evp.c": "0c4bd2673b772c80738245183f58370f229908db5fe56e3e883ee91c519b7ad0"
+    },
+    "review": "EVP_PKEY_cmp returns -1 when key types differ and -2 when comparison is unsupported; header documents only 1 as equality.",
+    "matched_to_device_libcrypto": false
+  },
+  "build_requirements": {
+    "android_build_system": "Soong in a compatible Android 14 source tree; not a standalone Linux g++ daemon build",
+    "binary_target": "adbd",
+    "apex_target": "com.android.adbd",
+    "required_daemon_abi": "ARM32 for this captured daemon",
+    "system_interface_libraries": [
+      "libadbd_auth.so",
+      "libadbd_fs.so"
+    ],
+    "source_build_metadata_sha256": {
+      "Android.bp": "bb7c3caac22cb8c8233b1990c6f1c123d4fd24fd6dc4c1ecf0e95359ae46749c",
+      "apex/Android.bp": "0f2cafa8c2f20d900ddbc8e995618e44f1eda6a3eac187b29e5b9227fb9f849a",
+      "apex/apex_manifest.json": "3eb24707c2592cbb537d556086211bb5f6ee5afdef7a036333ab3d5027551c4a"
+    }
+  },
+  "packaging_requirements": {
+    "apex_payload_signature": true,
+    "apex_container_signature": true,
+    "accepted_device_signer_identities_known": false,
+    "compatible_signing_material_available": false,
+    "production_signer_or_firmware_rebuild_trust_chain_required": true,
+    "changing_version_code_alone_is_sufficient": false,
+    "signature_enforcement_changes_proposed": false
+  },
+  "stb_accessed": false,
+  "full_daemon_built": false,
+  "apex_built": false,
+  "installed": false,
+  "source_abi_compatibility_verified": false,
+  "full_may_2026_patch_coverage_established": false
+}
