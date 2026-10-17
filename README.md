@@ -43,12 +43,6 @@ dipertahankan sebagai arsip teknis, bukan tracker atau rencana pengembangan akti
 
 Nama proyek adalah nama kustomisasi Google TV pribadi untuk B866F. Firmware dasarnya tetap karya EBS dan komponen pihak lain tetap milik pembuatnya.
 
-Eksperimen source build di GitHub Actions didokumentasikan dalam
-[pemeriksaan ABI kernel](kernel/README.md). Workflow hanya menghasilkan laporan
-diagnostik; tidak menghasilkan paket instalasi atau menulis partisi STB.
-Temuan patch Android dan batas cakupan kandidat dicatat dalam
-[audit keamanan](security/README.md), terpisah dari keberhasilan boot emulator.
-
 ## Mulai dari sini
 
 1. Baca [panduan instalasi](docs/INSTALASI.md). Siapkan recovery yang sudah diuji sebelum perubahan yang membutuhkan reboot.
