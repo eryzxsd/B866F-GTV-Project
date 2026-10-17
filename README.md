@@ -41,7 +41,7 @@ dipertahankan sebagai arsip teknis, bukan tracker atau rencana pengembangan akti
 | Google TV Home | 1.0.994451607 / 831927, aplikasi Google asli |
 | Settings target SHA-256 | `b798e976ac4fea52d39c30f98845682bf20bbbe06224e4c592b4f43165197d1f` |
 
-**Proyek ini tidak meningkatkan patch keamanan ke Mei 2026 dan tidak mengganti kernel.** Nama proyek adalah nama kustomisasi pribadi. Firmware dasarnya tetap karya EBS dan komponen pihak lain tetap milik pembuatnya.
+Nama proyek adalah nama kustomisasi Google TV pribadi untuk B866F. Firmware dasarnya tetap karya EBS dan komponen pihak lain tetap milik pembuatnya.
 
 Eksperimen source build di GitHub Actions didokumentasikan dalam
 [pemeriksaan ABI kernel](kernel/README.md). Workflow hanya menghasilkan laporan
