@@ -19,15 +19,15 @@ Samba memakai SMB2/3, login wajib, signing wajib, dan pembatasan jaringan lokal.
 
 ## Progres kernel dan patch keamanan
 
-**Pembaruan status: 17 Oktober 2026 · Upaya upgrade kernel dan patch penuh dihentikan untuk waktu tidak ditentukan · Belum siap dipasang.**
+**Pembaruan status: 17 Oktober 2026 · Upaya upgrade kernel dan patch keamanan penuh dihentikan · Tidak ada paket upgrade siap dipasang.**
 
-Fokus aktif beralih ke stabilitas kustomisasi Google TV. Source dan bukti riset
-kernel tetap tersedia sebagai arsip; tidak ada jadwal penyelesaian atau build
-lanjutan yang dijanjikan. Pekerjaan ini hanya dipertimbangkan kembali jika ada
-basis firmware B866F lebih baru yang terverifikasi atau source/vendor yang
-sesuai, beserta kompatibilitas dan jalur pemulihan yang dapat dibuktikan.
-Perbaikan keamanan individual merupakan lingkup terpisah dan tidak otomatis
-mengaktifkan kembali target upgrade penuh.
+Fokus aktif beralih ke stabilitas kustomisasi Google TV. Upaya upgrade kernel
+dan target patch keamanan penuh Mei 2026 sudah dihentikan, bukan dijeda.
+Source, workflow manual, dan bukti riset tetap tersedia sebagai arsip hasil
+eksperimen; kotak yang belum tercentang di bawah mencatat batas hasil, bukan
+rencana pekerjaan lanjutan. Tidak ada build atau investigasi lanjutan yang
+direncanakan. Pekerjaan keamanan individual pun tidak dilanjutkan otomatis;
+pekerjaan baru memerlukan permintaan baru dari pemilik proyek.
 
 Tracker ini diperbarui manual berdasarkan hasil yang sudah dicatat. Kotak tercentang
 menunjukkan pemeriksaan dengan cakupan tertentu yang sudah selesai, bukan persentase
