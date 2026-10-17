@@ -8,6 +8,7 @@ def main():
     pairs={
         'system/priv-app/GoogleTVHome/base.apk':a.google_tv_system_apk,
         'system/app/EbsSettingsTheme/EbsSettingsTheme.apk':ROOT/'dist/settings-overlay.apk',
+        'system/product/overlay/B866FNotificationRouting.apk':ROOT/'dist/notification-routing.apk',
         'bin/gtv-launcher-switch':ROOT/'dist/gtv-launcher-switch',
         'bin/gtv-samba-control':ROOT/'dist/gtv-samba-control',
         'samba/libb866f_samba_paths.so':ROOT/'dist/libb866f_samba_paths.so',

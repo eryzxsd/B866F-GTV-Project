@@ -13,12 +13,21 @@ Kustomisasi Google TV untuk **ZTE B866F V1.1 dengan basis EBS Project Android 14
 - Menu **B866F GTV Project → Ganti launcher**: mendeteksi launcher HOME yang terpasang, memilih default, dan menghentikan launcher sebelumnya setelah pilihan baru terverifikasi. Komponen HOME yang dinonaktifkan oleh alat dicatat untuk pemulihan.
 - Menu **Samba server**: berbagi folder internal `Shared` dan USB secara terpisah, kata sandi, akses tulis opsional, dan mulai saat boot opsional.
 - Layanan kompatibilitas profil lokal untuk Google TV Home **1.0.994451607**. Hanya launcher dengan paket dan sertifikat Google yang sesuai dapat memanggil layanan. Profil anak/multi-profil belum didukung.
+- [Panel notifikasi](docs/NOTIFIKASI.md) dengan overlay routing yang bertahan setelah reboot, sehingga System UI tidak perlu dimulai ulang saat Home memuat pada boot berikutnya. [Kartu popup](docs/KARTU-NOTIFIKASI.md) adalah komponen opsional terpisah.
 
 Samba memakai SMB2/3, login wajib, signing wajib, dan pembatasan jaringan lokal. Kondisi awal: **server mati, akses tulis mati, mulai saat boot mati**. Tidak ada port router yang dibuka.
 
 ## Progres kernel dan patch keamanan
 
-**Pembaruan status: 17 Oktober 2026 · Pekerjaan sedang dijeda · Belum siap dipasang.**
+**Pembaruan status: 17 Oktober 2026 · Upaya upgrade kernel dan patch penuh dihentikan untuk waktu tidak ditentukan · Belum siap dipasang.**
+
+Fokus aktif beralih ke stabilitas kustomisasi Google TV. Source dan bukti riset
+kernel tetap tersedia sebagai arsip; tidak ada jadwal penyelesaian atau build
+lanjutan yang dijanjikan. Pekerjaan ini hanya dipertimbangkan kembali jika ada
+basis firmware B866F lebih baru yang terverifikasi atau source/vendor yang
+sesuai, beserta kompatibilitas dan jalur pemulihan yang dapat dibuktikan.
+Perbaikan keamanan individual merupakan lingkup terpisah dan tidak otomatis
+mengaktifkan kembali target upgrade penuh.
 
 Tracker ini diperbarui manual berdasarkan hasil yang sudah dicatat. Kotak tercentang
 menunjukkan pemeriksaan dengan cakupan tertentu yang sudah selesai, bukan persentase
@@ -96,7 +105,7 @@ Pengujian: login Windows dan daftar share berhasil; kata sandi salah ditolak; mo
 
 ## Pemulihan, laporan masalah, dan kontribusi
 
-Lihat [pemulihan](docs/PEMULIHAN.md), [catatan keamanan](SECURITY.md), dan [kontribusi](CONTRIBUTING.md). Jangan unggah dump perangkat, kata sandi, private key, serial perangkat, token ADB, atau log akun Google ke issue.
+Lihat [pemulihan dan rollback launcher/Settings/notifikasi](docs/PEMULIHAN.md), [catatan keamanan](SECURITY.md), dan [kontribusi](CONTRIBUTING.md). Jangan unggah dump perangkat, kata sandi, private key, serial perangkat, token ADB, atau log akun Google ke issue.
 
 Kode proyek dan adaptasi yang dicakup dilisensikan Apache-2.0, kecuali berkas yang menyebut lisensi lain (konfigurasi kernel memakai GPL-2.0-only); lihat [LICENSE](LICENSE) dan [NOTICE](NOTICE). Samba dan dependensinya diambil dari Termux saat build lokal, memakai lisensi masing-masing. Google TV, Android TV, ZTE, dan EBS tidak mensponsori proyek ini.
 

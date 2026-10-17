@@ -1,0 +1,3 @@
+<resources>
+  <string name="notification_handler" translatable="false">com.google.android.apps.tv.launcherx</string>
+</resources>

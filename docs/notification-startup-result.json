@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-17",
+  "device": "B866F V1.1, EBS Android 14",
+  "launcher_version": "1.0.994451607",
+  "overlay_package": "com.local.b866f.notificationrouting",
+  "overlay_has_application_code": false,
+  "resource_policy_checked": ["public", "product"],
+  "overlayable_checks_bypassed": false,
+  "activation_boot_tested": true,
+  "subsequent_boot_tested": true,
+  "overlay_enabled_state_persisted": true,
+  "google_tv_route_preserved": true,
+  "systemui_starts_in_subsequent_boot": 1,
+  "systemui_restart_seen_in_subsequent_boot": false,
+  "same_route_apply_preserved_systemui_process": true,
+  "restore_and_apply_resource_values_verified": true,
+  "home_first_draw_after_boot_animation_seconds": 5.445,
+  "full_content_readiness_timed": false,
+  "launcher_anr_seen_in_captured_subsequent_boot": false,
+  "user_confirmed_shorter_black_screen": true,
+  "user_confirmed_home_loading_normal": true,
+  "limits": "One device and one subsequent persistence boot; no long-term reliability or other firmware compatibility established. First activation or a changed route can still restart SystemUI when --refresh is requested. Raw device logs and screenshots remain private."
+}

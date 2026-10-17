@@ -2,6 +2,7 @@
 # Route the system notification entry to the installed Google TV dashboard.
 # No APK replacement, notification listener grant, or resident process.
 OVERLAY=com.android.shell:B866FGtvNotifications
+PERSISTENT_OVERLAY=com.local.b866f.notificationrouting
 RESOURCE=android:string/config_notificationHandlerPackage
 LAUNCHER=com.google.android.apps.tv.launcherx
 ACTION=${1:-status}
@@ -21,20 +22,33 @@ if [ "$ACTION" = apply ]; then
     esac
 fi
 if [ "$ACTION" = apply ]; then
-    cmd overlay fabricate --target android --name B866FGtvNotifications "$RESOURCE" string "$LAUNCHER" || exit 1
-    cmd overlay enable --user 0 "$OVERLAY" || exit 1
+    if cmd package path "$PERSISTENT_OVERLAY" | grep -q '^package:'; then
+        # A packaged overlay retains its enabled state across boots, so SystemUI
+        # can read the correct route when it first starts.
+        cmd overlay enable --user 0 "$PERSISTENT_OVERLAY" || exit 1
+        if cmd overlay list --user 0 | grep -Fq "$OVERLAY"; then
+            cmd overlay disable --user 0 "$OVERLAY" || exit 1
+        fi
+    elif [ "$before" != "$LAUNCHER" ]; then
+        # Compatibility with older modules that do not contain the APK yet.
+        cmd overlay fabricate --target android --name B866FGtvNotifications "$RESOURCE" string "$LAUNCHER" || exit 1
+        cmd overlay enable --user 0 "$OVERLAY" || exit 1
+    fi
     after=$(cmd overlay lookup android "$RESOURCE") || exit 1
     if [ "$after" != "$LAUNCHER" ]; then
         cmd overlay disable --user 0 "$OVERLAY"
+        cmd overlay disable --user 0 "$PERSISTENT_OVERLAY"
         echo 'Override tidak terverifikasi; dinonaktifkan.' >&2
         exit 1
     fi
 else
     # Disabling this overlay restores the firmware's underlying resource value.
     # A new installation may not have created the overlay yet.
-    if cmd overlay list --user 0 | grep -Fq "$OVERLAY"; then
-        cmd overlay disable --user 0 "$OVERLAY" || exit 1
-    fi
+    for owned_overlay in "$OVERLAY" "$PERSISTENT_OVERLAY"; do
+        if cmd overlay list --user 0 | grep -Fq "$owned_overlay"; then
+            cmd overlay disable --user 0 "$owned_overlay" || exit 1
+        fi
+    done
     after=$(cmd overlay lookup android "$RESOURCE") || exit 1
 fi
 

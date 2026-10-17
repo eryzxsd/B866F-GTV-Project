@@ -1,0 +1,3 @@
+<overlay>
+  <item target="string/config_notificationHandlerPackage" value="@string/notification_handler"/>
+</overlay>

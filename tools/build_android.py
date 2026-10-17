@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--component',choices=['tools','profile-compat','settings-overlay','notification-cards','app-drawer'],required=True)
+    p.add_argument('--component',choices=['tools','profile-compat','settings-overlay','notification-cards','notification-routing','app-drawer'],required=True)
     p.add_argument('--build-tools',type=Path,required=True)
     p.add_argument('--android-jar',type=Path,required=True)
     p.add_argument('--framework-apk',type=Path);p.add_argument('--settings-apk',type=Path)

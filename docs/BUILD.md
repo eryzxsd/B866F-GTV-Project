@@ -32,6 +32,17 @@ python tools/build_android.py --component settings-overlay --build-tools PATH_BU
 
 ID paket overlay sengaja `0x7e`. Jangan menggantinya: referensi atribut firmware dapat salah direlokasi dan membuat Settings crash. Hash target Settings diverifikasi sebelum link overlay.
 
+Modul juga memerlukan overlay routing notifikasi:
+
+```
+python tools/build_android.py --component notification-routing --build-tools PATH_BUILD_TOOLS --android-jar PATH_ANDROID_JAR --keystore local-inputs/release.p12
+```
+
+APK ini hanya berisi satu pemetaan resource, tanpa kode atau izin aplikasi.
+Packager menempatkannya di `system/product/overlay/`; jangan memasangnya sebagai
+APK pengguna biasa karena resource framework ini memerlukan kebijakan product.
+Lihat [NOTIFIKASI.md](NOTIFIKASI.md) untuk aktivasi dan pemulihan.
+
 ## Helper dan Samba
 
 ```
