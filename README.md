@@ -17,50 +17,17 @@ Kustomisasi Google TV untuk **ZTE B866F V1.1 dengan basis EBS Project Android 14
 
 Samba memakai SMB2/3, login wajib, signing wajib, dan pembatasan jaringan lokal. Kondisi awal: **server mati, akses tulis mati, mulai saat boot mati**. Tidak ada port router yang dibuka.
 
-## Progres kernel dan patch keamanan
+## Catatan riset kernel dan keamanan
 
-**Pembaruan status: 17 Oktober 2026 · Upaya upgrade kernel dan patch keamanan penuh dihentikan · Tidak ada paket upgrade siap dipasang.**
+**17 Oktober 2026: upaya upgrade kernel dan patch keamanan penuh dihentikan.**
+Eksperimen menghasilkan beberapa pengujian emulator yang berhasil, tetapi belum
+membuktikan kompatibilitas seluruh driver B866F, Android, DRM/Netflix, maupun
+cakupan patch Mei 2026. Tidak ada hasil eksperimen ini yang dipasang sebagai
+pembaruan kernel atau keamanan pada STB, dan tidak ada paket upgrade siap pakai.
+Fokus proyek sekarang adalah kustomisasi dan stabilitas Google TV.
 
-Fokus aktif beralih ke stabilitas kustomisasi Google TV. Upaya upgrade kernel
-dan target patch keamanan penuh Mei 2026 sudah dihentikan, bukan dijeda.
-Source, workflow manual, dan bukti riset tetap tersedia sebagai arsip hasil
-eksperimen; kotak yang belum tercentang di bawah mencatat batas hasil, bukan
-rencana pekerjaan lanjutan. Tidak ada build atau investigasi lanjutan yang
-direncanakan. Pekerjaan keamanan individual pun tidak dilanjutkan otomatis;
-pekerjaan baru memerlukan permintaan baru dari pemilik proyek.
-
-Tracker ini diperbarui manual berdasarkan hasil yang sudah dicatat. Kotak tercentang
-menunjukkan pemeriksaan dengan cakupan tertentu yang sudah selesai, bukan persentase
-kesiapan firmware atau perkiraan waktu selesai. Keberhasilan QEMU tidak membuktikan
-kompatibilitas hardware B866F atau cakupan patch Android.
-
-### Kernel 5.15.196
-
-- [x] Audit awal modul/ABI perangkat dan build kernel dari source.
-- [x] Boot Linux inti di QEMU, pemeriksaan inti, dan shutdown bersih.
-- [x] Uji trust/signature serta load/unload **37 modul asli** di QEMU; I/O zram terbatas berhasil.
-- [ ] Verifikasi seluruh driver vendor yang diperlukan, termasuk media/decoder dan Wi-Fi, beserta fungsi hardware nyata.
-- [ ] Buktikan jalur restore mandiri, lalu uji boot B866F, Android, audio/video, remote, dan Netflix/DRM.
-- [ ] Siapkan serta validasi paket pembaruan yang dapat dipulihkan sebelum rilis.
-
-[Bukti dan batas uji kernel/emulator](kernel/POST_QEMU.md). Uji 37 modul tidak
-mencakup seluruh driver vendor atau membuktikan operasi perangkat USB/HID nyata.
-Eksplorasi upstream yang lebih baru masih parsial dan tidak termasuk hasil di atas.
-
-### Patch keamanan Android — target Mei 2026
-
-- [x] Susun inventaris awal 13 bulletin Mei 2025–Mei 2026; sebagian cakupan masih memerlukan review.
-- [x] Siapkan backport adbd CVE-2026-0073 dan uji guard crypto pada host.
-- [x] Build binary kandidat adbd ARM32 dan inspeksi offline perubahan serta sebagian interface-nya.
-- [ ] Selesaikan audit/perbaikan seluruh komponen yang berlaku: platform Android, Mainline, kernel, dan vendor.
-- [ ] Selesaikan kompatibilitas runtime Android, signing/paket pembaruan, dan pemulihan.
-- [ ] Validasi pada STB dan buktikan cakupan patch sebelum menyatakan level keamanan baru.
-
-[Bukti dan batas audit keamanan](security/README.md). Backport adbd saja tidak
-memenuhi seluruh level patch Mei 2026. **Belum ada kernel baru atau pembaruan
-keamanan dari eksperimen ini yang dipasang ke STB.** Basis terakhir yang diverifikasi
-tetap kernel `5.15.153-android14-11-maybe-dirty` dan patch **1 Mei 2025**; tanggal
-patch tidak diubah untuk sekadar menampilkan versi lebih baru.
+[Hasil riset kernel](kernel/POST_QEMU.md) dan [audit keamanan](security/README.md)
+dipertahankan sebagai arsip teknis, bukan tracker atau rencana pengembangan aktif.
 
 ## Kompatibilitas yang benar-benar diuji
 
