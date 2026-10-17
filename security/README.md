@@ -1,6 +1,12 @@
 # Audit patch keamanan Android
 
-Tujuan adalah pembaruan nyata, bukan mengganti teks tanggal pada Settings.
+> **ARSIP — DIHENTIKAN pada 17 Oktober 2026.** Upaya upgrade kernel dan patch
+> keamanan penuh telah berakhir. Isi folder ini dipertahankan sebagai catatan
+> eksperimen historis, bukan pengembangan aktif, roadmap, atau paket siap pasang.
+> Petunjuk dan status menunggu di bawah merupakan konteks saat eksperimen dibuat.
+> Fokus aktif proyek adalah kustomisasi Google TV.
+
+Tujuan eksperimen terdahulu adalah pembaruan nyata, bukan mengganti teks tanggal pada Settings.
 Hasil uji kernel dan ABI tidak membuktikan seluruh patch platform terpasang.
 
 ## Temuan adbd Mei 2026

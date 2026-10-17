@@ -1,5 +1,11 @@
 # Eksperimen ABI kernel
 
+> **ARSIP — DIHENTIKAN pada 17 Oktober 2026.** Upaya upgrade kernel dan patch
+> keamanan penuh telah berakhir. Isi folder ini dipertahankan sebagai catatan
+> eksperimen historis, bukan pengembangan aktif, roadmap, atau paket siap pasang.
+> Petunjuk dan status menunggu di bawah merupakan konteks saat eksperimen dibuat.
+> Fokus aktif proyek adalah kustomisasi Google TV.
+
 Workflow **Kernel ABI baseline (diagnostic only)** dijalankan manual melalui tab
 Actions. Tidak berjalan otomatis saat push/PR dan tidak mengakses STB.
 
